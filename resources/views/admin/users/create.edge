@@ -1,0 +1,81 @@
+@layout('layouts/master')
+
+@set('title', 'Funcionários')
+
+@section('content')
+  <div class="form-container">
+    <div class="card-form">
+      <form action="{{ route('admin.users.store') }}" method="post">
+        <h2>Novo funcionário</h2>
+        @!component('components/input', {
+          name: 'nome',
+          label: 'Nome',
+          value: flashMessages.get('nome') || '',
+          error: 'errors.nome'
+        })
+
+        @!component('components/input', {
+          name: 'cpf',
+          label: 'Cpf',
+          value: flashMessages.get('cpf') || '',
+          error: 'errors.cpf'
+        })
+
+        @!component('components/select', {
+          name: 'cargoId',
+          label: 'Cargo',
+          valueKey: 'id',
+          labelKey: 'titulo',
+          collection: cargos,
+          value: flashMessages.get('cargoId') || '',
+          error: 'errors.cargoId'
+        })
+
+        @!component('components/input', {
+          name: 'password',
+          label: 'Senha',
+          type:'password',
+          error: 'errors.password'
+        })
+
+        @!component('components/input', {
+          name: 'password_confirmation',
+          label: 'Senha',
+          type: 'password',
+          error: 'errors.password_confirmation'
+        })
+
+        <h2>Dados Bancários</h2>
+
+        @!component('components/input', {
+          name: 'banco',
+          label: 'Banco',
+          value: flashMessages.get('banco') || '',
+          error: 'errors.banco'
+        })
+
+        @!component('components/input', {
+          name: 'agencia',
+          label: 'Agência',
+          value: flashMessages.get('agencia') || '',
+          error: 'errors.agencia'
+        })
+
+        @!component('components/input', {
+          name: 'operacaoCaixa',
+          label: 'Operação Caixa',
+          value: flashMessages.get('operacaoCaixa') || '',
+          error: 'errors.operacaoCaixa'
+        })
+        
+        @!component('components/input', {
+          name: 'conta',
+          label: 'Conta',
+          value: flashMessages.get('conta') || '',
+          error: 'errors.conta'
+        })
+        <button class="btn btn-primary">Salvar</button>
+      </form>
+    </div>
+  </div>
+@endsection

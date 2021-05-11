@@ -1,0 +1,28 @@
+@layout('layouts/master')
+
+@set('title', 'Cargos')
+
+@section('content')
+  <div class="form-container">
+    <div class="card-form">
+      <form id="cargo" action="{{ route('admin.cargos.store') }}" method="post">
+        <h2>Novo cargo</h2>
+        @!component('components/input', {
+          name: 'titulo',
+          label: 'Título',
+          error: 'errors.titulo',
+          value: flashMessages.get('titulo')
+        })
+
+        <h2>Permissões</h2>
+        <div 
+          id="react-create-cargos"
+          data-resources='{{{ JSON.stringify(resources) }}}'
+        >
+        </div>
+
+        <button class="btn btn-primary">Salvar</button>
+      </form>
+    </div>
+  </div>
+@endsection

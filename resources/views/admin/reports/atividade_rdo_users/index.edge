@@ -1,0 +1,70 @@
+@layout('layouts/master')
+
+@set('title', 'Produção Funcionários')
+
+@section('content')
+  <form class="form-filter" action="">
+    <div class="form-group">
+      <label for="initialDate">Data inicial</label>
+      <input type="date" value='{{ request.qs().initialDate || '' }}' id="initialDate" name="initialDate" required />
+    </div>
+    
+    <div class="form-group">
+      <label for="finalDate">Data final</label>
+      <input type="date" value='{{ request.qs().finalDate || '' }}' id="finalDate" name="finalDate" required />
+    </div>
+
+    <div>
+      <label for="funcionario">Funcionário</label>
+      <div
+        class="react-select-input"
+        inputid='funcionario'
+        collection='{{{ JSON.stringify(users) }}}'
+        labelkey='nome'
+        valuekey='id'
+        name='userId'
+        placeholder='Selecione um funcionário'
+        value='{{ request.qs().userId }}'
+        required='true'
+      >
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="text-white" for="">label</label>
+      <button class="btn btn-primary">Filtrar</button>
+    </div>
+  </form>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        {{--  <th class="text-left">Data</th>  --}}
+        <th class="text-left">Atividade</th>
+        <th class="text-md-right" title="Quantidade Inicial">Q. Inicial</th>
+        <th class="text-md-right" title="Quantidade Final">Q. Final</th>
+        <th class="text-md-right" title="Quantidade Total">Q. Total</th>
+      </thead>
+      
+      <tbody>
+        @each(rdoUser in user?.rdoUsers)
+          <tr>
+            <td class="text-left text-primary text-semibold" colspan="4">
+              {{ rdoUser.rdo.data }}
+            </td>
+          </tr>
+          @each((atividade, index) in rdoUser.rdo.rdoAtividades)
+            <tr>
+              <td>{{ atividade.atividade.descricao }}</td>
+              <td class="text-md-right">{{{ Number(atividade.quantidade_inicial).toLocaleString('pt-BR') }}}</td>
+              <td class="text-md-right">{{{ Number(atividade.quantidade_final).toLocaleString('pt-BR') }}}</td>
+              <td class="text-md-right">{{{ Number(atividade.quantidade).toLocaleString('pt-BR') }}}</td>
+            </tr>
+          @endeach
+        @else
+          @!emptyMessage()
+        @endeach
+      </tbody>
+    </table>
+  </div>
+@endsection

@@ -1,0 +1,42 @@
+@layout('layouts/master')
+
+@set('title', 'Cargos')
+@set('rightLink', {
+  'address': route('admin.cargos.create'),
+  'payload': 'Novo'
+})
+
+
+@section('content')
+  <div class="table-container">
+    <table>
+      <thead>
+        <th class="text-left">Titulo</th>
+        <th class="text-right">Ações</th>
+      </thead>
+      
+      <tbody>
+        @each(cargo in cargos.data)
+          <tr>
+            <td title="Título" class="text-left">{{ cargo.titulo }}</td>
+            <td class="text-right">
+              <a href="{{ route('admin.cargos.edit', { id: cargo.id }) }}">
+                <span class="edit-icon" data-feather="edit"></span>
+              </a>
+
+              <form class="delete-form" action="{{ route('admin.cargos.destroy', { id: cargo.id }) }}?_method=DELETE" method="post">
+                <button type="button" class="btn-link">
+                  <span class="delete-icon" data-feather="trash"></span>
+                </button>
+              </form>
+            </td>
+          </tr>
+        @else
+          @!emptyMessage()
+        @endeach
+      </tbody>
+    </table>
+  </div>
+
+  @!component('components/pagination', collection=cargos)
+@endsection

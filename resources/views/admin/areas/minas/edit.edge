@@ -1,0 +1,30 @@
+@layout('layouts/master')
+
+@set('title', 'Minas')
+
+@section('content')
+  <div class="form-container">
+    <div class="card-form">
+      <form action="{{ route('admin.areas.minas.update', { id: mina.id }) }}?_method=PUT" method="post">
+        <h2>Editar Mina</h2>
+        @!component('components/input', {
+          name: 'nome',
+          label: 'Nome',
+          value: flashMessages.get('nome') || mina.nome,
+          error: 'errors.nome'
+        })
+
+        @!component('components/select', {
+          name: 'complexo_id',
+          label: 'Complexo',
+          valueKey: 'id',
+          labelKey: 'nome',
+          collection: complexos,
+          value: flashMessages.get('complexo_id') || mina.complexo_id,
+          error: 'errors.complexo_id'
+        })
+        <button class="btn btn-primary">Atualizar</button>
+      </form>
+    </div>
+  </div>
+@endsection

@@ -1,0 +1,29 @@
+@if(collection.data.length)
+  <div class="pagination">
+    <a 
+      tabindex="{{ collection.meta.previous_page_url || -1 }}" 
+      href="{{ collection.meta.previous_page_url }}"
+      class="{{ collection.meta.previous_page_url ? '' : 'disabled'}}"
+      >
+      Anterior
+    </a>
+
+    @if(collection.meta.current_page > collection.meta.first_page)
+      <a href="{{ collection.meta.previous_page_url }}">{{ collection.meta.current_page - 1 }}</a>
+    @endif
+
+    <a class="active">{{ collection.meta.current_page }}</a>
+
+    @if(collection.meta.current_page < collection.meta.last_page)
+      <a href="{{ collection.meta.next_page_url }}">{{ collection.meta.current_page + 1 }}</a>
+    @endif
+
+    <a 
+      tabindex="{{ collection.meta.next_page_url || -1 }}" 
+      href="{{ collection.meta.next_page_url }}"
+      class="{{ collection.meta.next_page_url ? '' : 'disabled'}}"
+      >
+      Próxima
+    </a>
+  </div>
+@endif

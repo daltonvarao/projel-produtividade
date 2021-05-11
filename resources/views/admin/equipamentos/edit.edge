@@ -1,0 +1,35 @@
+@layout('layouts/master')
+
+@set('title', 'Equipamentos')
+
+@section('content')
+  <div class="form-container">
+    <div class="card-form">
+      <form action="{{ route('admin.equipamentos.update', { id: equipamento.id }) }}?_method=PUT" method="post">
+        <h2>Editar Equipamento</h2>
+        @!component('components/input', {
+          name: 'tag',
+          label: 'Tag',
+          error: 'errors.tag',
+          value: flashMessages.get('tag') || equipamento.tag
+        })
+
+        @!component('components/input', {
+          name: 'descricao',
+          label: 'Descrição',
+          error: 'errors.descricao',
+          value: flashMessages.get('descricao') || equipamento.descricao
+        })
+
+        @!component('components/checkbox', {
+          name: 'sonda',
+          label: 'Sonda',
+          error: 'errors.sonda',
+          value: flashMessages.get('sonda') || equipamento.sonda
+        })
+
+        <button class="btn btn-primary">Salvar</button>
+      </form>
+    </div>
+  </div>
+@endsection

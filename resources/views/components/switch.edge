@@ -1,0 +1,11 @@
+<div class="switch">
+  <input 
+    type="checkbox"
+    id="{{id || name}}" 
+    name="{{name}}"
+    {{ disabled ? 'disabled' : '' }}
+    {{ checked ? 'checked' : ''}}
+    onchange="{{ onChange || '' }}"
+  >
+  <label for="{{id || name}}"></label>
+</div>

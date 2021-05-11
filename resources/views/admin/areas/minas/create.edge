@@ -1,0 +1,31 @@
+@layout('layouts/master')
+
+@set('title', 'Minas')
+
+@section('content')
+  <div class="form-container">
+    <div class="card-form">
+      <form action="{{ route('admin.areas.minas.store') }}" method="post">
+        <h2>Nova Mina</h2>
+        @!component('components/input', {
+          name: 'nome',
+          label: 'Nome',
+          value: flashMessages.get('nome') || '',
+          error: 'errors.nome'
+        })
+
+        @!component('components/select', {
+          name: 'complexo_id',
+          label: 'Complexo',
+          valueKey: 'id',
+          labelKey: 'nome',
+          collection: complexos,
+          value: flashMessages.get('complexo_id') || '',
+          error: 'errors.complexo_id'
+        })
+
+        <button class="btn btn-primary">Salvar</button>
+      </form>
+    </div>
+  </div>
+@endsection

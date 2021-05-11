@@ -1,0 +1,99 @@
+@card({ title: 'Atividades' })
+  @slot('actions')
+    <button class="show-modal btn-link text-primary" data-target="add-atividade">
+      <span data-feather="plus-square"></span>
+    </button>
+  @endslot
+  @slot('content')
+    <table class="table no-shadow">
+      <thead>
+        <th class="text-left">Hora Inicio</th>
+        <th class="text-left">Hora Fim</th>
+        <th class="text-left">Atividade</th>
+        <th class="text-center">Quantidade Inicial</th>
+        <th class="text-center">Quantidade Final</th>
+        <th class="text-center">Quantidade Total</th>
+        <th class="text-center">Ações</th>
+      </thead>
+      
+      <tbody>
+        @each(rdo_atividade in rdo.rdoAtividades)
+          <tr>
+            <td title="Hora Início" class="text-left">{{ rdo_atividade.hora_inicio  }}</td>
+            <td title="Hora Fim" class="text-left">{{ rdo_atividade.hora_fim  }}</td>
+            <td title="Descrição" class="text-left">{{ rdo_atividade.atividade.descricao }}</td>
+            <td title="Quantidade Inicial" class="text-md-center">
+              {{ 
+                rdo_atividade.atividade.tipo === 'produtiva' 
+                  ? (rdo_atividade.atividade.unidade_medida === 'metros' 
+                      ? Number(rdo_atividade.quantidade_inicial).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) 
+                      : '-'
+                    )
+                  : '-' 
+              }}
+            </td>
+            <td title="Quantidade Final" class="text-md-center">
+              {{ 
+                rdo_atividade.atividade.tipo === 'produtiva' 
+                  ? (rdo_atividade.atividade.unidade_medida === 'metros' 
+                      ? Number(rdo_atividade.quantidade_final).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) 
+                      : '-'
+                    )
+                  : '-' 
+              }}
+            </td>
+            <td title="Quantidade" class="text-md-center">
+              {{{
+                rdo_atividade.atividade.tipo === 'produtiva' 
+                  ? (rdo_atividade.atividade.unidade_medida === 'metros' 
+                      ? Number(rdo_atividade.quantidade).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+                      : Number(rdo_atividade.quantidade)
+                    ) 
+                  : '-' 
+              }}}
+            </td>
+
+            <td class="text-md-right">
+              <form class="delete-form" action="{{ route('admin.rdo_atividades.destroy', { rdoId: rdo.id, id: rdo_atividade.id }) }}?_method=DELETE" method="post">
+                <button type="button" class="btn-link">
+                  <span class="delete-icon" data-feather="trash"></span>
+                </button>
+              </form>
+            </td>
+          </tr>
+        @endeach
+      </tbody>
+    </table>
+  @endslot
+@end
+
+@modal({ title: 'Adicionar Atividades', id: 'add-atividade' })
+  @slot('content')
+    <form action="{{ route('admin.rdo_atividades.store', { rdoId: rdo.id }) }}" method="post" id="add-atividade-form">
+      <div class="form-group-inline">
+        @!input({
+          name: 'horaInicio',
+          label: 'Horário Inicial',
+          type: 'time',
+          value: '08:00:00'
+        })
+        
+        @!input({
+          name: 'horaFim',
+          label: 'Horário Final',
+          type: 'time',
+          value: '08:00:00'
+        })
+      </div>
+
+      <div id="create-rdo-atividades" collection='{{{ JSON.stringify(atividades) }}}'></div>
+    </form>
+  @endslot
+
+  @slot('footer')
+    <button data-target="add-atividade" class="close-modal btn btn-error" data-type="close-modal">
+      Cancelar
+    </button>
+    <button class="btn btn-primary" form="add-atividade-form">Salvar</button>
+  @endslot
+@end

@@ -1,0 +1,58 @@
+<nav class="sidebar">
+  <div class="brand">
+    <div>
+      <img src="/img/logo.png" alt="Logo">
+      <h1>Projel</h1>
+    </div>
+
+    <button class="close-menu">&times;</button>
+  </div>
+
+  <div class="navigation">
+    <div>
+      <a href="{{ route('admin.dashboard.index') }}">
+        Dashboard
+        <span data-feather="grid"></span>
+      </a>
+      <a href="{{ route('admin.areas.index') }}">
+        Áreas
+        <span data-feather="map-pin"></span>
+      </a>
+      <a href="{{ route('admin.atividades.index') }}">
+        Atividades
+        <span data-feather="list"></span>
+      </a>
+      <a href="{{ route('admin.cargos.index') }}">
+        Cargos
+        <span data-feather="briefcase"></span>
+      </a>
+      <a href="{{ route('admin.contratos.index') }}">
+        Contratos
+        <span data-feather="file-text"></span>
+      </a>
+      <a href="{{ route('admin.equipamentos.index') }}">
+        Equipamentos
+        <span data-feather="tool"></span>
+      </a>
+      <a href="{{ route('admin.users.index') }}">
+        Funcionários
+        <span data-feather="users"></span>
+      </a>
+      <a href="{{ route('admin.rdos.index') }}">
+        RDO's
+        <span data-feather="archive"></span>
+      </a>
+      <a href="{{ route('admin.configuracoes.index') }}">
+        Configurações
+        <span data-feather="settings"></span>
+      </a>
+    </div>
+
+    <form class="logout-container" method="post" action="{{ route('admin.sessions.destroy', {id: 1}) }}?_method=DELETE">
+      <button>
+        Sair
+        <span data-feather="log-out"></span>
+      </button>
+    </form>
+  </div>
+</nav>

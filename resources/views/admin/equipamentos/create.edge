@@ -1,0 +1,35 @@
+@layout('layouts/master')
+
+@set('title', 'Equipamentos')
+
+@section('content')
+  <div class="form-container">
+    <div class="card-form">
+      <form action="{{ route('admin.equipamentos.store') }}" method="post">
+        <h2>Novo Equipamento</h2>
+        @!component('components/input', {
+          name: 'tag',
+          label: 'Tag',
+          error: 'errors.tag',
+          value: flashMessages.get('tag')
+        })
+
+        @!component('components/input', {
+          name: 'descricao',
+          label: 'Descrição',
+          error: 'errors.descricao',
+          value: flashMessages.get('descricao')
+        })
+
+        @!component('components/checkbox', {
+          name: 'sonda',
+          label: 'Sonda',
+          error: 'errors.sonda',
+          value: flashMessages.get('sonda')
+        })
+
+        <button class="btn btn-primary">Salvar</button>
+      </form>
+    </div>
+  </div>
+@endsection

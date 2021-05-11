@@ -1,0 +1,76 @@
+@card({ title: 'Equipamentos' })
+  @slot('actions')
+    <button class="show-modal btn-link text-primary" data-target="add-equipamento">
+      <span data-feather="plus-square"></span>
+    </button>
+  @endslot
+
+  @slot('content')
+    <table class="table no-shadow">
+      <thead>
+        <th class="text-left">Tag</th>
+        <th class="text-left">Descrição</th>
+        <th class="text-md-center">Quantidade</th>
+        <th class="text-md-right">Ações</th>
+      </thead>
+      
+      <tbody>
+        @each(rdo_equipamento in rdo.rdoEquipamentos)
+          <tr>
+            <td title="Tag" class="text-left">{{ rdo_equipamento.equipamento.tag  }}</td>
+            <td title="Descrição" class="text-left">{{ rdo_equipamento.equipamento.descricao }}</td>
+            <td title="Quantidade" class="text-md-center">
+              {{{ Number(rdo_equipamento.quantidade) }}}
+            </td>
+
+            <td class="text-md-right">
+              <form class="delete-form" action="{{ route('admin.rdo_equipamentos.destroy', { rdoId: rdo.id, id: rdo_equipamento.id }) }}?_method=DELETE" method="post">
+                <button type="button" class="btn-link">
+                  <span class="delete-icon" data-feather="trash"></span>
+                </button>
+              </form>
+            </td>
+          </tr>
+        @endeach
+      </tbody>
+    </table>
+  @endslot
+@end
+
+@modal({ title: 'Adicionar Equipamento', id: 'add-equipamento' })
+  @slot('content')
+    <form action="{{ route('admin.rdo_equipamentos.store', {rdoId: rdo.id}) }}" method="post" id="add-equipamento-form">
+      <div class="form-group">
+        <label for="equipamento">Equipamento</label>
+        <div 
+          class="react-select-input"
+          inputId="equipamento"
+          collection='{{{ JSON.stringify(equipamentos) }}}'
+          labelkey="tag_description" 
+          valuekey="id" 
+          name="equipamentoId"
+          placeholder="Selecione um equipamento"
+          value=''
+          required='true'
+        >
+        </div>
+      </div>
+
+      @!input({
+        name: 'quantidade',
+        label: 'Quantidade',
+        type: 'number',
+        error: 'errors.quantidade',
+        min: 0,
+        max: 999,
+      })
+    </form>
+  @endslot
+
+  @slot('footer')
+    <button data-target="add-equipamento" class="close-modal btn btn-error" data-type="close-modal">
+      Cancelar
+    </button>
+    <button class="btn btn-primary" form="add-equipamento-form">Salvar</button>
+  @endslot
+@end

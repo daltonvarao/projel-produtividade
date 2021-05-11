@@ -1,0 +1,75 @@
+@layout('layouts/master')
+
+@set('title', 'Rdos')
+
+@section('content')
+  <div class="form-container">
+    <div class="card-form">
+      <form method="post" action="{{ route('admin.rdos.update', { id: rdo.id }) }}?_method=PUT">
+        <h2>Editar Rdo</h2>
+
+        @!component('components/input', {
+          name: 'nome',
+          label: 'Nome',
+          error: 'errors.nome',
+          value: rdo.nome || flashMessages.get('nome')
+        })
+
+        @!component('components/input', {
+          name: 'data',
+          label: 'Data',
+          error: 'errors.data',
+          type: 'date',
+          value: rdo.isoData || flashMessages.get('data')
+        })
+
+        @!component('components/input', {
+          label: 'Contrato',
+          value: rdo.contrato.numero,
+          readonly: true,
+          error: ''
+        })
+
+        @!component('components/input', {
+          label: 'Equipamento Principal',
+          value: rdo.equipamentoPrincipal.tag_description,
+          readonly: true,
+          error: ''
+
+        })
+
+        @!component('components/input', {
+          label: 'Responsável',
+          value: rdo.user.nome,
+          readonly: true,
+          error: ''
+        })
+
+        @!selectArray({
+          name: 'condicoesTempo',
+          label: 'Condições do tempo',
+          collection: ['bom', 'chuvoso'],
+          value: rdo.condicoes_tempo || flashMessages.get('condicoesTempo'),
+          error: 'errors.condicoesTempo'
+        })
+        
+        @!component('components/input', {
+          label: 'Pluviometria (mm)',
+          name: 'pluviometria',
+          value: rdo.pluviometria || flashMessages.get('pluviometria'),
+          error: 'errors.pluviometria'
+        })
+
+        @!selectArray({
+          name: 'status',
+          label: 'Status',
+          collection: ['andamento', 'finalizado'],
+          value: rdo.status || flashMessages.get('status'),
+          error: 'errors.status'
+        })
+
+        <button class="btn btn-primary">Atualizar</button>
+      </form>
+    </div>
+  </div>
+@endsection

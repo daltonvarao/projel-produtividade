@@ -1,0 +1,17 @@
+@if(flashMessages.get('error'))
+  <div class="alert alert-error">
+    <span>
+      {{ flashMessages.get('error') }}
+    </span>
+    <div class="loader"></div>
+  </div>
+@endif
+
+@if(flashMessages.get('success'))
+  <div class="alert alert-success">
+    <span>
+      {{ flashMessages.get('success') }}
+    </span>
+    <div class="loader"></div>
+  </div>
+@endif

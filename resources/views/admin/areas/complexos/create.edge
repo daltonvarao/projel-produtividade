@@ -1,0 +1,20 @@
+@layout('layouts/master')
+
+@set('title', 'Complexos')
+
+@section('content')
+  <div class="form-container">
+    <div class="card-form">
+      <form action="{{ route('admin.areas.complexos.store') }}" method="post">
+        <h2>Novo Complexo</h2>
+        @!component('components/input', {
+          name: 'nome',
+          label: 'Nome',
+          value: flashMessages.get('nome') || '',
+          error: 'errors.nome'
+        })
+        <button class="btn btn-primary">Salvar</button>
+      </form>
+    </div>
+  </div>
+@endsection

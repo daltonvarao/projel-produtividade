@@ -1,0 +1,83 @@
+@layout('layouts/master')
+
+@set('title', 'Funcionários')
+
+@section('content')
+  <div class="form-container">
+    <div class="card-form">
+      <form method="post" action="{{ route('admin.users.update', { id: user.id }) }}?_method=PUT">
+        <h2>Editar Funcionário</h2>
+
+        @!component('components/input', { 
+          name: 'nome',
+          label: 'Nome',
+          error: 'errors.nome',
+          value: flashMessages.get('nome') || user.nome,
+        })
+
+        @!component('components/input', { 
+          name: 'cpf',
+          label: 'Cpf',
+          error: 'errors.cpf',
+          value: flashMessages.get('cpf') || user.cpf,
+        })
+
+        @!component('components/select', {
+          name: 'cargoId',
+          label: 'Cargo',
+          valueKey: 'id',
+          labelKey: 'titulo',
+          collection: cargos,
+          value: flashMessages.get('cargoId') || user.cargoId,
+          error: 'errors.cargoId',
+        })
+
+        @!component('components/input', { 
+          name: 'password',
+          label: 'Senha',
+          error: 'errors.password',
+          type: 'password',
+        })
+
+        @!component('components/input', {
+          name: 'password_confirmation',
+          label: 'Confirme a senha',
+          error: 'errors.password_confirmation',
+          type: 'password',
+        })
+
+        <h2>Dados Bancários</h2>
+
+        @!component('components/input', {
+          name: 'banco',
+          label: 'Banco',
+          value: flashMessages.get('banco') || user.banco,
+          error: 'errors.banco'
+        })
+
+        @!component('components/input', {
+          name: 'agencia',
+          label: 'Agência',
+          value: flashMessages.get('agencia') || user.agencia,
+          error: 'errors.agencia'
+        })
+
+        @!component('components/input', {
+          name: 'operacaoCaixa',
+          label: 'Operação Caixa',
+          value: flashMessages.get('operacaoCaixa') || user.operacaoCaixa,
+          error: 'errors.operacaoCaixa'
+        })
+
+        @!component('components/input', {
+          name: 'conta',
+          label: 'Conta',
+          value: flashMessages.get('conta') || user.conta,
+          error: 'errors.conta'
+        })
+
+        <button class="btn btn-primary">Atualizar</button>
+      </form>
+    </div>
+  </div>
+@endsection

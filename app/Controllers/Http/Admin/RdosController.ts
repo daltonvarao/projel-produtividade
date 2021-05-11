@@ -1,0 +1,130 @@
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { schema } from '@ioc:Adonis/Core/Validator'
+import Rdo from 'App/Models/Rdo'
+import User from 'App/Models/User'
+import Equipamento from 'App/Models/Equipamento'
+import Atividade from 'App/Models/Atividade'
+
+export default class RdosController {
+  public async index({ view, request }: HttpContextContract) {
+    const { page } = request.qs()
+
+    const rdos = await Rdo.query()
+      .preload('user')
+      .preload('contrato')
+      .paginate(page || 1)
+
+    return view.render('admin/rdos/index', {
+      rdos: rdos.baseUrl('rdos').toJSON(),
+    })
+  }
+
+  public async show({ request, view, logger, session, response }: HttpContextContract) {
+    const { id } = request.params()
+    const contratoId = session.get('contratoId')
+
+    const users = await User.query().apply((scopes) => scopes.inContract(contratoId))
+    const equipamentos = await Equipamento.query().apply((scopes) => scopes.inContract(contratoId))
+    const atividades = await Atividade.query().apply((scopes) => scopes.inContract(contratoId))
+
+    try {
+      const rdo = await Rdo.query()
+        .where({ id })
+        .preload('rdoAtividades', (query) => {
+          query.preload('atividade')
+          query.orderBy('hora_fim')
+          query.debug(true)
+        })
+        .preload('rdoEquipamentos', (query) => {
+          query.preload('equipamento')
+        })
+        .preload('rdoUsers', (query) => {
+          query.preload('user', (query) => {
+            query.preload('cargo')
+          })
+        })
+        .preload('contrato')
+        .preload('user')
+        .preload('equipamentoPrincipal')
+        .firstOrFail()
+
+      return view.render('admin/rdos/show', {
+        rdo: rdo.toJSON(),
+        users: users.map((i) => i.toJSON()),
+        atividades: atividades.map((i) => i.toJSON()),
+        equipamentos: equipamentos.map((i) => i.toJSON()),
+      })
+    } catch (error) {
+      logger.error(error)
+      session.flash('error', error.message)
+
+      return response.redirect().back()
+    }
+  }
+
+  public async edit({ view, request, session, response, logger }: HttpContextContract) {
+    const { id } = request.params()
+
+    try {
+      const rdo = await Rdo.query()
+        .where({ id })
+        .preload('contrato')
+        .preload('equipamentoPrincipal')
+        .preload('user')
+        .firstOrFail()
+
+      return view.render('admin/rdos/edit', {
+        rdo: rdo.toJSON(),
+      })
+    } catch (error) {
+      logger.error(error)
+      session.flash('error', error.message)
+
+      return response.redirect().back()
+    }
+  }
+
+  public async update({ request, session, response, logger }: HttpContextContract) {
+    const { id } = request.params()
+
+    const validationSchema = schema.create({
+      nome: schema.string(),
+      data: schema.date(),
+      condicoesTempo: schema.string(),
+      pluviometria: schema.number(),
+      status: schema.string(),
+    })
+
+    const data = await request.validate({
+      schema: validationSchema,
+    })
+
+    try {
+      await Rdo.updateOrCreate({ id }, data)
+      session.flash('success', 'Rdo atualizado.')
+
+      return response.redirect().toRoute('admin.rdos.show', { id })
+    } catch (error) {
+      logger.error(error)
+      session.flash('error', error.message)
+
+      return response.redirect().back()
+    }
+  }
+
+  public async destroy({ request, session, response, logger }: HttpContextContract) {
+    const { id } = request.params()
+
+    try {
+      await Rdo.query().where({ id }).delete()
+      session.flash('success', 'Rdo deletado.')
+
+      return response.redirect().toRoute('admin.rdos.index')
+    } catch (error) {
+      logger.error(error)
+      session.flash('error', error.message)
+
+      return response.redirect().back()
+    }
+  }
+}

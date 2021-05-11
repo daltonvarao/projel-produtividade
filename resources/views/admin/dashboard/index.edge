@@ -1,0 +1,15 @@
+@layout('layouts/master')
+
+@set('title', 'Dashboard')
+
+@section('content')
+  <h2 class="report-title">Relatórios</h2>
+
+  <div class="reports">
+    <a href="{{ route('admin.reports.relatorio_atividades_usuarios.index') }}" class="report-card">
+      <h4>Produção Funcionários</h4>
+
+      <span data-feather="users"></span>
+    </a>
+  </div>
+@endsection

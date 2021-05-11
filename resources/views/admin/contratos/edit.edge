@@ -1,0 +1,35 @@
+@layout('layouts/master')
+
+@set('title', 'Contratos')
+
+@section('content')
+  <div class="form-container">
+    <div class="card-form">
+      <form action="{{ route('admin.contratos.update', { id: contrato.id }) }}?_method=PUT" method="post">
+        <h2>Editar Contrato</h2>
+        @!component('components/input', {
+          name: 'numero',
+          label: 'Número',
+          error: 'errors.numero',
+          value: flashMessages.get('numero') || contrato.numero,
+        })
+
+        @!component('components/input', {
+          name: 'centroCusto',
+          label: 'Centro de custo',
+          error: 'errors.centroCusto',
+          value: flashMessages.get('centroCusto') || contrato.centro_custo,
+        })
+
+        @!component('components/input', {
+          name: 'descricao',
+          label: 'Descrição',
+          error: 'errors.descricao',
+          value: flashMessages.get('descricao') || contrato.descricao,
+        })
+
+        <button class="btn btn-primary">Salvar</button>
+      </form>
+    </div>
+  </div>
+@endsection

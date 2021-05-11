@@ -1,0 +1,16 @@
+<div class="modal-container" id="{{ id }}" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>{{ title }}</h2>
+      <button class="close-modal">
+        <span data-feather="x"></span>
+      </button>
+    </div>
+    <div class="modal-body">
+      {{{ $slots.content() }}}
+    </div>
+    <div class="modal-footer">
+      {{{ $slots.footer ? $slots.footer() : '' }}}
+    </div>
+  </div>
+</div>

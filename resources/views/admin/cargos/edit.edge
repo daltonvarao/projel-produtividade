@@ -1,0 +1,31 @@
+@layout('layouts/master')
+
+@set('title', 'Cargos')
+
+@section('content')
+  <div class="form-container">
+    <div class="card-form">
+      <form method="post" action="{{ route('admin.cargos.update', { id: cargo.id }) }}?_method=PUT">
+        <h2>Editar cargo</h2>
+
+        @!component('components/input', {
+          name: 'titulo',
+          label: 'Título',
+          error: 'errors.titulo',
+          value: cargo.titulo || flashMessages.get('titulo')
+        })
+
+        <h2>Permissões</h2>
+
+        <div 
+          id="react-edit-cargos"
+          data-resources='{{{ JSON.stringify(resources) }}}'
+          data-permissions='{{{ JSON.stringify(permissions) }}}'
+        >
+        </div>
+
+        <button class="btn btn-primary">Atualizar</button>
+      </form>
+    </div>
+  </div>
+@endsection

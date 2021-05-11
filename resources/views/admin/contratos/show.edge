@@ -1,0 +1,13 @@
+@layout('layouts/master')
+
+@set('title', 'Contratos')
+
+@section('content')
+  <div 
+    id="react-contratos"
+    data-contrato='{{{ JSON.stringify(contrato) }}}'
+    data-cargos='{{{ JSON.stringify(cargos) }}}'
+    data-atividades='{{{ JSON.stringify(atividades) }}}'
+  >
+  </div>
+@endsection

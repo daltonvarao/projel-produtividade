@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Projel Admin</title>
+
+  @entryPointStyles('app')
+
+</head>
+  <body>
+    @include('partials/alerts')
+    <div class="login-container">
+      <div class="login-card">
+        <div class="projel-logo">
+          <img src="/img/logo-projel.png">
+          <h1>Projel</h1>
+        </div>
+    
+        <form action="{{ route('sessions.store') }}" method="post">
+          <h2>Login</h2>
+          <input type="text" placeholder="CPF" name="cpf">
+          <input type="password" placeholder="Senha" name="password">
+    
+          <button class="btn-primary">Entrar</button>
+        </form>
+      </div>
+    </div>
+
+    @entryPointScripts('main')
+  </body>
+</html>

@@ -1,0 +1,12 @@
+<div class="card-info">
+  <h2 class="card-title">
+    {{ title }}
+
+    <div class="card-title-actions">
+      {{{ $slots.actions ? $slots.actions() : '' }}}
+    </div>
+  </h2>
+  <div class="card-body">
+    {{{ $slots.content() }}} 
+  </div>
+</div>

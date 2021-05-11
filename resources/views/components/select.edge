@@ -1,0 +1,25 @@
+@set('valueKey', valueKey)
+@set('labelKey', labelKey)
+
+<div class="form-group">
+  <label for="{{ id || name }}">{{ label }}</label>
+  <select 
+    class="{{ flashMessages.get(error) ? 'invalid' : '' }}{{ className || '' }}"
+    name="{{id || name}}" 
+    id="{{id || name}}"
+    {{ disabled ? 'disabled' : '' }}
+    {{ readonly ? 'readonly' : '' }}
+  >
+    <option value="">Selecione...</option>
+
+    @each(item in collection)
+      <option 
+        {{ value == item[valueKey] ? 'selected' : '' }}
+        value="{{ item[valueKey] }}"
+      >
+        {{ item[labelKey] }}
+      </option>
+    @endeach
+  </select>
+  @!component('components/input_validation', field=error)
+</div>

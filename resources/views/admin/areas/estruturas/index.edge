@@ -1,0 +1,45 @@
+@layout('layouts/master')
+
+@set('title', 'Áreas')
+@set('rightLink', {
+  'address': route('admin.areas.estruturas.create'),
+  'payload': 'Nova'
+})
+
+@section('content')
+  @include('admin/areas/menu-links')
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <th class="text-left">Nome</th>
+        <th class="text-left">Mina</th>
+        <th class="text-right">Ações</th>
+      </thead>
+      
+      <tbody>
+        @each(estrutura in estruturas?.data)
+          <tr>
+            <td title="Nome" class="text-left">{{ estrutura.nome }}</td>
+            <td title="Nome" class="text-left">{{ estrutura.mina.nome }}</td>
+            <td class="text-right">
+              <a href="{{ route('admin.areas.estruturas.edit', { id: estrutura.id }) }}">
+                <span class="edit-icon" data-feather="edit"></span>
+              </a>
+
+              <form class="delete-form" action="{{ route('admin.areas.estruturas.destroy', { id: estrutura.id }) }}?_method=DELETE" method="post">
+                <button type="button" class="btn-link">
+                  <span class="delete-icon" data-feather="trash"></span>
+                </button>
+              </form>
+            </td>
+          </tr>
+        @else
+          @!emptyMessage()
+        @endeach
+      </tbody>
+    </table>
+  </div>
+
+  {{--  @!component('components/pagination', collection=areas)  --}}
+@endsection

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Projel Admin - {{ title }}</title>
+    @entryPointStyles('app')
+  </head>
+  <body>
+    @include('partials/sidebar')
+    @include('partials/alerts')
+
+    <div class="content">
+      <div class="page-title">
+        <button class="show-menu">
+          <span data-feather="menu"></span>
+        </button>
+        <div>
+          <h1>
+            {{ title }}
+          </h1>
+
+          @if(rightLink)
+            <a class="btn btn-primary" href="{{ rightLink.address }}">{{rightLink.payload}}</a>
+          @endif
+        </div>
+      </div>
+      <div class="container">
+        @!section('content')
+      </div>
+    </div>
+
+    <script>
+      localStorage.setItem('user:token', '{{ session.get("userToken") }}')
+    </script>
+
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+      feather.replace()
+    </script>
+
+    @entryPointScripts('app')
+    @entryPointScripts('main')
+  </body>
+</html>

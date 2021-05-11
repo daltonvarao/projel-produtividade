@@ -1,0 +1,42 @@
+@layout('layouts/master')
+
+@set('title', 'Rdo\'s')
+
+@section('content')
+  <div class="table-container">
+    <table>
+      <thead>
+        <th class="text-left">Nome</th>
+        <th class="text-left">Contrato</th>
+        <th class="text-left">Responsável</th>
+        <th class="text-left">Status</th>
+        <th class="text-right">Ações</th>
+      </thead>
+      
+      <tbody>
+        @each(rdo in rdos.data)
+          <tr>
+            <td title="Nome" class="text-left">{{ rdo.nome || 'Sem nome' }}</td>
+            <td title="Contrato" class="text-left">{{ rdo.contrato.numero }}</td>
+            <td title="Responsável" class="text-left">{{ rdo?.user?.nome }}</td>
+            <td title="Status" class="text-left">{{ rdo.status }}</td>
+            <td class="text-right">
+              <a href="{{ route('admin.rdos.show', { id: rdo.id }) }}">
+                <span class="edit-icon" data-feather="eye"></span>
+              </a>
+              <form class="delete-form" action="{{ route('admin.rdos.destroy', { id: rdo.id }) }}?_method=DELETE" method="post">
+                <button type="button" class="btn-link">
+                  <span class="delete-icon" data-feather="trash"></span>
+                </button>
+              </form>
+            </td>
+          </tr>
+        @else
+          @!emptyMessage()
+        @endeach
+      </tbody>
+    </table>
+  </div>
+
+  @!pagination(collection=rdos)
+@endsection

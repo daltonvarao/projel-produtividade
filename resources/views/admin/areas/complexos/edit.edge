@@ -1,0 +1,20 @@
+@layout('layouts/master')
+
+@set('title', 'Complexos')
+
+@section('content')
+  <div class="form-container">
+    <div class="card-form">
+      <form action="{{ route('admin.areas.complexos.update', { id: complexo.id }) }}?_method=PUT" method="post">
+        <h2>Editar área</h2>
+        @!component('components/input', {
+          name: 'nome',
+          label: 'Nome',
+          value: flashMessages.get('nome') || complexo.nome,
+          error: 'errors.nome'
+        })
+        <button class="btn btn-primary">Atualizar</button>
+      </form>
+    </div>
+  </div>
+@endsection

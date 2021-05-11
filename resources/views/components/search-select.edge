@@ -1,0 +1,12 @@
+<div class="search-select-container">
+  <input type="text" class="search-select-input">
+  <div class="search-select-list">
+    @each(item in collection)
+      <div class="search-select-item">
+        {{ item[labelKey] }}
+      </div>
+    @endeach
+  </div>
+</div>
+
+{{--  fazer essa putaria em REACT  --}}

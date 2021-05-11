@@ -1,0 +1,19 @@
+<div class="form-group {{ className || '' }}">
+  @if(label)
+    <label for="{{ id || name }}">{{ label }}</label>
+  @endif
+  <input
+    placeholder="{{ placeholder || label }}"
+    class="{{ flashMessages.get(error) ? 'invalid' : ''}}"
+    type="{{ type || 'text' }}"
+    name="{{ name }}"
+    step="{{ step ?? '' }}"
+    min="{{ min ?? '' }}"
+    max="{{ max ?? '' }}"
+    id="{{ id || name }}"
+    value='{{ value ?? '' }}'
+    {{ disabled ? 'disabled' : '' }}
+    {{ readonly ? 'readonly' : '' }}
+  >
+  @!component('components/input_validation', field=error)
+</div>

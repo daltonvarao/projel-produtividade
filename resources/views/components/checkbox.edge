@@ -1,0 +1,11 @@
+<div class="form-group form-group-inline">
+  <input 
+    type="checkbox"
+    name="{{name}}"
+    id="{{id || name}}"
+
+    {{ value ? 'checked' : '' }}
+    
+  >
+  <label for="{{id || name}}">{{label}}</label>
+</div>

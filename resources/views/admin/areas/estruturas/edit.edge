@@ -1,0 +1,30 @@
+@layout('layouts/master')
+
+@set('title', 'Estruturas')
+
+@section('content')
+  <div class="form-container">
+    <div class="card-form">
+      <form action="{{ route('admin.areas.estruturas.update', { id: estrutura.id }) }}?_method=PUT" method="post">
+        <h2>Editar Estrutura</h2>
+        @!component('components/input', {
+          name: 'nome',
+          label: 'Nome',
+          value: flashMessages.get('nome') || estrutura.nome,
+          error: 'errors.nome'
+        })
+
+        @!component('components/select', {
+          name: 'mina_id',
+          label: 'Mina',
+          valueKey: 'id',
+          labelKey: 'nome',
+          collection: minas,
+          value: flashMessages.get('mina_id') || estrutura.mina_id,
+          error: 'errors.mina_id'
+        })
+        <button class="btn btn-primary">Atualizar</button>
+      </form>
+    </div>
+  </div>
+@endsection

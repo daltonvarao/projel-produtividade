@@ -1,0 +1,64 @@
+@card({ title: 'Colaboradores' })
+  @slot('actions')
+    <button class="show-modal btn-link text-primary" data-target="add-colaborador">
+      <span data-feather="user-plus"></span>
+    </button>
+  @endslot
+  @slot('content')
+    <table class="table no-shadow">
+      <thead>
+        <th class="text-left">Nome</th>
+        <th class="text-left">Cargo</th>
+        <th class="text-md-center">Cpf</th>
+        <th class="text-md-right">Ações</th>
+      </thead>
+      
+      <tbody>
+        @each(rdo_user in rdo.rdoUsers)
+          <tr>
+            <td title="Nome" class="text-left">{{ rdo_user.user.nome  }}</td>
+            <td title="Cargo" class="text-left">{{ rdo_user.user.cargo.titulo }}</td>
+            <td title="Cpf" class="text-md-center">{{ rdo_user.user.cpf  }}</td>
+            <td class="text-md-right">
+              <form class="delete-form" action="{{ route('admin.rdo_users.destroy', { rdoId: rdo.id, id: rdo_user.id }) }}?_method=DELETE" method="post">
+                <button type="button" class="btn-link">
+                  <span class="delete-icon" data-feather="trash"></span>
+                </button>
+              </form>
+            </td>
+          </tr>
+        @endeach
+      </tbody>
+    </table>
+  @endslot
+@end
+
+@modal({ title: 'Adicionar colaborador', id: 'add-colaborador' })
+  @slot('content')
+    <form action="{{ route('admin.rdo_users.store', {rdoId: rdo.id}) }}" method="post" id="add-colaborador-form">
+      <div class="form-group">
+        <label for="funcionario">Funcionário</label>
+
+        <div 
+          class="react-select-input"
+          inputId="funcionario"
+          collection='{{{ JSON.stringify(users) }}}'
+          labelkey="nome" 
+          valuekey="id" 
+          name="userId"
+          placeholder="Selecione um funcionário"
+          value=''
+          required='true'
+        >
+        </div>
+      </div>
+    </form>
+  @endslot
+
+  @slot('footer')
+    <button data-target="add-colaborador" class="close-modal btn btn-error" data-type="close-modal">
+      Cancelar
+    </button>
+    <button class="btn btn-primary" form="add-colaborador-form">Salvar</button>
+  @endslot
+@end

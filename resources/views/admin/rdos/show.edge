@@ -1,0 +1,66 @@
+@layout('layouts/master')
+
+@set('title', 'Rdo\'s')
+
+@section('content')
+  @card({ title: rdo.nome })
+    @slot('actions')
+      <a class="btn-link text-primary" href="{{ route('admin.rdos.edit', { id: rdo.id }) }}">
+        <span data-feather="edit">Editar</span>
+      </a>
+    @endslot
+
+    @slot('content')
+      <div class="flex flex-row">
+        <div>
+          <h4 class="text-primary">Responsável</h4>
+          {{ rdo.user.nome }}
+        </div>
+
+        <div>
+          <h4 class="text-primary">Equipamento Principal</h4>
+          {{ rdo.equipamentoPrincipal.tag }}
+        </div>
+
+        <div>
+          <h4 class="text-primary">Contrato</h4>
+          {{ rdo.contrato.numero }}
+        </div>
+
+        <div></div>
+      </div>
+
+      <div class="flex flex-row justify-space-between">
+        <div>
+          <h4 class="text-primary">Data</h4>
+          {{ rdo.data }}
+        </div>
+        
+        <div class="text-capitalize">
+          <h4 class="text-primary">Status</h4>
+          {{ rdo.status }}
+        </div>
+
+        <div class="text-capitalize">
+          <h4 class="text-primary">Condições do Tempo</h4>
+          {{ rdo.condicoes_tempo }}
+        </div>
+  
+        @if(rdo.condicoes_tempo === 'chuvoso')
+          <div>
+            <h4 class="text-primary">Pluviometria</h4>
+            {{ rdo.pluviometria }}
+          </div>
+
+          <div></div>
+        @else
+          <div></div>
+        @endif
+      </div>
+    @endslot
+  @end
+
+  @!rdoUsers({ rdo, users })
+  @!rdoEquipamentos({ rdo, equipamentos })
+  @!rdoAtividades({ rdo, atividades })
+@endsection

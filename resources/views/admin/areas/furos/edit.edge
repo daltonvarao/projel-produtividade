@@ -1,0 +1,31 @@
+@layout('layouts/master')
+
+@set('title', 'Furos')
+
+@section('content')
+  <div class="form-container">
+    <div class="card-form">
+      <form action="{{ route('admin.areas.furos.update', { id: furo.id }) }}?_method=PUT" method="post">
+        <h2>Editar furo</h2>
+
+        @!component('components/input', {
+          name: 'nome',
+          label: 'Nome',
+          value: flashMessages.get('nome') || furo.nome,
+          error: 'errors.nome'
+        })
+
+        @!component('components/select', {
+          name: 'estrutura_id',
+          label: 'Estrutura',
+          valueKey: 'id',
+          labelKey: 'nome',
+          collection: estruturas,
+          value: flashMessages.get('estrutura_id') || furo.estrutura_id,
+          error: 'errors.estrutura_id'
+        })
+        <button class="btn btn-primary">Salvar</button>
+      </form>
+    </div>
+  </div>
+@endsection

@@ -1,0 +1,27 @@
+@layout('layouts/master')
+
+@set('title', 'Configurações')
+
+@section('content')
+
+<div class="form-container">
+  <div class="card-form">
+    <form action="{{ route('admin.configuracoes.store') }}" method="post">
+      <h2>Selecionar Contrato</h2>
+
+        @!component('components/select', {
+          name: 'contratoId',
+          label: 'Contratos',
+          valueKey: 'id',
+          labelKey: 'numero',
+          collection: contratos,
+          value: session.get('contratoId'),
+          error: 'errors.contratoId'
+        })
+
+        <button class="btn btn-primary">Salvar</button>
+
+      </form>
+    </div>
+  </div>
+@endsection
