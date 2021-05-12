@@ -1,6 +1,5 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema } from '@ioc:Adonis/Core/Validator'
-import AtividadeRdoUserService from 'App/Services/AtividadeRdoUser'
 
 import RdoBuilderService from 'App/Services/RdoBuilder'
 

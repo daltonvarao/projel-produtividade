@@ -2,15 +2,15 @@
   "entrypoints": {
     "app": {
       "css": [
-        "http://localhost:8080/assets/app.css"
+        "/assets/app.b18e82e9.css"
       ],
       "js": [
-        "http://localhost:8080/assets/app.js"
+        "/assets/app.e3de6d66.js"
       ]
     },
     "main": {
       "js": [
-        "http://localhost:8080/assets/main.js"
+        "/assets/main.bf523e77.js"
       ]
     }
   }
