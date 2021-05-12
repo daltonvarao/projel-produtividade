@@ -1,3 +1,4 @@
+import Furo from 'App/Models/Furo'
 import Rdo from 'App/Models/Rdo'
 import User from 'App/Models/User'
 import { DateTime } from 'luxon'
@@ -56,12 +57,12 @@ export default class RdoBuilderService {
 
   public static async _buildRdoAtividade({ furoNome: nome, ...atividade }: Atividade, rdo: Rdo) {
     const rdoAtividade = await rdo.related('rdoAtividades').create(atividade)
-    await rdo.load('estrutura')
 
     if (nome) {
-      const furo = await rdo.estrutura
-        .related('furos')
-        .firstOrCreate({ nome, contratoId: rdo.contratoId }, { nome, contratoId: rdo.contratoId })
+      const furo = await Furo.firstOrCreate(
+        { nome, contratoId: rdo.contratoId, estruturaId: rdo.estruturaId },
+        { nome, contratoId: rdo.contratoId }
+      )
 
       await rdoAtividade.related('furo').associate(furo)
     }

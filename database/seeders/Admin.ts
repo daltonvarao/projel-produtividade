@@ -84,45 +84,47 @@ export default class AdminSeeder extends BaseSeeder {
 
     await ComplexoFactory.merge({ nome: 'Mariana', contratoId: contrato.id })
       .with('minas', 1, (minas) => {
-        minas.merge({
-          nome: 'Fazendão',
-          contratoId: contrato.id,
-        })
-
-        minas.with('estruturas', 1, (estruturas) => {
-          estruturas.merge({
-            nome: 'Barragem Pacatu',
+        minas
+          .merge({
+            nome: 'Fazendão',
             contratoId: contrato.id,
           })
-
-          estruturas.with('furos', 1, (furos) => {
-            furos.merge({
-              nome: 'PZ-IC-09',
-            })
+          .with('estruturas', 1, (estruturas) => {
+            estruturas
+              .merge({
+                nome: 'Barragem Pacatu',
+                contratoId: contrato.id,
+              })
+              .with('furos', 1, (furos) => {
+                furos.merge({
+                  nome: 'PZ-IC-09',
+                  contratoId: contrato.id,
+                })
+              })
           })
-        })
       })
       .create()
 
     await ComplexoFactory.merge({ nome: 'Carajás', contratoId: contrato.id })
       .with('minas', 1, (minas) => {
-        minas.merge({
-          nome: 'Serra Norte',
-          contratoId: contrato.id,
-        })
-
-        minas.with('estruturas', 1, (estruturas) => {
-          estruturas.merge({
-            nome: 'Barragem Jacaré',
+        minas
+          .merge({
+            nome: 'Serra Norte',
             contratoId: contrato.id,
           })
-
-          estruturas.with('furos', 1, (furos) => {
-            furos.merge({
-              nome: 'PZ-IC-11',
-            })
+          .with('estruturas', 1, (estruturas) => {
+            estruturas
+              .merge({
+                nome: 'Barragem Jacaré',
+                contratoId: contrato.id,
+              })
+              .with('furos', 1, (furos) => {
+                furos.merge({
+                  nome: 'PZ-IC-11',
+                  contratoId: contrato.id,
+                })
+              })
           })
-        })
       })
       .create()
   }

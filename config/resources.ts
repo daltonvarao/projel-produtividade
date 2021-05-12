@@ -78,8 +78,8 @@ const routes = [
     actionsTitle: ['Criar', 'Ler', 'Atualizar', 'Deletar'],
   },
   {
-    name: 'admin.reports.producao_funcionarios',
-    title: 'Relatório Produção Funcionários',
+    name: 'admin.reports.relatorio_atividades_usuarios',
+    title: 'Relatório Atividades Funcionários',
     actions: [false, true, false, false],
     actionsTitle: ['Criar', 'Ler', 'Atualizar', 'Deletar'],
   },

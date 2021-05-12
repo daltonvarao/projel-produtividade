@@ -3,10 +3,10 @@
     {{ title }}
 
     <div class="card-title-actions">
-      {{{ $slots.actions ? $slots.actions() : '' }}}
+      {{{ $slots.actions ? await $slots.actions() : '' }}}
     </div>
   </h2>
   <div class="card-body">
-    {{{ $slots.content() }}} 
+    {{{ await $slots.content() }}} 
   </div>
 </div>

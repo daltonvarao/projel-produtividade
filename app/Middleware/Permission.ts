@@ -52,10 +52,8 @@ export default class Permission {
       return await next()
     }
 
-    await user.load('cargo')
-
     const name = this._filterRouteName(route?.name || '')
-    const permission = await user.cargo.related('permissions').query().where({ name }).first()
+    const permission = await CargoPermission.query().where({ name, cargoId: user.cargoId }).first()
 
     if (!permission) {
       return await next()
@@ -63,9 +61,9 @@ export default class Permission {
 
     const method = request.method()
 
-    const havePermission = this.checkPermission(permission, method)
+    const hasPermission = this.checkPermission(permission, method)
 
-    if (!havePermission) {
+    if (!hasPermission) {
       session.flash('error', 'Você não possui permissão para acessar este recurso')
       return response.redirect().back()
     }

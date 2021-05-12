@@ -23,9 +23,6 @@
             <td title="Centro de custo" class="text-left">{{ contrato.centroCusto }}</td>
             <td title="Descrição" class="text-left">{{ contrato.descricao }}</td>
             <td class="text-right">
-              {{--  <a href="{{ route('admin.contratos.show', { id: contrato.id }) }}">
-                <span class="edit-icon" data-feather="eye"></span>
-              </a>  --}}
               <a href="{{ route('admin.contratos.edit', { id: contrato.id }) }}">
                 <span class="edit-icon" data-feather="edit"></span>
               </a>

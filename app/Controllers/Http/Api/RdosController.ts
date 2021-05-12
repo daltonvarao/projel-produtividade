@@ -55,9 +55,7 @@ export default class RdosController {
         })
       }
 
-      const rdos = await RdoBuilderService.buildMany(user, data)
-
-      await AtividadeRdoUserService.buildMany(data, rdos)
+      await RdoBuilderService.buildMany(user, data)
 
       return {
         message: 'Rdos cadastrados com sucesso',

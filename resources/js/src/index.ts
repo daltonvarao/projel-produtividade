@@ -1,4 +1,3 @@
-import './pages/Contratos'
 import './pages/CreateCargos'
 import './pages/EditCargos'
 import './pages/ReactSelectInput'

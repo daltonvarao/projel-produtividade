@@ -7,10 +7,10 @@
       </button>
     </div>
     <div class="modal-body">
-      {{{ $slots.content() }}}
+      {{{ await $slots.content() }}}
     </div>
     <div class="modal-footer">
-      {{{ $slots.footer ? $slots.footer() : '' }}}
+      {{{ $slots.footer ? await $slots.footer() : '' }}}
     </div>
   </div>
 </div>
