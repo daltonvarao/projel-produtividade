@@ -17,4 +17,4 @@ Route.group(() => {
   .namespace('App/Controllers/Http/Api')
   .as('api')
   .prefix('api')
-  .middleware(['auth:api'])
+  .middleware(['auth:api', 'log'])

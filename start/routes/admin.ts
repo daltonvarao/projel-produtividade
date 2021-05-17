@@ -14,6 +14,13 @@ Route.group(() => {
   Route.resource('users', 'UsersController').except(['show'])
   Route.resource('rdos', 'RdosController').except(['create', 'store'])
 
+  Route.group(() => {
+    Route.resource('logs', 'UserLogsController').only(['index'])
+  })
+    .namespace('App/Controllers/Http/Admin/Configuracoes')
+    .as('configuracoes')
+    .prefix('configuracoes')
+
   Route.resource('areas', 'AreasController').only(['index'])
   Route.group(() => {
     Route.resource('furos', 'FurosController').except(['show'])
@@ -47,4 +54,4 @@ Route.group(() => {
   .namespace('App/Controllers/Http/Admin')
   .as('admin')
   .prefix('admin')
-  .middleware(['auth', 'permission', 'sync', 'sessionStorage'])
+  .middleware(['auth', 'permission', 'sync', 'sessionStorage', 'log'])

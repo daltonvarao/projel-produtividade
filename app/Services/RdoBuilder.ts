@@ -1,3 +1,4 @@
+import ApiSyncVersion from 'App/Models/ApiSyncVersion'
 import Furo from 'App/Models/Furo'
 import Rdo from 'App/Models/Rdo'
 import User from 'App/Models/User'
@@ -59,10 +60,21 @@ export default class RdoBuilderService {
     const rdoAtividade = await rdo.related('rdoAtividades').create(atividade)
 
     if (nome) {
-      const furo = await Furo.firstOrCreate(
+      const furo = await Furo.firstOrNew(
         { nome, contratoId: rdo.contratoId, estruturaId: rdo.estruturaId },
         { nome, contratoId: rdo.contratoId }
       )
+
+      if (furo.$isNew) {
+        console.log('é novo esse caralho')
+        await ApiSyncVersion.create({
+          contratoId: rdo.contratoId,
+          requestMethod: 'POST',
+          requestUrl: '/api/rdos',
+        })
+
+        await furo.save()
+      }
 
       await rdoAtividade.related('furo').associate(furo)
     }

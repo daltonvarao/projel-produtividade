@@ -56,8 +56,6 @@ const CreateCargoPermissions: React.FC<EditCargoPermissionsProps> = ({
       newState.push(row)
     })
 
-    console.log(permissions)
-
     dispatch({ type: 'CHANGE_ALL', value: newState })
   }, [permissions])
 

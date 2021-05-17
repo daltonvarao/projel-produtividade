@@ -1,14 +1,16 @@
 @layout('layouts/master')
 
 @set('title', 'Configurações')
+@set('rightLink', {
+  'address': route('admin.configuracoes.logs.index'),
+  'payload': 'Logs do Sistema'
+})
 
 @section('content')
-
-<div class="form-container">
-  <div class="card-form">
-    <form action="{{ route('admin.configuracoes.store') }}" method="post">
-      <h2>Selecionar Contrato</h2>
-
+  <div class="form-container">
+    <div class="card-form">
+      <form action="{{ route('admin.configuracoes.store') }}" method="post">
+        <h2>Selecionar Contrato</h2>
         @!component('components/select', {
           name: 'contratoId',
           label: 'Contratos',
@@ -20,7 +22,6 @@
         })
 
         <button class="btn btn-primary">Salvar</button>
-
       </form>
     </div>
   </div>

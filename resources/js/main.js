@@ -94,21 +94,3 @@ showModals.forEach((showModal) => {
     }
   })
 })
-
-// SWITCH2
-
-// const switchs = document.querySelectorAll('.switch2')
-// if (switchs) {
-//   switchs.forEach((ss) => {
-//     const btn = ss.querySelector('button')
-//     const inp = ss.querySelector('input')
-
-//     inp.onchange = function (ev) {
-//       console.log(ev)
-//     }
-
-//     btn.addEventListener('click', function () {
-//       inp.value = inp.value === 'false' ? 'true' : 'false'
-//     })
-//   })
-// }

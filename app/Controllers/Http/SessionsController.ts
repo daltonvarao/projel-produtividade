@@ -1,5 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Logger from '@ioc:Adonis/Core/Logger'
+import UserLog from 'App/Models/UserLog'
 
 export default class SessionsController {
   public async index({ view, auth, response }: HttpContextContract) {
@@ -12,13 +13,21 @@ export default class SessionsController {
     return view.render('sessions/index')
   }
 
-  public async store({ request, auth, response, session }: HttpContextContract) {
+  public async store({ request, auth, response, session, route }: HttpContextContract) {
     const { cpf, password } = request.only(['cpf', 'password'])
 
     try {
       await auth.attempt(cpf, password)
 
       const { token, user } = await auth.use('api').attempt(cpf, password)
+
+      await UserLog.create({
+        route: route?.name,
+        ip: request.ip(),
+        url: request.url(),
+        userId: user.id,
+        method: request.method(),
+      })
 
       session.put('userToken', token)
       session.put('contratoId', user.contratoId)

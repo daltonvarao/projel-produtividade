@@ -44,4 +44,5 @@ Server.middleware.registerNamed({
   permission: () => import('App/Middleware/Permission'),
   sync: () => import('App/Middleware/ApiSyncVersion'),
   sessionStorage: () => import('App/Middleware/SessionStorage'),
+  log: () => import('App/Middleware/UserLog'),
 })
