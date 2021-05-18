@@ -15,46 +15,7 @@
           value: flashMessages.get('descricao')
         })
 
-        @!selectArray({
-          name: 'tipo',
-          label: 'Tipo',
-          error: 'errors.tipo',
-          value: flashMessages.get('tipo'),
-          collection: tipos
-        })
-        
-        @!selectArray({
-          name: 'unidade_medida',
-          label: 'Unidade de medida',
-          error: 'errors.unidade_medida',
-          value: flashMessages.get('unidade_medida'),
-          collection: unidadeMedidas
-        })
-
-        <h2>Valor unitário por cargo</h2>
-
-        <table class="table">
-          <thead>
-            <tr>
-              <th class="text-left">Cargo</th>
-              <th class="text-right">Valor Unitário</th>
-            </tr>
-          </thead>
-          
-          <tbody>
-            @each((cargo, cargoIndex) in cargos)
-              <tr>
-                <td class="text-left">
-                  {{ cargo.titulo }}
-                  <input type="hidden" value="{{ cargo.id }}" name="{{ `cargoId[${cargoIndex}]` }}">
-                </td>
-                <td class="text-right">
-                  <input class="w-25" type="text" value="0.0"  name="{{ `valorUnitario[${cargoIndex}]` }}"/>
-                </td>
-              </tr>
-            @endeach
-          </tbody>
-        </table>
+        <div id="react-create-atividade" data-cargos='{{{ JSON.stringify(cargos) }}}'></div>
 
         <button class="btn btn-primary">Salvar</button>
       </form>

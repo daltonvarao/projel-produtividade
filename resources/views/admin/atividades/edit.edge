@@ -13,49 +13,9 @@
           label: 'Descrição',
           error: 'errors.descricao',
           value: flashMessages.get('descricao') || atividade.descricao
-        })
+        }) 
 
-        @!component('components/select2', {
-          name: 'tipo',
-          label: 'Tipo',
-          error: 'errors.tipo',
-          value: flashMessages.get('tipo') || atividade.tipo,
-          collection: tipos
-        })
-
-        @!selectArray({
-          name: 'unidade_medida',
-          label: 'Unidade de medida',
-          error: 'errors.unidade_medida',
-          value: flashMessages.get('unidade_medida') || atividade.unidade_medida,
-          collection: unidadeMedidas 
-        })
-        
-        <h2>Valor unitário por cargo</h2>
-
-        <table class="table">
-          <thead>
-            <tr>
-              <th class="text-left">Cargo</th>
-              <th class="text-right">Valor Unitário</th>
-            </tr>
-          </thead>
-          
-          <tbody>
-            @each((atividadeCargoValor, cargoIndex) in atividade.atividadeCargoValores)
-              <tr>
-                <td class="text-left">
-                  {{ atividadeCargoValor.cargo.titulo }}
-                  <input type="hidden" value="{{ atividadeCargoValor.cargo.id }}" name="{{ `cargoId[${cargoIndex}]` }}">
-                  <input type="hidden" value="{{ atividadeCargoValor.id }}" name="{{ `atividadeCargoId[${cargoIndex}]` }}">
-                </td>
-                <td class="text-right">
-                  <input class="w-25" type="text" value="{{ atividadeCargoValor.valor_unitario }}"  name="{{ `valorUnitario[${cargoIndex}]` }}"/>
-                </td>
-              </tr>
-            @endeach
-          </tbody>
-        </table>
+        <div id="react-edit-atividade" data-atividade='{{{ JSON.stringify(atividade) }}}'></div>
 
         <button class="btn btn-primary">Salvar</button>
       </form>

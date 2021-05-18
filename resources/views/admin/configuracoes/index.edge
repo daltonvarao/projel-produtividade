@@ -1,12 +1,41 @@
 @layout('layouts/master')
 
 @set('title', 'Configurações')
-@set('rightLink', {
-  'address': route('admin.configuracoes.logs.index'),
-  'payload': 'Logs do Sistema'
-})
+
 
 @section('content')
+  <div class="profile-card">
+    <div class="profile-pic">
+      <h2>DV</h2>
+    </div>
+
+    <div class="profile-infos">
+      <div class="profile-info-section">
+        <div class="profile-info">
+          <h4>Nome</h4>
+          <h3>{{ user.nome }}</h3>
+        </div>
+  
+        <div class="profile-info">
+          <h4>Cpf</h4>
+          <h3>{{ user.cpf }}</h3>
+        </div>
+      </div>
+
+      <div class="profile-info-section">
+        <div class="profile-info">
+          <h4>Cargo</h4>
+          <h3>{{ user.cargo.titulo }}</h3>
+        </div>
+  
+        <div class="profile-info">
+          <h4>Contrato</h4>
+          <h3>{{{  user.contrato.descricao }}}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="form-container">
     <div class="card-form">
       <form action="{{ route('admin.configuracoes.store') }}" method="post">
@@ -25,4 +54,12 @@
       </form>
     </div>
   </div>
+
+  @card(title='Opções')
+    @slot('content')
+      <a href="{{ route('admin.configuracoes.logs.index') }}">
+        Acessar logs do sistema
+      </a>
+    @endslot
+  @end
 @endsection
