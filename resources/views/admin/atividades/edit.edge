@@ -15,7 +15,12 @@
           value: flashMessages.get('descricao') || atividade.descricao
         }) 
 
-        <div id="react-edit-atividade" data-atividade='{{{ JSON.stringify(atividade) }}}'></div>
+        <div 
+          id="react-edit-atividade" 
+          data-atividade='{{{ JSON.stringify(atividade) }}}'
+          data-flashmessages='{{{ JSON.stringify(flashMessages.all()) }}}'
+        >
+        </div>
 
         <button class="btn btn-primary">Salvar</button>
       </form>

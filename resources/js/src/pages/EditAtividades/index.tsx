@@ -24,20 +24,37 @@ interface Atividade {
   }[]
 }
 
+interface CreateAtividadeForm {
+  descricao?: string
+  tipo?: string
+  unidade_medida?: string
+  cargoId?: number[]
+  valorUnitario?: number[]
+}
+
+interface FlashMessages extends CreateAtividadeForm {
+  errors?: CreateAtividadeForm
+}
+
 interface CreateAtividadesProps {
   cargos: Cargo[]
   atividade: Atividade
+  flashMessages: FlashMessages
 }
 
-const EditAtividades: React.FC<CreateAtividadesProps> = ({ atividade }) => {
+const EditAtividades: React.FC<CreateAtividadesProps> = ({ atividade, flashMessages }) => {
   const tipos = ['produtiva', 'improdutiva', 'parada']
   const unidadeMedidas = ['unidades', 'metros']
 
   const [tipo, setTipo] = useState('')
 
   useEffect(() => {
-    setTipo(atividade.tipo)
-  }, [atividade.tipo])
+    if (flashMessages?.tipo) {
+      setTipo(flashMessages.tipo)
+    } else {
+      setTipo(atividade.tipo)
+    }
+  }, [atividade.tipo, flashMessages])
 
   if (!atividade) {
     return <Loader />
@@ -47,7 +64,13 @@ const EditAtividades: React.FC<CreateAtividadesProps> = ({ atividade }) => {
     <React.Fragment>
       <div className="form-group">
         <label htmlFor="tipo">Tipo</label>
-        <select onChange={(ev) => setTipo(ev.target.value)} value={tipo} name="tipo" id="tipo">
+        <select
+          onChange={(ev) => setTipo(ev.target.value)}
+          value={tipo}
+          name="tipo"
+          id="tipo"
+          className={flashMessages?.errors?.tipo && 'invalid'}
+        >
           <option value="">Selecione</option>
           {tipos.map((tipo, index) => {
             return (
@@ -58,11 +81,9 @@ const EditAtividades: React.FC<CreateAtividadesProps> = ({ atividade }) => {
           })}
         </select>
 
-        {/* @if(flashMessages.has(field))
-          <span class="input-validation">
-            {{ flashMessages.get(field) }}
-          </span>
-        @endif */}
+        {flashMessages?.errors?.tipo && (
+          <span className="input-validation">{flashMessages.errors.tipo}</span>
+        )}
       </div>
 
       {tipo === 'produtiva' ? (
@@ -71,8 +92,9 @@ const EditAtividades: React.FC<CreateAtividadesProps> = ({ atividade }) => {
             <label htmlFor="unidade_medida">Unidade de medida</label>
             <select
               name="unidade_medida"
-              defaultValue={atividade.unidade_medida}
+              defaultValue={flashMessages?.unidade_medida ?? atividade.unidade_medida}
               id="unidade_medida"
+              className={flashMessages?.errors?.unidade_medida && 'invalid'}
             >
               <option value="">Selecione</option>
               {unidadeMedidas.map((unidade, index) => {
@@ -84,11 +106,9 @@ const EditAtividades: React.FC<CreateAtividadesProps> = ({ atividade }) => {
               })}
             </select>
 
-            {/* @if(flashMessages.has(field))
-          <span class="input-validation">
-            {{ flashMessages.get(field) }}
-          </span>
-        @endif */}
+            {flashMessages?.errors?.unidade_medida && (
+              <span className="input-validation">{flashMessages.errors.unidade_medida}</span>
+            )}
           </div>
 
           <h2>Valor unitário por cargo</h2>
@@ -121,7 +141,7 @@ const EditAtividades: React.FC<CreateAtividadesProps> = ({ atividade }) => {
                     <td className="text-right">
                       <input
                         className="w-25"
-                        type="text"
+                        type="number"
                         defaultValue={atividadeCargo.valor_unitario}
                         name={`valorUnitario[${cargoIndex}]`}
                       />
@@ -144,6 +164,11 @@ if (container) {
   const cargos = JSON.parse(cargosRaw ?? '[]')
   const atividadeRaw = container.getAttribute('data-atividade')
   const atividade = JSON.parse(atividadeRaw ?? '[]')
+  const flashMessagesRaw = container.getAttribute('data-flashmessages')
+  const flashMessages = JSON.parse(flashMessagesRaw ?? '[]')
 
-  ReactDOM.render(<EditAtividades cargos={cargos} atividade={atividade} />, container)
+  ReactDOM.render(
+    <EditAtividades cargos={cargos} atividade={atividade} flashMessages={flashMessages} />,
+    container
+  )
 }
