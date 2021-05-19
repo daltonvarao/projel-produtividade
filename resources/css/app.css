@@ -46,6 +46,7 @@ body {
 
 a {
   text-decoration: none;
+  color: var(--primary);
 }
 
 button.btn-link {
@@ -527,7 +528,7 @@ body.modal-open {
 .card-form {
   display: flex;
   margin: 0 auto;
-  width: 720px;
+  max-width: 820px;
   background: var(--white);
   border-radius: 8px;
   padding: 3rem 2rem;
@@ -556,6 +557,7 @@ body.modal-open {
   padding: 0.5rem 0.75rem;
 }
 
+.card-form form .form-group + div,
 .card-form form .form-group + select,
 .card-form form select + .form-group,
 .card-form form .form-group + .form-group,
@@ -806,6 +808,8 @@ table + button {
   border-radius: 8px;
   padding: 2rem;
   box-shadow: 0 0 25px 0 var(--shadow-color);
+  max-width: 820px;
+  margin: 0 auto;
   margin-bottom: 2rem;
 }
 
@@ -897,6 +901,7 @@ table + button {
 .cards-container {
   margin-bottom: 1rem;
   display: flex;
+  max-width: 820px;
 }
 
 .cards-container .card + .card {
@@ -931,6 +936,69 @@ table + button {
   transition: border 0.3s;
 }
 
+/* CONFIGURACOES PROFILE */
+.profile-card {
+  max-width: 820px;
+  margin: 0 auto;
+  background: #fff;
+  display: flex;
+  padding: 2rem 3rem;
+  border-radius: 8px;
+  box-shadow: 0 0 20px 3px var(--shadow-color);
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.profile-card .profile-pic {
+  background: var(--primary);
+  width: 96px;
+  height: 96px;
+  border-radius: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  margin-right: 3rem;
+}
+
+.profile-card .profile-pic h2 {
+  /* color: var(--primary); */
+  color: #fff;
+}
+
+.profile-infos {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.profile-info-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  width: 500px;
+  justify-content: space-between;
+}
+
+.profile-card .profile-info {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 0.25rem;
+}
+
+.profile-card .profile-info h4 {
+  color: var(--primary);
+}
+
+.profile-card .profile-info h3 {
+  font-weight: 300;
+}
+
+.form-container + div {
+  margin-top: 1.5rem;
+}
+
 /* MEDIA QUERIES */
 
 @media screen and (min-width: 768px) {
@@ -956,6 +1024,10 @@ table + button {
 
   .empty-list img {
     width: 30%;
+  }
+
+  .form-container + div {
+    margin-top: 2rem;
   }
 }
 
@@ -1097,6 +1169,51 @@ table + button {
 
   .cards-container .card + .card {
     margin: 0;
+  }
+
+  .card-info {
+    margin-bottom: 1.5rem;
+  }
+
+  /* CONFIGURACOES PROFILE */
+  .profile-card {
+    margin: 0 auto;
+    background: #fff;
+    display: block;
+
+    padding: 2rem 1rem;
+    border-radius: 8px;
+    box-shadow: 0 0 20px 3px var(--shadow-color);
+    margin-bottom: 1.5rem;
+  }
+
+  .profile-card .profile-pic {
+    margin: 0 auto;
+  }
+
+  .profile-infos {
+    display: block;
+    flex-direction: column;
+  }
+
+  .profile-info-section {
+    width: auto;
+    display: block;
+    background: transparent;
+  }
+
+  .profile-card .profile-info {
+    width: fit-content;
+    display: block;
+    background: transparent;
+    padding: 1rem;
+  }
+
+  .profile-card .profile-info h4 {
+    color: var(--primary);
+  }
+
+  .profile-card .profile-info h3 {
   }
 }
 

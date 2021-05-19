@@ -59,8 +59,12 @@ export default class AtividadesController {
         }),
       ]),
       tipo: schema.enum(this.tipos),
-      cargoId: schema.array().members(schema.number()),
-      valorUnitario: schema.array().members(schema.number()),
+      cargoId: schema.array
+        .optional([rules.requiredWhen('tipo', '=', 'produtiva')])
+        .members(schema.number()),
+      valorUnitario: schema.array
+        .optional([rules.requiredWhen('tipo', '=', 'produtiva')])
+        .members(schema.number()),
       unidade_medida: schema.string.optional({}, [rules.requiredWhen('tipo', '=', 'produtiva')]),
     })
 
@@ -69,17 +73,19 @@ export default class AtividadesController {
       messages: this.validationMessages,
     })
 
-    const atividadeCargosValoresData = cargoId.map((cid, index) => {
-      return {
-        cargoId: cid,
-        valorUnitario: valorUnitario[index],
-      }
-    })
-
     try {
       const atividade = await Atividade.create({ contratoId, ...data })
 
-      await atividade.related('atividadeCargoValores').createMany(atividadeCargosValoresData)
+      if (cargoId && valorUnitario) {
+        const atividadeCargosValoresData = cargoId.map((cid, index) => {
+          return {
+            cargoId: cid,
+            valorUnitario: valorUnitario[index],
+          }
+        })
+
+        await atividade.related('atividadeCargoValores').createMany(atividadeCargosValoresData)
+      }
 
       session.flash('success', 'Atividade cadastrada.')
       return response.redirect().toRoute('admin.atividades.index')
@@ -124,11 +130,17 @@ export default class AtividadesController {
           whereNot: { id },
         }),
       ]),
-      unidade_medida: schema.string(),
+      unidade_medida: schema.string.optional({}, [rules.requiredWhen('tipo', '=', 'produtiva')]),
       tipo: schema.enum(this.tipos),
-      cargoId: schema.array().members(schema.number()),
-      valorUnitario: schema.array().members(schema.number()),
-      atividadeCargoId: schema.array().members(schema.number()),
+      cargoId: schema.array
+        .optional([rules.requiredWhen('tipo', '=', 'produtiva')])
+        .members(schema.number()),
+      valorUnitario: schema.array
+        .optional([rules.requiredWhen('tipo', '=', 'produtiva')])
+        .members(schema.number()),
+      atividadeCargoId: schema.array
+        .optional([rules.requiredWhen('tipo', '=', 'produtiva')])
+        .members(schema.number()),
     })
 
     const { cargoId, valorUnitario, atividadeCargoId, ...data } = await request.validate({
@@ -136,18 +148,19 @@ export default class AtividadesController {
       messages: this.validationMessages,
     })
 
-    const atividadeCargosValoresData = cargoId.map((cid, index) => {
-      return {
-        cargoId: cid,
-        valorUnitario: valorUnitario[index],
-        id: atividadeCargoId[index],
-      }
-    })
-
     try {
       await Atividade.query().where({ id }).update(data)
 
-      await AtividadeCargoValor.updateOrCreateMany('id', atividadeCargosValoresData)
+      if (valorUnitario && atividadeCargoId && cargoId) {
+        const atividadeCargosValoresData = cargoId.map((cid, index) => {
+          return {
+            cargoId: cid,
+            valorUnitario: valorUnitario[index],
+            id: atividadeCargoId[index],
+          }
+        })
+        await AtividadeCargoValor.updateOrCreateMany('id', atividadeCargosValoresData)
+      }
 
       session.flash('success', 'Atividade atualizada.')
       return response.redirect().toRoute('admin.atividades.index')
