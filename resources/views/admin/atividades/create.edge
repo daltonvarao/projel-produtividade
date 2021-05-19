@@ -8,8 +8,6 @@
       <form action="{{ route('admin.atividades.store') }}" method="post">
         <h2>Nova Atividade</h2>
 
-        {{flashMessages.all() && inspect(flashMessages.all())}}
-
         @!input({
           name: 'descricao',
           label: 'Descrição',
