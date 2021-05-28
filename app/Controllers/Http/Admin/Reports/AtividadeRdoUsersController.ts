@@ -26,6 +26,7 @@ export default class AtividadeRdoUsersController {
                 .whereHas('atividade', (qa) => qa.where('tipo', 'produtiva'))
                 .preload('atividade')
                 .preload('rdo')
+                .preload('furo')
             })
           )
       )

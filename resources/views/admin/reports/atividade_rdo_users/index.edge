@@ -41,6 +41,7 @@
       <thead>
         {{--  <th class="text-left">Data</th>  --}}
         <th class="text-left">Atividade</th>
+        <th class="text-left">Furo</th>
         <th class="text-md-right" title="Quantidade Inicial">Q. Inicial</th>
         <th class="text-md-right" title="Quantidade Final">Q. Final</th>
         <th class="text-md-right" title="Quantidade Total">Q. Total</th>
@@ -56,6 +57,7 @@
           @each((atividade, index) in rdoUser.rdo.rdoAtividades)
             <tr>
               <td>{{ atividade.atividade.descricao }}</td>
+              <td class="text-md-left">{{{ atividade.furo.nome }}}</td>
               <td class="text-md-right">{{{ Number(atividade.quantidade_inicial).toLocaleString('pt-BR') }}}</td>
               <td class="text-md-right">{{{ Number(atividade.quantidade_final).toLocaleString('pt-BR') }}}</td>
               <td class="text-md-right">{{{ Number(atividade.quantidade).toLocaleString('pt-BR') }}}</td>
