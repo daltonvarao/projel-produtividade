@@ -42,7 +42,7 @@ interface CreateAtividadesProps {
   flashMessages: FlashMessages
 }
 
-const EditAtividades: React.FC<CreateAtividadesProps> = ({ atividade, flashMessages }) => {
+const EditAtividades: React.FC<CreateAtividadesProps> = ({ atividade, flashMessages, cargos }) => {
   const tipos = ['produtiva', 'improdutiva', 'parada']
   const unidadeMedidas = ['unidades', 'metros']
 
@@ -56,7 +56,7 @@ const EditAtividades: React.FC<CreateAtividadesProps> = ({ atividade, flashMessa
     }
   }, [atividade.tipo, flashMessages])
 
-  if (!atividade) {
+  if (!(atividade && cargos)) {
     return <Loader />
   }
 
@@ -122,27 +122,25 @@ const EditAtividades: React.FC<CreateAtividadesProps> = ({ atividade, flashMessa
             </thead>
 
             <tbody>
-              {atividade.atividadeCargoValores.map((atividadeCargo, cargoIndex) => {
+              {cargos.map((cargo, cargoIndex) => {
                 return (
                   <tr key={cargoIndex}>
                     <td className="text-left">
-                      {atividadeCargo.cargo.titulo}
+                      {cargo.titulo}
                       <input
                         type="hidden"
-                        defaultValue={atividadeCargo.id}
+                        defaultValue="false"
                         name={`atividadeCargoId[${cargoIndex}]`}
                       />
-                      <input
-                        type="hidden"
-                        defaultValue={atividadeCargo.cargo.id}
-                        name={`cargoId[${cargoIndex}]`}
-                      />
+                      <input type="hidden" value={cargo.id} name={`cargoId[${cargoIndex}]`} />
                     </td>
                     <td className="text-right">
                       <input
                         className="w-25"
                         type="number"
-                        defaultValue={atividadeCargo.valor_unitario}
+                        defaultValue={
+                          atividade.atividadeCargoValores[cargoIndex]?.valor_unitario ?? '0.0'
+                        }
                         name={`valorUnitario[${cargoIndex}]`}
                       />
                     </td>

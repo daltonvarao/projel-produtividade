@@ -11,6 +11,7 @@ import {
 import CargoPermission from 'App/Models/CargoPermission'
 import Contrato from 'App/Models/Contrato'
 import User from 'App/Models/User'
+import AtividadeCargoValor from './AtividadeCargoValor'
 
 export default class Cargo extends BaseModel {
   @column({ isPrimary: true })
@@ -30,6 +31,9 @@ export default class Cargo extends BaseModel {
 
   @hasMany(() => User)
   public users: HasMany<typeof User>
+
+  @hasMany(() => AtividadeCargoValor)
+  public atividadeCargoValores: HasMany<typeof AtividadeCargoValor>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

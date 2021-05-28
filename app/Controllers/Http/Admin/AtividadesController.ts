@@ -99,17 +99,19 @@ export default class AtividadesController {
 
   public async edit({ view, response, session, params, logger }: HttpContextContract) {
     const { id } = params
+    const cargos = await Cargo.query().orderBy('id')
 
     try {
       const atividade = await Atividade.query()
         .where({ id })
-        .preload('atividadeCargoValores', (q) => q.preload('cargo'))
+        .preload('atividadeCargoValores', (q) => q.preload('cargo', (qa) => qa.orderBy('id')))
         .firstOrFail()
 
       return view.render('admin/atividades/edit', {
         atividade: atividade.toJSON(),
         tipos: this.tipos,
         unidadeMedidas: this.unidadeMedidas,
+        cargos: cargos.map((cargo) => cargo.toJSON()),
       })
     } catch (error) {
       logger.error(error)
@@ -138,12 +140,9 @@ export default class AtividadesController {
       valorUnitario: schema.array
         .optional([rules.requiredWhen('tipo', '=', 'produtiva')])
         .members(schema.number()),
-      atividadeCargoId: schema.array
-        .optional([rules.requiredWhen('tipo', '=', 'produtiva')])
-        .members(schema.number()),
     })
 
-    const { cargoId, valorUnitario, atividadeCargoId, ...data } = await request.validate({
+    const { cargoId, valorUnitario, ...data } = await request.validate({
       schema: atividadeSchema,
       messages: this.validationMessages,
     })
@@ -151,15 +150,17 @@ export default class AtividadesController {
     try {
       await Atividade.query().where({ id }).update(data)
 
-      if (valorUnitario && atividadeCargoId && cargoId) {
+      const atividade = await Atividade.query().where({ id }).firstOrFail()
+      await atividade.related('atividadeCargoValores').query().delete().debug(true)
+
+      if (valorUnitario && cargoId) {
         const atividadeCargosValoresData = cargoId.map((cid, index) => {
           return {
             cargoId: cid,
             valorUnitario: valorUnitario[index],
-            id: atividadeCargoId[index],
           }
         })
-        await AtividadeCargoValor.updateOrCreateMany('id', atividadeCargosValoresData)
+        await atividade.related('atividadeCargoValores').createMany(atividadeCargosValoresData)
       }
 
       session.flash('success', 'Atividade atualizada.')
