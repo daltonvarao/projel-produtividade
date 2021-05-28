@@ -6,10 +6,15 @@
   <h2 class="report-title">Relatórios</h2>
 
   <div class="reports">
-    <a href="{{ route('admin.reports.relatorio_atividades_usuarios.index') }}" class="report-card">
-      <h4>Produção Funcionários</h4>
+    <a href="{{ route('admin.reports.atividades_usuarios.index') }}" class="report-card">
+      <h4>Atividades Funcionários</h4>
 
       <span data-feather="users"></span>
+    </a>
+    <a href="{{ route('admin.reports.producao_usuarios.index') }}" class="report-card">
+      <h4>Produção Funcionários</h4>
+
+      <span data-feather="dollar-sign"></span>
     </a>
   </div>
 @endsection

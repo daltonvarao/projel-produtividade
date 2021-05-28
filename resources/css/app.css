@@ -842,6 +842,12 @@ table + button {
 }
 
 /* CARD REPORTS */
+.reports {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 2rem;
+}
+
 .report-title {
   margin-bottom: 1rem;
 }
