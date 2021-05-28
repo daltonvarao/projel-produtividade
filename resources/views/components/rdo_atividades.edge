@@ -10,6 +10,7 @@
         <th class="text-left">Hora Inicio</th>
         <th class="text-left">Hora Fim</th>
         <th class="text-left">Atividade</th>
+        <th class="text-left">Furo</th>
         <th class="text-center">Quantidade Inicial</th>
         <th class="text-center">Quantidade Final</th>
         <th class="text-center">Quantidade Total</th>
@@ -22,6 +23,7 @@
             <td title="Hora Início" class="text-left">{{ rdo_atividade.hora_inicio  }}</td>
             <td title="Hora Fim" class="text-left">{{ rdo_atividade.hora_fim  }}</td>
             <td title="Descrição" class="text-left">{{ rdo_atividade.atividade.descricao }}</td>
+            <td title="Descrição" class="text-left">{{ rdo_atividade.furo?.nome ?? '-' }}</td>
             <td title="Quantidade Inicial" class="text-md-center">
               {{ 
                 rdo_atividade.atividade.tipo === 'produtiva' 

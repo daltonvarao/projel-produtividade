@@ -30,17 +30,15 @@ export default class RdosController {
     try {
       const rdo = await Rdo.query()
         .where({ id })
-        .preload('rdoAtividades', (query) => {
-          query.preload('atividade')
-          query.orderBy('hora_fim')
-          query.debug(true)
+        .preload('rdoAtividades', (qra) => {
+          qra.preload('atividade').preload('furo').orderBy('hora_fim')
         })
-        .preload('rdoEquipamentos', (query) => {
-          query.preload('equipamento')
+        .preload('rdoEquipamentos', (qre) => {
+          qre.preload('equipamento')
         })
-        .preload('rdoUsers', (query) => {
-          query.preload('user', (query) => {
-            query.preload('cargo')
+        .preload('rdoUsers', (qru) => {
+          qru.preload('user', (qu) => {
+            qu.preload('cargo')
           })
         })
         .preload('contrato')

@@ -150,7 +150,7 @@ export default class AtividadesController {
       await Atividade.query().where({ id }).update(data)
 
       const atividade = await Atividade.query().where({ id }).firstOrFail()
-      await atividade.related('atividadeCargoValores').query().delete().debug(true)
+      await atividade.related('atividadeCargoValores').query().delete()
 
       if (valorUnitario && cargoId) {
         const atividadeCargosValoresData = cargoId.map((cid, index) => {
