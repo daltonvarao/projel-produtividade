@@ -1,7 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Atividade from 'App/Models/Atividade'
-import AtividadeCargoValor from 'App/Models/AtividadeCargoValor'
 import Cargo from 'App/Models/Cargo'
 
 export default class AtividadesController {
