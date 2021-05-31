@@ -47,6 +47,7 @@ Encore.setPublicPath('/assets')
 */
 Encore.addEntry('app', './resources/js/app.ts')
 Encore.addEntry('main', './resources/js/main.js')
+Encore.addEntry('errors', './resources/js/errors.ts')
 
 /*
 |--------------------------------------------------------------------------

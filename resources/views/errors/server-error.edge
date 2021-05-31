@@ -1,1 +1,22 @@
-<p> It's a 500 </p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Projel - 404</title>
+  @entryPointStyles('errors')
+</head>
+<body>
+  <div class="container">
+    <div class="img-container">
+      <img class="logo-projel" src="/img/logo-projel-light.png" alt="">
+    </div>
+    <div class="msg-container">
+      <h1 class="status-code">{{error.status}}</h1>
+      <p class="error-message">Ocorreu um erro, volte para página inicial.</p>
+      <a href="/">Voltar para página inicial</a>
+    </div>
+  </div>
+</body>
+</html>

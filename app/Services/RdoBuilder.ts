@@ -66,7 +66,6 @@ export default class RdoBuilderService {
       )
 
       if (furo.$isNew) {
-        console.log('é novo esse caralho')
         await ApiSyncVersion.create({
           contratoId: rdo.contratoId,
           requestMethod: 'POST',
