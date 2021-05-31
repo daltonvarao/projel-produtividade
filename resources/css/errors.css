@@ -58,7 +58,7 @@ h1.status-code {
   font-size: 140px;
   position: absolute;
   color: #f0f0fd;
-
+  transition: font-size 0.4s;
   z-index: -10;
 }
 
