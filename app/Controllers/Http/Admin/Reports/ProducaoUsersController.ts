@@ -47,6 +47,7 @@ export default class ProducaoUsersController {
           return { user: user, quantidade }
         })
       })
+      .filter((ps) => ps.length)
       .map((ps) => {
         return ps.reduce((pv, cv) => {
           return { quantidade: pv.quantidade + cv.quantidade, user: pv.user }

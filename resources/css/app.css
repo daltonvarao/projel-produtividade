@@ -1232,9 +1232,6 @@ table + button {
   .profile-card .profile-info h4 {
     color: var(--primary);
   }
-
-  .profile-card .profile-info h3 {
-  }
 }
 
 /* GLOBALS */
