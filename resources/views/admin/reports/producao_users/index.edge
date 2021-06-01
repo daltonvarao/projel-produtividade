@@ -58,7 +58,7 @@
         @endeach
 
         @if(producaoUsers?.length)
-          <tr class="bg-light total">
+          <tr>
             <td class="text-right text-bold text-primary" colspan="7">Total</td>
             <td class="text-md-right">
               {{{ Number(total).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) }}}
