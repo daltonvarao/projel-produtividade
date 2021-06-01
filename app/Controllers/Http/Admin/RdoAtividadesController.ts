@@ -13,6 +13,7 @@ export default class RdoAtividadesController {
       quantidadeInicial: schema.number.optional(),
       quantidadeFinal: schema.number.optional(),
       horaInicio: schema.date(),
+      furoId: schema.number(),
       horaFim: schema.date(),
     })
 

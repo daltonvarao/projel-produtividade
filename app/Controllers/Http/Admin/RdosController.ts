@@ -4,6 +4,7 @@ import Rdo from 'App/Models/Rdo'
 import User from 'App/Models/User'
 import Equipamento from 'App/Models/Equipamento'
 import Atividade from 'App/Models/Atividade'
+import Furo from 'App/Models/Furo'
 
 export default class RdosController {
   public async index({ view, request }: HttpContextContract) {
@@ -46,11 +47,16 @@ export default class RdosController {
         .preload('equipamentoPrincipal')
         .firstOrFail()
 
+      const furos = await Furo.query()
+        .where({ estruturaId: rdo.estruturaId })
+        .apply((scopes) => scopes.inContract(contratoId))
+
       return view.render('admin/rdos/show', {
         rdo: rdo.toJSON(),
         users: users.map((i) => i.toJSON()),
         atividades: atividades.map((i) => i.toJSON()),
         equipamentos: equipamentos.map((i) => i.toJSON()),
+        furos: furos.map((i) => i.toJSON()),
       })
     } catch (error) {
       logger.error(error)

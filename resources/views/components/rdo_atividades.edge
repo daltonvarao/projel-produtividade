@@ -7,28 +7,28 @@
   @slot('content')
     <table class="table no-shadow">
       <thead>
-        <th class="text-left">Hora Inicio</th>
-        <th class="text-left">Hora Fim</th>
+        <th title="Horário Inicial" class="text-left">H. Inicio</th>
+        <th title="Horário Final" class="text-left">H. Fim</th>
         <th class="text-left">Atividade</th>
-        <th class="text-left">Furo</th>
-        <th class="text-center">Quantidade Inicial</th>
-        <th class="text-center">Quantidade Final</th>
-        <th class="text-center">Quantidade Total</th>
+        <th class="text-md-center">Furo</th>
+        <th title="Quantidade Inicial" class="text-center">Q. Inicial</th>
+        <th title="Quantidade Final" class="text-center">Q. Final</th>
+        <th title="Quantidade Total" class="text-center">Q. Total</th>
         <th class="text-center">Ações</th>
       </thead>
       
       <tbody>
         @each(rdo_atividade in rdo.rdoAtividades)
           <tr>
-            <td title="Hora Início" class="text-left">{{ rdo_atividade.hora_inicio  }}</td>
-            <td title="Hora Fim" class="text-left">{{ rdo_atividade.hora_fim  }}</td>
-            <td title="Descrição" class="text-left">{{ rdo_atividade.atividade.descricao }}</td>
-            <td title="Descrição" class="text-left">{{ rdo_atividade.furo?.nome ?? '-' }}</td>
+            <td title="Horário Inicial" class="text-left">{{ rdo_atividade.hora_inicio }}</td>
+            <td title="Horário Final" class="text-left">{{ rdo_atividade.hora_fim  }}</td>
+            <td title="Descrição" class="text-left">{{ (rdo_atividade.atividade.descricao) }}</td>
+            <td title="Furo" class="text-md-center">{{ rdo_atividade.furo?.nome ?? '-' }}</td>
             <td title="Quantidade Inicial" class="text-md-center">
               {{ 
                 rdo_atividade.atividade.tipo === 'produtiva' 
                   ? (rdo_atividade.atividade.unidade_medida === 'metros' 
-                      ? Number(rdo_atividade.quantidade_inicial).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) 
+                      ? Number(rdo_atividade.quantidade_inicial).toLocaleString('pt-BR', { minimumFractionDigits: 2 }).concat('m')
                       : '-'
                     )
                   : '-' 
@@ -38,7 +38,7 @@
               {{ 
                 rdo_atividade.atividade.tipo === 'produtiva' 
                   ? (rdo_atividade.atividade.unidade_medida === 'metros' 
-                      ? Number(rdo_atividade.quantidade_final).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) 
+                      ? Number(rdo_atividade.quantidade_final).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) .concat('m')
                       : '-'
                     )
                   : '-' 
@@ -48,7 +48,7 @@
               {{{
                 rdo_atividade.atividade.tipo === 'produtiva' 
                   ? (rdo_atividade.atividade.unidade_medida === 'metros' 
-                      ? Number(rdo_atividade.quantidade).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+                      ? Number(rdo_atividade.quantidade).toLocaleString('pt-BR', { minimumFractionDigits: 2 }).concat('m')
                       : Number(rdo_atividade.quantidade)
                     ) 
                   : '-' 
@@ -88,7 +88,10 @@
         })
       </div>
 
-      <div id="create-rdo-atividades" collection='{{{ JSON.stringify(atividades) }}}'></div>
+      <div
+        id="create-rdo-atividades"
+        data-furos='{{{ JSON.stringify(furos) }}}'
+        data-atividades='{{{ JSON.stringify(atividades) }}}'></div>
     </form>
   @endslot
 

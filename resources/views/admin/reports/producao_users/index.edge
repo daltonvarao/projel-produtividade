@@ -19,34 +19,53 @@
       <button class="btn btn-primary">Filtrar</button>
     </div>
   </form>
-
-  {{--  {{ inspect(producaoUsers[0].user) }}  --}}
-
   <div class="table-container">
     <table>
       <thead>
-        <th class="text-left">Nome</th>
-        <th class="text-left">Cargo</th>
-        <th class="text-left">Cpf</th>
-        <th class="text-center" colspan="4">Dados bancários</th>
-        <th class="text-md-right">Produção no período</th>
+        <tr>
+          <th class="text-left" rowspan="2">Nome</th>
+          <th class="text-left" rowspan="2">Cargo</th>
+          <th class="text-md-center" rowspan="2">Cpf</th>
+          <th class="text-center" colspan="4">Dados bancários</th>
+          <th class="text-md-right" rowspan="2">Valor (R$)</th>
+        </tr>
+        <tr>
+          <th class="text-md-cente">Banco</th>
+          <th class="text-md-center">Agência</th>
+          <th class="text-md-center" title="Operação da Caixa">O. C</th>
+          <th class="text-md-center">Conta</th>
+        </tr>
       </thead>
       
       <tbody>
+        @set('total', 0)
         @each(producaoUser in producaoUsers)
+          @set('total', total + producaoUser.quantidade)
           <tr>
-            <td title="Nome" class="text-left">{{ producaoUser.user.nome }}</td>
-            <td title="Cargo" class="text-left">{{ producaoUser.user.cargo.titulo }}</td>
-            <td title="Cpf" class="text-left">{{ producaoUser.user.cpf }}</td>
-            <td title="Cpf" class="text-left">{{ producaoUser.user.banco }}</td>
-            <td title="Cpf" class="text-left">{{ producaoUser.user.agencia }}</td>
-            <td title="Cpf" class="text-left">{{ producaoUser.user.operacaoCaixa }}</td>
-            <td title="Cpf" class="text-left">{{ producaoUser.user.conta }}</td>
-            <td class="show-money-mask text-md-right" title="Produção no Período">{{ producaoUser.quantidade }}</td>
+            <td class="text-left" title="Nome">{{ producaoUser.user.nome }}</td>
+            <td class="text-left" title="Cargo">{{ producaoUser.user.cargo.titulo }}</td>
+            <td class="text-md-center" title="Cpf">{{ producaoUser.user.cpf }}</td>
+            <td class="text-md-center" title="Banco">{{ producaoUser.user.banco }}</td>
+            <td class="text-md-center" title="Agência">{{ producaoUser.user.agencia }}</td>
+            <td class="text-md-center" title="Operação Caixa">{{ producaoUser.user.operacaoCaixa }}</td>
+            <td class="text-md-center" title="Conta" >{{ producaoUser.user.conta }}</td>
+            <td class="text-md-right" title="Produção no Período">
+              {{ Number(producaoUser.quantidade).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) }}
+            </td>
           </tr>
         @else
           @!emptyMessage()
         @endeach
+
+        @if(producaoUsers.length)
+          <tr class="bg-light total">
+            <td class="text-right text-bold text-primary" colspan="7">Total</td>
+            <td class="text-md-right">
+              {{{ Number(total).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) }}}
+            </td>
+          </tr>
+        @endif
+        <tr></tr>
       </tbody>
     </table>
   </div>

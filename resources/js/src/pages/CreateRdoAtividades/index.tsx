@@ -9,15 +9,22 @@ interface Atividade {
   id: number
 }
 
-interface CreateRdoAtividadesProps {
-  atividades: Atividade[]
+interface Furo {
+  nome: string
+  id: number
 }
 
-const CreateRdoAtividades: React.FC<CreateRdoAtividadesProps> = ({ atividades }) => {
+interface CreateRdoAtividadesProps {
+  atividades: Atividade[]
+  furos: Furo[]
+}
+
+const CreateRdoAtividades: React.FC<CreateRdoAtividadesProps> = ({ atividades, furos }) => {
   const [quantidadeInicial, setQuantidadeInicial] = useState('0')
   const [quantidadeFinal, setQuantidadeFinal] = useState('0')
   const [quantidade, setQuantidade] = useState('0')
   const [atividade, setAtividade] = useState<Atividade>()
+  const [furo, setFuro] = useState<Furo>()
 
   useEffect(() => {
     const result = Number(quantidadeFinal) - Number(quantidadeInicial)
@@ -41,6 +48,24 @@ const CreateRdoAtividades: React.FC<CreateRdoAtividadesProps> = ({ atividades })
           name="atividadeId"
         />
       </div>
+
+      {atividade?.tipo === 'produtiva' && (
+        <div className="form-group">
+          <label htmlFor="furo">Furos</label>
+          <ReactSelectInput
+            collection={furos}
+            labelKey="nome"
+            valueKey="id"
+            inputId="furo"
+            placeholder="Selecione um furo"
+            value={furo}
+            onChange={(value: Furo) => {
+              setFuro(value)
+            }}
+            name="furoId"
+          />
+        </div>
+      )}
 
       <div className="form-group-inline">
         {atividade?.tipo === 'produtiva' && atividade.unidade_medida === 'metros' ? (
@@ -92,8 +117,11 @@ const CreateRdoAtividades: React.FC<CreateRdoAtividadesProps> = ({ atividades })
 const container = document.querySelector('#create-rdo-atividades')
 
 if (container) {
-  const collectionRaw = container.getAttribute('collection')
-  const atividades: Atividade[] = JSON.parse(collectionRaw || '')
+  const atividadesRaw = container.getAttribute('data-atividades')
+  const atividades: Atividade[] = JSON.parse(atividadesRaw || '')
 
-  ReactDOM.render(<CreateRdoAtividades atividades={atividades} />, container)
+  const furosRaw = container.getAttribute('data-furos')
+  const furos: Furo[] = JSON.parse(furosRaw || '')
+
+  ReactDOM.render(<CreateRdoAtividades furos={furos} atividades={atividades} />, container)
 }

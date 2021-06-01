@@ -42,9 +42,9 @@
         {{--  <th class="text-left">Data</th>  --}}
         <th class="text-left">Atividade</th>
         <th class="text-left">Furo</th>
-        <th class="text-md-right" title="Quantidade Inicial">Q. Inicial</th>
-        <th class="text-md-right" title="Quantidade Final">Q. Final</th>
-        <th class="text-md-right" title="Quantidade Total">Q. Total</th>
+        <th class="text-md-center" title="Quantidade Inicial">Q. Inicial</th>
+        <th class="text-md-center" title="Quantidade Final">Q. Final</th>
+        <th class="text-md-center" title="Quantidade Total">Q. Total</th>
       </thead>
       
       <tbody>
@@ -58,9 +58,36 @@
             <tr>
               <td>{{ atividade.atividade.descricao }}</td>
               <td class="text-md-left">{{{ atividade.furo?.nome ?? '-' }}}</td>
-              <td class="text-md-right">{{{ Number(atividade.quantidade_inicial).toLocaleString('pt-BR') }}}</td>
-              <td class="text-md-right">{{{ Number(atividade.quantidade_final).toLocaleString('pt-BR') }}}</td>
-              <td class="text-md-right">{{{ Number(atividade.quantidade).toLocaleString('pt-BR') }}}</td>
+              <td class="text-md-center">
+                {{ 
+                  atividade.atividade.tipo === 'produtiva' 
+                    ? (atividade.atividade.unidade_medida === 'metros' 
+                        ? Number(atividade.quantidade_inicial).toLocaleString('pt-BR', { minimumFractionDigits: 2 }).concat('m')
+                        : '-'
+                      )
+                    : '-' 
+                }}
+              </td>
+              <td class="text-md-center">
+                {{ 
+                  atividade.atividade.tipo === 'produtiva' 
+                    ? (atividade.atividade.unidade_medida === 'metros' 
+                        ? Number(atividade.quantidade_final).toLocaleString('pt-BR', { minimumFractionDigits: 2 }).concat('m')
+                        : '-'
+                      )
+                    : '-' 
+                }}
+              </td>
+              <td class="text-md-center">
+                {{ 
+                  atividade.atividade.tipo === 'produtiva' 
+                    ? (atividade.atividade.unidade_medida === 'metros' 
+                        ? Number(atividade.quantidade).toLocaleString('pt-BR', { minimumFractionDigits: 2 }).concat('m')
+                        : Number(atividade.quantidade)
+                      )
+                    : '-' 
+                }}
+              </td>
             </tr>
           @endeach
         @else

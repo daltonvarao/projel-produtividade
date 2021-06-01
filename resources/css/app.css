@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
 
 :root {
   --primary: #1c3b6b;
@@ -78,6 +78,10 @@ button.btn-link {
 
 .text-semibold {
   font-weight: 500 !important;
+}
+
+.text-bold {
+  font-weight: 600 !important;
 }
 
 .flex {
@@ -529,7 +533,7 @@ body.modal-open {
 .card-form {
   display: flex;
   margin: 0 auto;
-  max-width: 820px;
+  max-width: 960px;
   background: var(--white);
   border-radius: 8px;
   padding: 3rem 2rem;
@@ -727,6 +731,10 @@ table + button {
   font-weight: 500;
 }
 
+.table-container table thead tr + tr th {
+  padding-top: 0;
+}
+
 .table thead th {
   padding-top: 0.25rem;
 }
@@ -748,6 +756,11 @@ table + button {
   padding: 0.75rem 0.5rem;
   border-top: 1px solid #bbb4;
   font-weight: 300;
+}
+
+.table tbody tr.total td,
+.table-container table tbody tr.total td {
+  border-top: 2px solid rgba(0, 0, 0, 0.1) !important;
 }
 
 /* DELETE FORM */
@@ -809,7 +822,7 @@ table + button {
   border-radius: 8px;
   padding: 2rem;
   box-shadow: 0 0 25px 0 var(--shadow-color);
-  max-width: 820px;
+  max-width: 960px;
   margin: 0 auto;
   margin-bottom: 2rem;
 }
@@ -945,7 +958,7 @@ table + button {
 
 /* CONFIGURACOES PROFILE */
 .profile-card {
-  max-width: 820px;
+  max-width: 960px;
   margin: 0 auto;
   background: #fff;
   display: flex;
@@ -1241,6 +1254,10 @@ table + button {
   width: 100% !important;
 }
 
+.bg-light {
+  background: var(--light);
+}
+
 .form-row {
   display: flex;
   align-items: center;
@@ -1267,14 +1284,45 @@ table + button {
 
   .container {
     padding: 0;
-    padding: 5rem 0.75rem;
+    padding: 5rem 0rem;
   }
 
   .page-title {
     left: 0;
   }
 
+  .page-title h1 {
+    font-size: 26px;
+  }
+
   .show-menu {
     display: none;
+  }
+
+  .table tbody tr td,
+  .table-container table tbody tr td {
+    font-size: 12px;
+  }
+
+  .table thead tr td,
+  .table-container table thead tr th {
+    font-size: 13px;
+  }
+
+  .table-container,
+  .card-form,
+  .form-filter {
+    padding: 1rem;
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .form-filter button,
+  .form-filter label.text-white {
+    display: none;
+  }
+
+  .form-filter input {
+    border: 1px solid rgba(0, 0, 0, 0.1);
   }
 }
