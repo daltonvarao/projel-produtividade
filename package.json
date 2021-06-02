@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@adonisjs/auth": "^8.0.3",
-    "@adonisjs/core": "^5.1.0",
+    "@adonisjs/core": "^5.1.8",
     "@adonisjs/lucid": "^14.0.1",
     "@adonisjs/repl": "^3.0.0",
     "@adonisjs/session": "^6.0.0",
