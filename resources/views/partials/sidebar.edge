@@ -46,6 +46,10 @@
         Configurações
         <span data-feather="settings"></span>
       </a>
+      <a href="{{ route('admin.ajuda.index') }}">
+        Ajuda
+        <span data-feather="help-circle"></span>
+      </a>
     </div>
 
     <form class="logout-container" method="post" action="{{ route('admin.sessions.destroy', {id: 1}) }}?_method=DELETE">

@@ -51,6 +51,8 @@ Route.group(() => {
     .namespace('App/Controllers/Http/Admin/Reports')
     .as('reports')
     .prefix('reports')
+
+  Route.resource('ajuda', 'HelpsController').except(['create', 'store'])
 })
   .namespace('App/Controllers/Http/Admin')
   .as('admin')
