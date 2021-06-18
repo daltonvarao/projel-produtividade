@@ -44,7 +44,7 @@
           <tr>
             <td class="text-left" title="Nome">{{ producaoUser.user.nome }}</td>
             <td class="text-left" title="Cargo">{{ producaoUser.user.cargo.titulo }}</td>
-            <td class="text-md-center" title="Cpf">{{ producaoUser.user.cpf }}</td>
+            <td class="text-md-center" title="Cpf">{{{ producaoUser.user.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d)/, '$1.$2.$3-$4')  }}}</td>
             <td class="text-md-center" title="Banco">{{ producaoUser.user.banco }}</td>
             <td class="text-md-center" title="Agência">{{ producaoUser.user.agencia }}</td>
             <td class="text-md-center" title="Operação Caixa">{{ producaoUser.user.operacaoCaixa }}</td>
