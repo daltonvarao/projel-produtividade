@@ -108,6 +108,7 @@ const CreateAtividades: React.FC<CreateAtividadesProps> = ({ cargos, flashMessag
                       <input
                         className="w-25"
                         type="number"
+                        step="0.01"
                         defaultValue="0.0"
                         name={`valorUnitario[${cargoIndex}]`}
                       />
