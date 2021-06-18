@@ -21,7 +21,7 @@
         @each(user in users.data)
           <tr>
             <td title="Nome" class="text-left">{{ user.nome }}</td>
-            <td title="Cpf" class="text-left">{{ user.cpf }}</td>
+            <td title="Cpf" class="text-left">{{{ user.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d)/, '$1.$2.$3-$4') }}}</td>
             <td title="Cargo" class="text-left">{{ user.cargo.titulo }}</td>
             <td class="text-right table-actions">
               <a href="{{ route('admin.users.edit', { id: user.id }) }}">
