@@ -10,6 +10,7 @@ import {
 } from '@ioc:Adonis/Lucid/Orm'
 import Contrato from 'App/Models/Contrato'
 import AtividadeCargoValor from 'App/Models/AtividadeCargoValor'
+import AtividadeRdo from './AtividadeRdo'
 
 export default class Atividade extends BaseModel {
   @column({ isPrimary: true })
@@ -32,6 +33,9 @@ export default class Atividade extends BaseModel {
 
   @hasMany(() => AtividadeCargoValor)
   public atividadeCargoValores: HasMany<typeof AtividadeCargoValor>
+
+  @hasMany(() => AtividadeRdo)
+  public rdoAtividades: HasMany<typeof AtividadeRdo>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

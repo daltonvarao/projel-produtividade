@@ -72,7 +72,7 @@ test.group('Api RdosController', (group) => {
       .expect(422)
   })
 
-  test.only('should POST in /rdos be able to create Rdos', async (assert) => {
+  test('should POST in /rdos be able to create Rdos', async (assert) => {
     const data = [
       {
         nome: 'Sondagem',
