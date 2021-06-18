@@ -78,13 +78,15 @@ export default class UsersController {
       banco: schema.string(),
       agencia: schema.string(),
       conta: schema.string(),
-      operacaoCaixa: schema.string(),
+      operacaoCaixa: schema.string.optional(),
     })
 
     const data = await request.validate({
       schema: userSchema,
       messages: this.validationMessages,
     })
+
+    data.cpf = data.cpf.replace(/\D/g, '')
 
     try {
       await currentContrato.related('users').create(data)
@@ -138,13 +140,15 @@ export default class UsersController {
       banco: schema.string(),
       agencia: schema.string(),
       conta: schema.string(),
-      operacaoCaixa: schema.string(),
+      operacaoCaixa: schema.string.optional(),
     })
 
     const data = await request.validate({
       schema: userSchema,
       messages: this.validationMessages,
     })
+
+    data.cpf = data.cpf.replace(/\D/g, '')
 
     try {
       const user = await User.findOrFail(id)

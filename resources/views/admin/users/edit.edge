@@ -20,6 +20,9 @@
           label: 'Cpf',
           error: 'errors.cpf',
           value: flashMessages.get('cpf') || user.cpf,
+          maxLength: 14,
+          minLength: 14,
+          id: 'cpf'
         })
 
         @!component('components/select', {

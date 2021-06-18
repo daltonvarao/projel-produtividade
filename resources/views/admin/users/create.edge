@@ -18,7 +18,9 @@
           name: 'cpf',
           label: 'Cpf',
           value: flashMessages.get('cpf') || '',
-          error: 'errors.cpf'
+          error: 'errors.cpf',
+          maxLength: 14,
+          minLength: 14,
         })
 
         @!component('components/select', {
@@ -72,7 +74,7 @@
           name: 'conta',
           label: 'Conta',
           value: flashMessages.get('conta') || '',
-          error: 'errors.conta'
+          error: 'errors.conta',
         })
         <button class="btn btn-primary">Salvar</button>
       </form>
