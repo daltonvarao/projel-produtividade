@@ -930,7 +930,7 @@ table + button {
 
 .card {
   background: var(--white);
-  border-radius: 5px;
+  border-radius: 8px;
   width: 100%;
   box-shadow: 0 0 20px 3px var(--shadow-color);
 }

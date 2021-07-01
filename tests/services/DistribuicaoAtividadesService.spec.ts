@@ -9,7 +9,7 @@ import Rdo from 'App/Models/Rdo'
 import Contrato from 'App/Models/Contrato'
 import DistribuicaoAtividadesService from 'App/Services/DistribuicaoAtividadesService'
 
-test.group('AtividadeRdoUserService', async (group) => {
+test.group('DistribuicaoAtividadesService', async (group) => {
   let atividades: Atividade[]
   let rdos: Rdo[]
   let contrato: Contrato
@@ -61,14 +61,24 @@ test.group('AtividadeRdoUserService', async (group) => {
     const finalDate = '2021-01-31'
 
     const service = new DistribuicaoAtividadesService(contrato.id, initialDate, finalDate)
-    const atividades = await service.build()
+    const summary = await service.build()
 
-    assert.lengthOf(atividades.produtivas, 2)
-    assert.lengthOf(atividades.produtivas[0].rdoAtividades, 3)
+    // produtivas
+    assert.lengthOf(summary.produtivas.atividades, 2)
+    assert.equal(summary.produtivas.atividades[0].totalTime, 3)
+    assert.equal(summary.produtivas.totalTime, 6)
 
-    assert.lengthOf(atividades.improdutivas, 1)
-    assert.lengthOf(atividades.improdutivas[0].rdoAtividades, 3)
+    // improdutivas
+    assert.lengthOf(summary.improdutivas.atividades, 1)
+    assert.equal(summary.improdutivas.atividades[0].totalTime, 3)
+    assert.equal(summary.improdutivas.totalTime, 3)
 
-    assert.lengthOf(atividades.paradas, 0)
+    // paradas
+    assert.lengthOf(summary.paradas.atividades, 0)
+    assert.equal(summary.paradas.totalTime, 0)
+
+    // summary
+    assert.equal(summary.totalTime, 9)
+    assert.lengthOf(summary.totalTimes, 3)
   })
 })
