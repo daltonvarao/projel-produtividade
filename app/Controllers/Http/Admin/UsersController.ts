@@ -12,6 +12,8 @@ export default class UsersController {
     'password.required': 'Senha é obrigatória.',
     'nome.required': 'Nome é obrigatório.',
     'cpf.required': 'Cpf é obrigatório.',
+    'cpf.minLength': 'Cpf inválido, muito curto.',
+    'cpf.maxLength': 'Cpf inválido, muito longo.',
     'operacaoCaixa.required': 'Operação Caixa é obrigatório.',
     'conta.required': 'Conta é obrigatório.',
     'agencia.required': 'Agência é obrigatório.',
@@ -72,19 +74,23 @@ export default class UsersController {
             contrato_id: contratoId,
           },
         }),
+        rules.maxLength(14),
+        rules.minLength(14),
       ]),
       password: schema.string({}, [rules.confirmed('password_confirmation')]),
       cargoId: schema.number(),
       banco: schema.string(),
       agencia: schema.string(),
       conta: schema.string(),
-      operacaoCaixa: schema.string(),
+      operacaoCaixa: schema.string.optional(),
     })
 
     const data = await request.validate({
       schema: userSchema,
       messages: this.validationMessages,
     })
+
+    data.cpf = data.cpf.replace(/\D/g, '')
 
     try {
       await currentContrato.related('users').create(data)
@@ -138,13 +144,15 @@ export default class UsersController {
       banco: schema.string(),
       agencia: schema.string(),
       conta: schema.string(),
-      operacaoCaixa: schema.string(),
+      operacaoCaixa: schema.string.optional(),
     })
 
     const data = await request.validate({
       schema: userSchema,
       messages: this.validationMessages,
     })
+
+    data.cpf = data.cpf.replace(/\D/g, '')
 
     try {
       const user = await User.findOrFail(id)

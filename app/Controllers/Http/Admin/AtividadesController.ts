@@ -98,7 +98,9 @@ export default class AtividadesController {
 
   public async edit({ view, response, session, params, logger }: HttpContextContract) {
     const { id } = params
-    const cargos = await Cargo.query().orderBy('id')
+    const contratoId: number = session.get('contratoId')
+
+    const cargos = await Cargo.query().apply((scopes) => scopes.inContract(contratoId))
 
     try {
       const atividade = await Atividade.query()

@@ -12,6 +12,10 @@
     max="{{ max ?? '' }}"
     id="{{ id || name }}"
     value='{{ value ?? '' }}'
+    {{ maxLength ? `maxlength=${maxLength}` : ''}}
+    {{ minLength ? `minlength=${minLength}` : ''}}
+    
+    {{ pattern ? `pattern=${pattern}` : ''}}
     {{ disabled ? 'disabled' : '' }}
     {{ readonly ? 'readonly' : '' }}
   >

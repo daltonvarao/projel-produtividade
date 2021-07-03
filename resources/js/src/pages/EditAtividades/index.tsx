@@ -138,6 +138,7 @@ const EditAtividades: React.FC<CreateAtividadesProps> = ({ atividade, flashMessa
                       <input
                         className="w-25"
                         type="number"
+                        step="0.01"
                         defaultValue={
                           atividade.atividadeCargoValores[cargoIndex]?.valor_unitario ?? '0.0'
                         }

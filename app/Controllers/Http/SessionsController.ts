@@ -16,10 +16,12 @@ export default class SessionsController {
   public async store({ request, auth, response, session, route }: HttpContextContract) {
     const { cpf, password } = request.only(['cpf', 'password'])
 
-    try {
-      await auth.attempt(cpf, password)
+    const unmaskedCpf = cpf.replace(/\D/g, '')
 
-      const { token, user } = await auth.use('api').attempt(cpf, password)
+    try {
+      await auth.attempt(unmaskedCpf, password)
+
+      const { token, user } = await auth.use('api').attempt(unmaskedCpf, password)
 
       await UserLog.create({
         route: route?.name,
