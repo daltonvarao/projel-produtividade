@@ -41,7 +41,7 @@
       <tbody>
         @each(atividade in atividades.data)
           <tr>
-            <td title="Descrição" class="text-left">{{ atividade.descricao }}</td>
+            <td title="Descrição" class="text-left">{{ truncate(atividade.descricao, 70) }}</td>
             <td title="Tipo" class="text-left">{{ atividade.tipo }}</td>
             <td class="text-right">
               <a href="{{ route('admin.atividades.edit', { id: atividade.id }) }}">

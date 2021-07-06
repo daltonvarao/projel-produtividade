@@ -5,23 +5,34 @@
 @section('content')
   <form class="form-filter" action="">
     <div class="form-group">
-      <label for="initialDate">Data inicial</label>
+      <label for="initial-date">Data inicial</label>
       <input
         type="date"
         value="{{ request.qs().initialDate || '' }}"
         name="initialDate"
+        id="initial-date"
       />
     </div>
 
     <div class="form-group">
-      <label for="finalDate">Data final</label>
-      <input type="date" value="{{ request.qs().finalDate || '' }}" name="finalDate" />
+      <label for="final-date">Data final</label>
+      <input type="date" id="final-date" value="{{ request.qs().finalDate || '' }}" name="finalDate" />
     </div>
 
     <div class="form-group">
       <label class="text-white" for="">label</label>
       <button class="btn btn-primary">Filtrar</button>
     </div>
+
+    <div class="form-group">
+      <label class="text-white" for="">label</label>
+      <a href="{{ request.url() }}" class="btn btn-light">Limpar</a>
+    </div>
   </form>
+  <div>
+    @unless(summary?.totalTime > 0)
+      @!emptyMessage()
+    @endunless
+  </div>
   <div id="react-distribuicao-atividades" data-summary='{{{ JSON.stringify(summary) }}}'></div>
 @endsection

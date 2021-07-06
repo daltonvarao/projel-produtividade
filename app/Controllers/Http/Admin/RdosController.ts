@@ -1,16 +1,19 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema } from '@ioc:Adonis/Core/Validator'
-import Rdo from 'App/Models/Rdo'
-import User from 'App/Models/User'
+
 import Equipamento from 'App/Models/Equipamento'
 import Atividade from 'App/Models/Atividade'
+import User from 'App/Models/User'
 import Furo from 'App/Models/Furo'
+import Rdo from 'App/Models/Rdo'
 
 export default class RdosController {
-  public async index({ view, request }: HttpContextContract) {
+  public async index({ view, request, session }: HttpContextContract) {
     const { page } = request.qs()
+    const contratoId: number = session.get('contratoId')
 
     const rdos = await Rdo.query()
+      .apply((scopes) => scopes.inContract(contratoId))
       .preload('user')
       .preload('contrato')
       .paginate(page || 1)
@@ -25,8 +28,8 @@ export default class RdosController {
     const contratoId = session.get('contratoId')
 
     const users = await User.query().apply((scopes) => scopes.inContract(contratoId))
-    const equipamentos = await Equipamento.query().apply((scopes) => scopes.inContract(contratoId))
     const atividades = await Atividade.query().apply((scopes) => scopes.inContract(contratoId))
+    const equipamentos = await Equipamento.query().apply((scopes) => scopes.inContract(contratoId))
 
     try {
       const rdo = await Rdo.query()

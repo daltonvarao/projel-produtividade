@@ -18,7 +18,7 @@
           <tr>
             <td title="Nome" class="text-left">{{ rdo_user.user.nome  }}</td>
             <td title="Cargo" class="text-left">{{ rdo_user.user.cargo.titulo }}</td>
-            <td title="Cpf" class="text-md-center">{{ rdo_user.user.cpf  }}</td>
+            <td title="Cpf" class="text-md-center">{{ rdo_user.user.maskedCpf  }}</td>
             <td class="text-md-right">
               <form class="delete-form" action="{{ route('admin.rdo_users.destroy', { rdoId: rdo.id, id: rdo_user.id }) }}?_method=DELETE" method="post">
                 <button type="button" class="btn-link">

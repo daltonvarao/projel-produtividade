@@ -14,8 +14,6 @@ export default class DistribuicaoAtividadesController {
     const service = new DistribuicaoAtividadesService(contratoId, initialDate, finalDate)
     const summary = await service.build()
 
-    console.log(summary)
-
     return view.render('admin/reports/distribuicao_atividades/index', {
       summary,
     })

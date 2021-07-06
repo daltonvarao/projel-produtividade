@@ -13,6 +13,8 @@ import Complexo from 'App/Models/Complexo'
 import Mina from 'App/Models/Mina'
 import Estrutura from 'App/Models/Estrutura'
 import Furo from 'App/Models/Furo'
+import AtividadeCargoValor from 'App/Models/AtividadeCargoValor'
+import RdoUser from 'App/Models/RdoUser'
 
 export const CargoFactory = Factory.define(Cargo, ({ faker }) => {
   return {
@@ -55,7 +57,16 @@ export const AtividadeFactory = Factory.define(Atividade, ({ faker }) => {
     tipo: faker.helpers.randomize(['parada', 'improdutiva', 'produtiva']),
     unidadeMedida: faker.helpers.randomize(['metros', 'unidades']),
   }
-}).build()
+})
+  .relation('atividadeCargoValores', () => AtividadeCargoValorFactory)
+  .build()
+
+export const AtividadeCargoValorFactory = Factory.define(AtividadeCargoValor, ({ faker }) => ({
+  valorUnitario: faker.datatype.float({ min: 0, max: 15 }),
+}))
+  .relation('atividade', () => AtividadeFactory)
+  .relation('cargo', () => CargoFactory)
+  .build()
 
 export const ApiSyncVersionFactory = Factory.define(ApiSyncVersion, ({ faker }) => {
   return {
@@ -89,18 +100,29 @@ export const RdoFactory = Factory.define(Rdo, ({ faker }) => {
 })
   .relation('rdoAtividades', () => AtividadeRdoFactory)
   .relation('equipamentoPrincipal', () => EquipamentoFactory)
+  .relation('rdoUsers', () => RdoUserFactory)
   .build()
 
-export const AtividadeRdoFactory = Factory.define(AtividadeRdo, ({ faker }) => ({
-  horaFim: DateTime.local(),
-  horaInicio: DateTime.local(),
-  quantidade: faker.datatype.float(50),
-  quantidadeFinal: faker.datatype.float(50),
-  quantidadeInicial: faker.datatype.float(50),
-}))
+export const AtividadeRdoFactory = Factory.define(AtividadeRdo, ({ faker }) => {
+  const quantidadeInicial = faker.datatype.float({ min: 0, max: 15 })
+  const quantidadeFinal = quantidadeInicial + faker.datatype.float({ min: 0, max: 15 })
+
+  return {
+    horaFim: DateTime.local(),
+    horaInicio: DateTime.local(),
+    quantidadeInicial,
+    quantidadeFinal,
+    quantidade: 0,
+  }
+})
   .relation('atividade', () => AtividadeFactory)
   .relation('rdo', () => RdoFactory)
   .relation('furo', () => FuroFactory)
+  .build()
+
+export const RdoUserFactory = Factory.define(RdoUser, () => ({}))
+  .relation('rdo', () => RdoFactory)
+  .relation('user', () => UserFactory)
   .build()
 
 export const ComplexoFactory = Factory.define(Complexo, ({ faker }) => ({

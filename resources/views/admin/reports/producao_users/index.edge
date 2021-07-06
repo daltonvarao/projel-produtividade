@@ -14,6 +14,21 @@
       <input type="date" value="{{ request.qs().finalDate || '' }}" name="finalDate" />
     </div>
 
+    <div>
+      <label for="funcionario">Funcionário (opcional)</label>
+      <div
+        class="react-select-input"
+        inputid='funcionario'
+        collection='{{{ JSON.stringify(users) }}}'
+        labelkey='nome'
+        valuekey='id'
+        name='userId'
+        placeholder='Selecione um funcionário'
+        value='{{ request.qs().userId }}'
+      >
+      </div>
+    </div>
+
     <div class="form-group">
       <label class="text-white" for="">label</label>
       <button class="btn btn-primary">Filtrar</button>
@@ -32,7 +47,7 @@
         <tr>
           <th class="text-md-cente">Banco</th>
           <th class="text-md-center">Agência</th>
-          <th class="text-md-center" title="Operação da Caixa">O. C</th>
+          <th class="text-md-center" title="Operação da Caixa">O. C.</th>
           <th class="text-md-center">Conta</th>
         </tr>
       </thead>
@@ -40,17 +55,17 @@
       <tbody>
         @set('total', 0)
         @each(producaoUser in producaoUsers)
-          @set('total', total + producaoUser.quantidade)
+          @set('total', total + producaoUser.producaoTotal)
           <tr>
             <td class="text-left" title="Nome">{{ producaoUser.user.nome }}</td>
             <td class="text-left" title="Cargo">{{ producaoUser.user.cargo.titulo }}</td>
-            <td class="text-md-center" title="Cpf">{{ producaoUser.user.cpf }}</td>
+            <td class="text-md-center" title="Cpf">{{ producaoUser.user.maskedCpf }}</td>
             <td class="text-md-center" title="Banco">{{ producaoUser.user.banco }}</td>
             <td class="text-md-center" title="Agência">{{ producaoUser.user.agencia }}</td>
-            <td class="text-md-center" title="Operação Caixa">{{ producaoUser.user.operacaoCaixa }}</td>
+            <td class="text-md-center" title="Operação Caixa">{{ producaoUser.user.operacaoCaixa ?? '-' }}</td>
             <td class="text-md-center" title="Conta" >{{ producaoUser.user.conta }}</td>
             <td class="text-md-right" title="Produção no Período">
-              {{ Number(producaoUser.quantidade).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) }}
+              {{ Number(producaoUser.producaoTotal).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) }}
             </td>
           </tr>
         @else

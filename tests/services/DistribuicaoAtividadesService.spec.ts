@@ -56,7 +56,7 @@ test.group('DistribuicaoAtividadesService', async (group) => {
     await Database.rollbackGlobalTransaction()
   })
 
-  test.only('should AtividadesImprodutivasService.build returns a list of atividades.tipo = "improdutivas" in period', async (assert) => {
+  test('should AtividadesImprodutivasService.build returns a list of atividades.tipo = "improdutivas" in period', async (assert) => {
     const initialDate = '2021-01-01'
     const finalDate = '2021-01-31'
 

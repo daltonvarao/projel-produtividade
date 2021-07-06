@@ -1,6 +1,6 @@
 @layout('layouts/master')
 
-@set('title', 'Produção Funcionários')
+@set('title', 'Atividades Funcionários')
 
 @section('content')
   <form class="form-filter" action="">
@@ -49,10 +49,19 @@
       <tbody>
         @each(rdoUser in user?.rdoUsers)
           <tr>
-            <td class="text-left text-primary text-semibold" colspan="5">
+            <td class="text-left text-primary text-semibold" colspan="4">
               {{ rdoUser.rdo.data }}
             </td>
+            <td class="text-center">
+              {{rdoUser.rdo.rdoAtividades.length > 0 ? `${rdoUser.rdo.rdoAtividades.length} atividades` : ''}}
+            </td>
           </tr>
+
+          @if(rdoUser.rdo.rdoAtividades.length === 0)
+            <tr>
+              <td colspan="5" style="border-top: 0; padding-top: 0;">Nenhuma atividade encontrada</td>
+            </tr>
+          @endif
           @each((atividade, index) in rdoUser.rdo.rdoAtividades)
             <tr>
               <td>{{ atividade.atividade.descricao }}</td>

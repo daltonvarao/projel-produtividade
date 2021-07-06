@@ -22,7 +22,15 @@ export default class DistribuicaoAtividadesService {
     )
   }
 
-  public _summaryByTipoAtividade(atividades: Atividade[]) {
+  public round(num: number) {
+    return Number(num.toFixed(2))
+  }
+
+  public _summaryByTipoAtividade(atvds: Atividade[]) {
+    const atividades = atvds.filter((atividade) => {
+      return atividade.rdoAtividades.length > 0
+    })
+
     const summary = atividades.map((atividade) => {
       let totalTime = 0
 
@@ -31,7 +39,7 @@ export default class DistribuicaoAtividadesService {
         totalTime += time
       })
 
-      return { name: atividade.descricao, totalTime }
+      return { name: atividade.descricao, totalTime: this.round(totalTime) }
     })
 
     const totalTime = atividades.length
@@ -40,7 +48,7 @@ export default class DistribuicaoAtividadesService {
         }).totalTime
       : 0
 
-    return { atividades: summary, totalTime: totalTime }
+    return { atividades: summary, totalTime: this.round(totalTime) }
   }
 
   public _totalTime(rdoAtividades: AtividadeRdo[]) {
@@ -51,15 +59,18 @@ export default class DistribuicaoAtividadesService {
       totalTime += time
     })
 
-    return totalTime
+    return this.round(totalTime)
   }
 
   public async build() {
-    const atividades = await AtividadeRdo.query().preload('rdo', (qr) => {
-      qr.whereBetween('data', [this.initialDate, this.finalDate]).andWhere({
-        contrato_id: this.contractId,
+    const atividades = await AtividadeRdo.query()
+      .whereHas('rdo', (qr) => {
+        qr.whereBetween('data', [this.initialDate, this.finalDate]).andWhere({
+          contrato_id: this.contractId,
+        })
       })
-    })
+      .preload('rdo')
+
     const produtivas = await this._baseQuery().where({ tipo: 'produtiva' })
     const improdutivas = await this._baseQuery().where({ tipo: 'improdutiva' })
     const paradas = await this._baseQuery().where({ tipo: 'parada' })
