@@ -9,6 +9,7 @@ import {
   HasMany,
   hasMany,
   scope,
+  computed,
 } from '@ioc:Adonis/Lucid/Orm'
 
 import Cargo from 'App/Models/Cargo'
@@ -77,6 +78,11 @@ export default class User extends BaseModel {
     if (user.$dirty.password) {
       user.password = await Hash.make(user.password)
     }
+  }
+
+  @computed()
+  public get maskedCpf() {
+    return this.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
   }
 
   public static inContract = scope((query, contratoId: number) => {

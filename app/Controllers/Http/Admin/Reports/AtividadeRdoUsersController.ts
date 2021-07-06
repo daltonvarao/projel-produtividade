@@ -19,7 +19,9 @@ export default class AtividadeRdoUsersController {
       .where({ id: userId })
       .preload('rdoUsers', (qru) =>
         qru
-          .whereHas('rdo', (qr) => qr.whereBetween('data', [initialDate, finalDate]))
+          .whereHas('rdo', (qr) =>
+            qr.whereBetween('data', [initialDate, finalDate]).andWhere({ contratoId })
+          )
           .preload('rdo', (qr) =>
             qr.preload('rdoAtividades', (qra) => {
               qra

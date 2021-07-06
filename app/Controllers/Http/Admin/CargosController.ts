@@ -10,7 +10,6 @@ export default class CargosController {
     unique: '{{ field }} já cadastrado, tente outro.',
   }
 
-  // GET
   public async index({ view, request, session }: HttpContextContract) {
     const { page } = request.qs()
     const contratoId: number = session.get('contratoId')
@@ -25,12 +24,10 @@ export default class CargosController {
     })
   }
 
-  // GET in /create
   public async create({ view }: HttpContextContract) {
     return view.render('admin/cargos/create', { resources })
   }
 
-  // POST
   public async store({ request, response, session, logger }: HttpContextContract) {
     const contratoId: number = session.get('contratoId')
 
@@ -82,7 +79,6 @@ export default class CargosController {
     }
   }
 
-  // GET in /:id/edit
   public async edit({ view, params, response, session, logger }: HttpContextContract) {
     const { id } = params
 
@@ -106,7 +102,6 @@ export default class CargosController {
     }
   }
 
-  // PUT in /:id
   public async update({ request, session, params, response, logger }: HttpContextContract) {
     const { id } = params
 
@@ -158,7 +153,6 @@ export default class CargosController {
     }
   }
 
-  // DELETE in /:id
   public async destroy({ params, response, session, logger }: HttpContextContract) {
     const { id } = params
 

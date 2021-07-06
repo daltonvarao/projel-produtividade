@@ -60,6 +60,10 @@ button.btn-link {
   color: var(--primary);
 }
 
+.btn-light:hover {
+  opacity: 0.8;
+}
+
 .text-left {
   text-align: left;
 }
@@ -930,7 +934,7 @@ table + button {
 
 .card {
   background: var(--white);
-  border-radius: 5px;
+  border-radius: 8px;
   width: 100%;
   box-shadow: 0 0 20px 3px var(--shadow-color);
 }
@@ -1048,6 +1052,11 @@ table + button {
 
   .form-container + div {
     margin-top: 2rem;
+  }
+
+  .table tbody tr,
+  .table-container table tbody tr {
+    font-size: 14px;
   }
 }
 

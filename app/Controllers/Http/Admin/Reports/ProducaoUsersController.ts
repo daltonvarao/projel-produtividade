@@ -1,62 +1,42 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
+import ProducaoUserService from 'App/Services/ProducaoUserService'
 
 export default class ProducaoUsersController {
-  public async index({ view, request, session }: HttpContextContract) {
+  public async index({ view, request, session, logger }: HttpContextContract) {
     const contratoId: number = session.get('contratoId')
 
-    const { initialDate, finalDate } = request.qs()
+    const users = await User.query()
+      .orderBy('nome')
+      .apply((scopes) => scopes.inContract(contratoId))
+
+    const { initialDate, finalDate, userId } = request.qs()
 
     if (!initialDate || !finalDate) {
-      return view.render('admin/reports/producao_users/index')
+      return view.render('admin/reports/producao_users/index', {
+        users: users.map((i) => i.toJSON()),
+      })
     }
 
-    const users = await User.query()
-      .where({ contratoId })
-      .preload('cargo')
-      .preload('rdoUsers', (qru) =>
-        qru
-          .whereHas('rdo', (qr) => qr.whereBetween('data', [initialDate, finalDate]))
-          .preload('rdo', (qr) =>
-            qr.preload('rdoAtividades', (qra) => {
-              qra
-                .whereHas('atividade', (qa) => {
-                  qa.where('tipo', 'produtiva')
-                })
-                .preload('atividade', (qa) => qa.preload('atividadeCargoValores'))
-                .preload('rdo')
-            })
-          )
+    try {
+      const service = new ProducaoUserService(
+        contratoId,
+        initialDate,
+        finalDate,
+        userId === 'undefined' ? undefined : userId
       )
+      const producaoUsers = await service.build()
 
-    const producaoUsers = users
-      .map((user) => {
-        return user.rdoUsers.map((rdo) => {
-          let quantidade = 0
-
-          rdo.rdo.rdoAtividades.map((atividade) => {
-            const cargosValores = atividade.atividade.atividadeCargoValores
-
-            const cargo = cargosValores.filter(
-              (cv) => cv.cargoId === user.cargoId && cv.atividadeId === atividade.atividadeId
-            )[0]
-
-            quantidade += Number(atividade.quantidade * cargo.valorUnitario)
-          })
-
-          return { user: user, quantidade }
-        })
+      return view.render('admin/reports/producao_users/index', {
+        producaoUsers,
+        users: users.map((i) => i.toJSON()),
       })
-      .filter((ps) => ps.length)
-      .map((ps) => {
-        return ps.reduce((pv, cv) => {
-          return { quantidade: pv.quantidade + cv.quantidade, user: pv.user }
-        })
-      })
+    } catch (error) {
+      logger.error(error)
 
-    return view.render('admin/reports/producao_users/index', {
-      users: users.map((u) => u.toJSON()),
-      producaoUsers,
-    })
+      return view.render('admin/reports/producao_users/index', {
+        users: users.map((i) => i.toJSON()),
+      })
+    }
   }
 }

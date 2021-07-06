@@ -47,6 +47,7 @@ Route.group(() => {
   Route.group(() => {
     Route.resource('atividades-usuarios', 'AtividadeRdoUsersController').only(['index'])
     Route.resource('producao-usuarios', 'ProducaoUsersController').only(['index'])
+    Route.resource('distribuicao-atividades', 'DistribuicaoAtividadesController').only(['index'])
   })
     .namespace('App/Controllers/Http/Admin/Reports')
     .as('reports')

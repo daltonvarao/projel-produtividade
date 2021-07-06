@@ -7,6 +7,7 @@ import {
   computed,
   HasMany,
   hasMany,
+  scope,
 } from '@ioc:Adonis/Lucid/Orm'
 
 import AtividadeRdo from 'App/Models/AtividadeRdo'
@@ -87,4 +88,8 @@ export default class Rdo extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  public static inContract = scope((query, contratoId: number) => {
+    query.where({ contratoId })
+  })
 }
