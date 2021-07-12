@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import stc from 'string-to-color'
-import { Pie, PieChart, Cell, Legend, Tooltip } from 'recharts'
-import * as Fi from 'react-icons/fi'
 
-import { CardContainer, Container, HeaderContainer, IconsContainer, Row } from './styles'
-
-interface Atividade {
-  descricao: string
-  tipo: string
-  unidade_medida: string
-}
+import {
+  Pie,
+  PieChart,
+  Cell,
+  Legend,
+  Tooltip,
+  Text,
+  LabelList,
+  ResponsiveContainer,
+} from 'recharts'
+import { Container, Row } from './styles'
 
 interface BaseSummary {
   atividades: Array<{
     name: string
     totalTime: number
-    quantidade: number
-    atividade: Atividade
   }>
   totalTime: number
 }
@@ -47,13 +47,12 @@ const Chart: React.FC<ChartProps> = ({ data, dataKey, labelKey }) => {
   const colors = data.map((entry: any) => stc(entry[labelKey]))
 
   return (
-    <PieChart width={600} height={450}>
-      <Pie data={data} dataKey={dataKey} label innerRadius="55%">
+    <PieChart width={1000} height={450}>
+      <Pie data={data} dataKey={dataKey} label>
         {data.map((_: any, index: number) => {
           return <Cell key={index} fill={colors[index]} />
         })}
       </Pie>
-
       <Tooltip
         formatter={(value: number) => {
           if (value <= 1) {
@@ -67,70 +66,11 @@ const Chart: React.FC<ChartProps> = ({ data, dataKey, labelKey }) => {
   )
 }
 
-const Card: React.FC<{ data: BaseSummary; title: string }> = ({ data, title }) => {
-  const [viewMode, setViewMode] = useState<'chart' | 'list'>('list')
-
-  function toggleViewMode() {
-    setViewMode((state) => (state === 'chart' ? 'list' : 'chart'))
-  }
-
-  useEffect(() => {
-    console.log(data)
-  }, [data])
-
-  if (!data.atividades.length) return null
-
+const TotalTime: React.FC<{ totalTime: number }> = ({ totalTime }) => {
   return (
-    <CardContainer>
-      <HeaderContainer>
-        <h2>
-          {title} {viewMode === 'chart' && ' - Total: ' + String(data.totalTime).concat(' horas')}
-        </h2>
-        <IconsContainer>
-          {viewMode === 'chart' ? (
-            <button onClick={toggleViewMode} title="Visualizar lista" className="btn-link">
-              <Fi.FiList size={24} />
-            </button>
-          ) : (
-            <button onClick={toggleViewMode} title="Visualizar gráfico" className="btn-link">
-              <Fi.FiPieChart size={24} />
-            </button>
-          )}
-        </IconsContainer>
-      </HeaderContainer>
-
-      {viewMode === 'chart' ? (
-        <div>
-          <Chart data={data.atividades} dataKey="totalTime" labelKey="name" />
-        </div>
-      ) : (
-        <table className="table">
-          <thead>
-            <tr>
-              <th className="text-left">Atividades</th>
-              <th className="text-md-right">Tempo total</th>
-              <th className="text-md-right">Quantitativo (m / un)</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {data.atividades.map((atividade) => (
-              <tr>
-                <td className="text-md-left">{atividade.name}</td>
-                <td className="text-md-right">{atividade.totalTime.toFixed(2).concat('h')}</td>
-                <td className="text-md-right">
-                  {atividade.atividade.tipo === 'produtiva'
-                    ? atividade.atividade.unidade_medida === 'metros'
-                      ? atividade.quantidade.toFixed(2).concat('m')
-                      : String(atividade.quantidade).concat(' un')
-                    : '-'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </CardContainer>
+    <span>
+      ({totalTime} {totalTime > 1 ? 'horas' : 'hora'})
+    </span>
   )
 }
 
@@ -138,6 +78,10 @@ const DistribuicaoAtividades: React.FC<DistribuicaoAtividadesProps> = ({ summary
   if (!summary) {
     return null
   }
+
+  useEffect(() => {
+    console.log(summary)
+  }, [])
 
   return (
     <Container>
@@ -148,13 +92,17 @@ const DistribuicaoAtividades: React.FC<DistribuicaoAtividadesProps> = ({ summary
         </Row>
       )}
 
-      <Card title="Distribuição de horas produtivas" data={summary.produtivas} />
+      {summary.produtivas.atividades.length > 0 && (
+        <Row className="card">
+          <h2>
+            Distribuição de horas produtivas <TotalTime totalTime={summary.produtivas.totalTime} />
+          </h2>
 
-      <Card title="Distribuição de horas improdutivas" data={summary.improdutivas} />
+          <Chart data={summary.produtivas.atividades} dataKey="totalTime" labelKey="name" />
+        </Row>
+      )}
 
-      <Card title="Distribuição de horas paradas" data={summary.paradas} />
-
-      {/* {summary.improdutivas.atividades.length > 0 && (
+      {summary.improdutivas.atividades.length > 0 && (
         <Row className="card">
           <h2>
             Distribuição de horas improdutivas{' '}
@@ -172,7 +120,7 @@ const DistribuicaoAtividades: React.FC<DistribuicaoAtividadesProps> = ({ summary
           </h2>
           <Chart data={summary.paradas.atividades} dataKey="totalTime" labelKey="name" />
         </Row>
-      )} */}
+      )}
     </Container>
   )
 }

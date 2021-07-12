@@ -1,6 +1,6 @@
 @layout('layouts/master')
 
-@set('title', 'Distribuição Atividades')
+@set('title', 'Distribuição de Atividades')
 
 @section('content')
   <form class="form-filter" action="">
@@ -19,21 +19,6 @@
       <input type="date" id="final-date" value="{{ request.qs().finalDate || '' }}" name="finalDate" />
     </div>
 
-    <div>
-      <label for="equipamento">Equipamento</label>
-      <div
-        class="react-select-input"
-        inputid='equipamento'
-        collection='{{{ JSON.stringify(equipamentos) }}}'
-        labelkey='tag'
-        valuekey='id'
-        name='equipamentoId'
-        placeholder='Selecione um equipamento'
-        value='{{ request.qs().equipamentoId }}'
-      >
-      </div>
-    </div>
-
     <div class="form-group">
       <label class="text-white" for="">label</label>
       <button class="btn btn-primary">Filtrar</button>
@@ -44,10 +29,10 @@
       <a href="{{ request.url() }}" class="btn btn-light">Limpar</a>
     </div>
   </form>
-
-  @if(summary)
-    <div id="react-distribuicao-atividades" data-summary='{{{ JSON.stringify(summary) }}}'></div>  
-  @else
-    @!emptyMessage()
-  @endif
+  <div>
+    @unless(summary?.totalTime > 0)
+      @!emptyMessage()
+    @endunless
+  </div>
+  <div id="react-distribuicao-atividades" data-summary='{{{ JSON.stringify(summary) }}}'></div>
 @endsection
