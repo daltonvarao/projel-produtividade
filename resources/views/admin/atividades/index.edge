@@ -34,7 +34,7 @@
     <table>
       <thead>
         <th class="text-left">Descrição</th>
-        <th class="text-md-center">Tipo</th>
+        <th class="text-left">Tipo</th>
         <th class="text-right">Ações</th>
       </thead>
       
@@ -42,7 +42,7 @@
         @each(atividade in atividades.data)
           <tr>
             <td title="Descrição" class="text-left">{{ truncate(atividade.descricao, 70) }}</td>
-            <td title="Tipo" class="text-md-center">{{ titleCase(atividade.tipo) }}</td>
+            <td title="Tipo" class="text-left">{{ atividade.tipo }}</td>
             <td class="text-right">
               <a href="{{ route('admin.atividades.edit', { id: atividade.id }) }}">
                 <span class="edit-icon" data-feather="edit"></span>
