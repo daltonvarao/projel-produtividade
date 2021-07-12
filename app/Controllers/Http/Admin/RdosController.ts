@@ -16,6 +16,7 @@ export default class RdosController {
       .apply((scopes) => scopes.inContract(contratoId))
       .preload('user')
       .preload('contrato')
+      .orderBy('data', 'desc')
       .paginate(page || 1)
 
     return view.render('admin/rdos/index', {

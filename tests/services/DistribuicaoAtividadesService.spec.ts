@@ -1,18 +1,25 @@
 import test from 'japa'
 
 import { DateTime } from 'luxon'
-import { AtividadeFactory, ContratoFactory, RdoFactory } from 'Database/factories'
+import {
+  AtividadeFactory,
+  ContratoFactory,
+  EquipamentoFactory,
+  RdoFactory,
+} from 'Database/factories'
 
 import Database from '@ioc:Adonis/Lucid/Database'
 import Atividade from 'App/Models/Atividade'
 import Rdo from 'App/Models/Rdo'
 import Contrato from 'App/Models/Contrato'
 import DistribuicaoAtividadesService from 'App/Services/DistribuicaoAtividadesService'
+import Equipamento from 'App/Models/Equipamento'
 
 test.group('DistribuicaoAtividadesService', async (group) => {
   let atividades: Atividade[]
   let rdos: Rdo[]
   let contrato: Contrato
+  let equipamentos: Equipamento[]
 
   group.before(async () => {
     await Database.beginGlobalTransaction()
@@ -25,10 +32,28 @@ test.group('DistribuicaoAtividadesService', async (group) => {
       { tipo: 'produtiva', descricao: 'Ensaio', contratoId: contrato.id },
     ]).createMany(3)
 
+    equipamentos = await EquipamentoFactory.merge([
+      { contratoId: contrato.id, tag: 'PJL-001', descricao: 'Sonda Mach 700', sonda: true },
+      { contratoId: contrato.id, tag: 'PJL-002', descricao: 'Sondeq', sonda: true },
+      { contratoId: contrato.id, tag: 'PJL-003', descricao: 'Caminhao pipa', sonda: false },
+    ]).createMany(3)
+
     rdos = await RdoFactory.merge([
-      { contratoId: contrato.id, data: DateTime.fromISO('2021-01-01T08:00:00') },
-      { contratoId: contrato.id, data: DateTime.fromISO('2021-01-15T08:00:00') },
-      { contratoId: contrato.id, data: DateTime.fromISO('2021-01-31T08:00:00') },
+      {
+        equipamentoId: equipamentos[0].id,
+        contratoId: contrato.id,
+        data: DateTime.fromISO('2021-01-01T08:00:00'),
+      },
+      {
+        equipamentoId: equipamentos[0].id,
+        contratoId: contrato.id,
+        data: DateTime.fromISO('2021-01-15T08:00:00'),
+      },
+      {
+        equipamentoId: equipamentos[1].id,
+        contratoId: contrato.id,
+        data: DateTime.fromISO('2021-01-31T08:00:00'),
+      },
     ])
       .with('rdoAtividades', 3, (ra) => {
         ra.merge([
@@ -79,6 +104,38 @@ test.group('DistribuicaoAtividadesService', async (group) => {
 
     // summary
     assert.equal(summary.totalTime, 9)
+    assert.lengthOf(summary.totalTimes, 3)
+  })
+
+  test('should AtividadesImprodutivasService.build returns a list of atividades for specific equipamento when equipamentoId is defined', async (assert) => {
+    const initialDate = '2021-01-01'
+    const finalDate = '2021-01-31'
+    const equipamentoId = equipamentos[0].id
+
+    const service = new DistribuicaoAtividadesService(
+      contrato.id,
+      initialDate,
+      finalDate,
+      equipamentoId
+    )
+    const summary = await service.build()
+
+    // produtivas
+    assert.lengthOf(summary.produtivas.atividades, 2)
+    assert.equal(summary.produtivas.atividades[0].totalTime, 2)
+    assert.equal(summary.produtivas.totalTime, 4)
+
+    // improdutivas
+    assert.lengthOf(summary.improdutivas.atividades, 1)
+    assert.equal(summary.improdutivas.atividades[0].totalTime, 2)
+    assert.equal(summary.improdutivas.totalTime, 2)
+
+    // paradas
+    assert.lengthOf(summary.paradas.atividades, 0)
+    assert.equal(summary.paradas.totalTime, 0)
+
+    // summary
+    assert.equal(summary.totalTime, 6)
     assert.lengthOf(summary.totalTimes, 3)
   })
 })
