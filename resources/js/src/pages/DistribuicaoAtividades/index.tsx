@@ -47,7 +47,7 @@ const Chart: React.FC<ChartProps> = ({ data, dataKey, labelKey }) => {
   const colors = data.map((entry: any) => stc(entry[labelKey]))
 
   return (
-    <PieChart width={600} height={450}>
+    <PieChart width={960} height={450}>
       <Pie data={data} dataKey={dataKey} label innerRadius="55%">
         {data.map((_: any, index: number) => {
           return <Cell key={index} fill={colors[index]} />
