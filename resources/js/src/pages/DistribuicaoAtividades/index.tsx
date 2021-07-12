@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 import stc from 'string-to-color'
 import { Pie, PieChart, Cell, Legend, Tooltip } from 'recharts'
@@ -74,10 +74,6 @@ const Card: React.FC<{ data: BaseSummary; title: string }> = ({ data, title }) =
     setViewMode((state) => (state === 'chart' ? 'list' : 'chart'))
   }
 
-  useEffect(() => {
-    console.log(data)
-  }, [data])
-
   if (!data.atividades.length) return null
 
   return (
@@ -149,30 +145,8 @@ const DistribuicaoAtividades: React.FC<DistribuicaoAtividadesProps> = ({ summary
       )}
 
       <Card title="Distribuição de horas produtivas" data={summary.produtivas} />
-
       <Card title="Distribuição de horas improdutivas" data={summary.improdutivas} />
-
       <Card title="Distribuição de horas paradas" data={summary.paradas} />
-
-      {/* {summary.improdutivas.atividades.length > 0 && (
-        <Row className="card">
-          <h2>
-            Distribuição de horas improdutivas{' '}
-            <TotalTime totalTime={summary.improdutivas.totalTime} />
-          </h2>
-
-          <Chart data={summary.improdutivas.atividades} dataKey="totalTime" labelKey="name" />
-        </Row>
-      )}
-
-      {summary.paradas.atividades.length > 0 && (
-        <Row className="card">
-          <h2>
-            Distribuição de horas paradas <TotalTime totalTime={summary.paradas.totalTime} />
-          </h2>
-          <Chart data={summary.paradas.atividades} dataKey="totalTime" labelKey="name" />
-        </Row>
-      )} */}
     </Container>
   )
 }
