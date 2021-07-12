@@ -1,6 +1,16 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column, computed, scope } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  BelongsTo,
+  belongsTo,
+  column,
+  computed,
+  hasMany,
+  scope,
+  HasMany,
+} from '@ioc:Adonis/Lucid/Orm'
 import Contrato from 'App/Models/Contrato'
+import Rdo from './Rdo'
 
 export default class Equipamento extends BaseModel {
   @column({ isPrimary: true })
@@ -17,6 +27,9 @@ export default class Equipamento extends BaseModel {
 
   @column()
   public contratoId: number
+
+  @hasMany(() => Rdo)
+  public rdo: HasMany<typeof Rdo>
 
   @belongsTo(() => Contrato)
   public contrato: BelongsTo<typeof Contrato>
