@@ -11,7 +11,6 @@ import {
 
 import Database from '@ioc:Adonis/Lucid/Database'
 import Atividade from 'App/Models/Atividade'
-import Rdo from 'App/Models/Rdo'
 import Contrato from 'App/Models/Contrato'
 import ProducaoUserService from 'App/Services/ProducaoUserService'
 import User from 'App/Models/User'
@@ -22,7 +21,6 @@ test.group('ProducaoUserService', async (group) => {
   let contrato: Contrato
   let cargos: Cargo[]
   let users: User[]
-  let rdos: Rdo[]
 
   group.before(async () => {
     await Database.beginGlobalTransaction()
@@ -55,7 +53,7 @@ test.group('ProducaoUserService', async (group) => {
       { contratoId: contrato.id, cargoId: cargos[2].id },
     ]).createMany(3)
 
-    rdos = await RdoFactory.merge([
+    await RdoFactory.merge([
       { contratoId: contrato.id, data: DateTime.fromISO('2021-01-01T08:00:00') },
       { contratoId: contrato.id, data: DateTime.fromISO('2021-01-15T08:00:00') },
       { contratoId: contrato.id, data: DateTime.fromISO('2021-01-31T08:00:00') },

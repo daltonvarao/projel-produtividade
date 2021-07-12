@@ -10,14 +10,12 @@ import {
 
 import Database from '@ioc:Adonis/Lucid/Database'
 import Atividade from 'App/Models/Atividade'
-import Rdo from 'App/Models/Rdo'
 import Contrato from 'App/Models/Contrato'
 import DistribuicaoAtividadesService from 'App/Services/DistribuicaoAtividadesService'
 import Equipamento from 'App/Models/Equipamento'
 
 test.group('DistribuicaoAtividadesService', async (group) => {
   let atividades: Atividade[]
-  let rdos: Rdo[]
   let contrato: Contrato
   let equipamentos: Equipamento[]
 
@@ -38,7 +36,7 @@ test.group('DistribuicaoAtividadesService', async (group) => {
       { contratoId: contrato.id, tag: 'PJL-003', descricao: 'Caminhao pipa', sonda: false },
     ]).createMany(3)
 
-    rdos = await RdoFactory.merge([
+    await RdoFactory.merge([
       {
         equipamentoId: equipamentos[0].id,
         contratoId: contrato.id,
