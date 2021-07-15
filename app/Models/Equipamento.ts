@@ -48,4 +48,8 @@ export default class Equipamento extends BaseModel {
   public static inContract = scope((query, contratoId: number) => {
     query.where({ contratoId })
   })
+
+  public static isSonda = scope((query) => {
+    query.andWhere({ sonda: true })
+  })
 }

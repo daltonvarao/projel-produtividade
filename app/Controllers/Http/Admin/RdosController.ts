@@ -48,6 +48,7 @@ export default class RdosController {
         })
         .preload('contrato')
         .preload('user')
+        .preload('estrutura')
         .preload('equipamentoPrincipal')
         .firstOrFail()
 

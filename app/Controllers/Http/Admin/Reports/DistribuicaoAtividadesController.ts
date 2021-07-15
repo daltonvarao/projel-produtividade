@@ -5,7 +5,10 @@ import DistribuicaoAtividadesService from 'App/Services/DistribuicaoAtividadesSe
 export default class DistribuicaoAtividadesController {
   public async index({ view, request, session }: HttpContextContract) {
     const contratoId: number = session.get('contratoId')
-    const equipamentos = await Equipamento.query().apply((scopes) => scopes.inContract(contratoId))
+    const equipamentos = await Equipamento.query().apply((scopes) => {
+      scopes.inContract(contratoId)
+      scopes.isSonda()
+    })
 
     const { initialDate, finalDate, equipamentoId } = request.qs()
 

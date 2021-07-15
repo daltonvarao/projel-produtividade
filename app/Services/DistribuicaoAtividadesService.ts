@@ -66,7 +66,10 @@ export default class DistribuicaoAtividadesService {
         }).totalTime
       : 0
 
-    return { atividades: summary, totalTime: this.round(totalTime) }
+    return {
+      atividades: summary.sort((a, b) => b.totalTime - a.totalTime),
+      totalTime: this.round(totalTime),
+    }
   }
 
   public _totalTime(rdoAtividades: AtividadeRdo[]) {

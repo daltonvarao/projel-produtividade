@@ -2,6 +2,8 @@
 
 @set('title', 'Rdo\'s')
 
+
+
 @section('content')
   @card({ title: rdo.nome })
     @slot('actions')
@@ -18,16 +20,9 @@
         </div>
 
         <div>
-          <h4 class="text-primary">Equipamento Principal</h4>
-          {{ rdo.equipamentoPrincipal.tag }}
-        </div>
-
-        <div>
           <h4 class="text-primary">Contrato</h4>
           {{ rdo.contrato.numero }}
         </div>
-
-        <div></div>
       </div>
 
       <div class="flex flex-row justify-space-between">
@@ -51,12 +46,21 @@
             <h4 class="text-primary">Pluviometria</h4>
             {{ rdo.pluviometria }}
           </div>
-
-          <div></div>
-        @else
-          <div></div>
         @endif
       </div>
+
+      <div class="flex flex-row">
+        <div>
+          <h4 class="text-primary">Equipamento Principal</h4>
+          {{ rdo.equipamentoPrincipal.tag }}
+        </div>
+
+        <div>
+          <h4 class="text-primary">Estrutura</h4>
+          {{ rdo.estrutura.nome }}
+        </div>
+      </div>
+
     @endslot
   @end
 

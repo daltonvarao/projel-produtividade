@@ -38,6 +38,11 @@ export default class Rdo extends BaseModel {
     return this.data.toISODate()
   }
 
+  @computed()
+  public get formattedData() {
+    return this.data.toFormat('dd/MM/yyyy')
+  }
+
   @column()
   public status: string
 
