@@ -16,7 +16,7 @@
       <tbody>
         @each(rdo in rdos.data)
           <tr>
-            <td title="Nome" class="text-left">{{ truncate(rdo.nome, 30) || 'Sem nome' }}</td>
+            <td title="Nome" class="text-left">{{ truncate(rdo.nome, 30) }}</td>
             <td title="Nome" class="text-md-center">{{ rdo.formattedData }}</td>
             <td title="Contrato" class="text-left">{{ truncate(rdo.contrato.numero) }}</td>
             <td title="Responsável" class="text-left">{{ rdo?.user?.nome }}</td>
