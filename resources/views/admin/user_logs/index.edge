@@ -8,7 +8,7 @@
       <thead>
         <th class="text-left">Data</th>
         <th class="text-left">Hora</th>
-        <th class="text-left">Ip</th>
+        {{--  <th class="text-left">Ip</th>  --}}
         <th class="text-left">Método</th>
         <th class="text-left">Url</th>
         <th class="text-left">Usuário</th>
@@ -19,7 +19,7 @@
           <tr>
             <td title="Data" class="text-left">{{ log.hora }}</td>
             <td title="Hora" class="text-left">{{ log.data }}</td>
-            <td title="Ip" class="text-left">{{ log.ip }}</td>
+            {{--  <td title="Ip" class="text-left">{{ log.ip }}</td>  --}}
             <td title="Método" class="text-left">{{ log.method }}</td>
             <td title="Url" class="text-left">{{ log.url }}</td>
             <td title="Usuário" class="text-left">{{ log?.user?.nome ?? '-' }}</td>
