@@ -141,7 +141,8 @@ const Card: React.FC<{ data: BaseSummary; title: string; showQuantitativo?: bool
               <td className="text-md-right">{data.totalTime}</td>
               {showQuantitativo && (
                 <React.Fragment>
-                  <td className="text-md-right"> - </td> <td className="text-md-right"> - </td>
+                  <td className="text-md-right"> - </td>
+                  <td className="text-md-right"> - </td>
                 </React.Fragment>
               )}
             </tr>
@@ -159,12 +160,11 @@ const DistribuicaoAtividades: React.FC<DistribuicaoAtividadesProps> = ({ summary
 
   return (
     <Container>
-      {summary.totalTime > 0 && (
-        <Row className="card">
-          <h2>Distribuição de horas diarias - Tipos de Atividades</h2>
-          <Chart data={summary.totalTimes} dataKey="value" labelKey="name" />
-        </Row>
-      )}
+      <Row className="card">
+        <h2>Distribuição de horas diarias - Tipos de Atividades</h2>
+        <Chart data={summary.totalTimes} dataKey="value" labelKey="name" />
+      </Row>
+
       <Card title="Distribuição de horas produtivas" showQuantitativo data={summary.produtivas} />
       <Card title="Distribuição de horas improdutivas" data={summary.improdutivas} />
       <Card title="Distribuição de horas paradas" data={summary.paradas} />
