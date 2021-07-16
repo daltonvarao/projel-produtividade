@@ -9,18 +9,29 @@ import Rdo from 'App/Models/Rdo'
 
 export default class RdosController {
   public async index({ view, request, session }: HttpContextContract) {
-    const { page } = request.qs()
+    const { page, equipamentoId } = request.qs()
     const contratoId: number = session.get('contratoId')
 
-    const rdos = await Rdo.query()
+    const query = Rdo.query()
       .apply((scopes) => scopes.inContract(contratoId))
       .preload('user')
+      .preload('equipamentoPrincipal')
       .preload('contrato')
-      .orderBy('data', 'desc')
-      .paginate(page || 1)
+
+    if (equipamentoId && equipamentoId !== 'undefined') {
+      query.where({ equipamentoId })
+    }
+
+    const rdos = await query.orderBy('data', 'desc').paginate(page || 1)
+
+    const equipamentos = await Equipamento.query().apply((scopes) => {
+      scopes.inContract(contratoId)
+      scopes.isSonda()
+    })
 
     return view.render('admin/rdos/index', {
-      rdos: rdos.baseUrl('rdos').toJSON(),
+      rdos: rdos.queryString(request.qs()).baseUrl('rdos').toJSON(),
+      equipamentos: equipamentos.map((i) => i.toJSON()),
     })
   }
 

@@ -701,6 +701,10 @@ button.checked::after {
 
 /* TABLES */
 
+.table-light {
+  background: rgba(0, 0, 0, 0.04);
+}
+
 table + button {
   margin-top: 1rem;
 }
@@ -752,6 +756,7 @@ table + button {
   border: 1px solid #bbb4;
 }
 
+.table-container table tbody tr:hover,
 .table tbody tr:hover {
   background: rgba(0, 0, 0, 0.04);
 }
@@ -1057,6 +1062,10 @@ table + button {
   .table tbody tr,
   .table-container table tbody tr {
     font-size: 14px;
+  }
+
+  .page-title h1 {
+    font-size: 28px;
   }
 }
 

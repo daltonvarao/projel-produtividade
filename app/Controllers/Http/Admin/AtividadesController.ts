@@ -29,7 +29,7 @@ export default class AtividadesController {
     const atividades = await atividadesQuery.orderBy('descricao').paginate(page || 1)
 
     return view.render('admin/atividades/index', {
-      atividades: atividades.baseUrl('atividades').toJSON(),
+      atividades: atividades.queryString(request.qs()).baseUrl('atividades').toJSON(),
     })
   }
 

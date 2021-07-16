@@ -67,7 +67,11 @@ const Chart: React.FC<ChartProps> = ({ data, dataKey, labelKey }) => {
   )
 }
 
-const Card: React.FC<{ data: BaseSummary; title: string }> = ({ data, title }) => {
+const Card: React.FC<{ data: BaseSummary; title: string; showQuantitativo?: boolean }> = ({
+  data,
+  title,
+  showQuantitativo = false,
+}) => {
   const [viewMode, setViewMode] = useState<'chart' | 'list'>('list')
 
   function toggleViewMode() {
@@ -105,24 +109,42 @@ const Card: React.FC<{ data: BaseSummary; title: string }> = ({ data, title }) =
             <tr>
               <th className="text-left">Atividades</th>
               <th className="text-md-right">Tempo total</th>
-              <th className="text-md-right">Quantitativo (m / un)</th>
+              {showQuantitativo && <th className="text-md-right">Quantitativo</th>}
+              {showQuantitativo && <th className="text-md-right">Quantitativo médio por hora</th>}
             </tr>
           </thead>
 
           <tbody>
             {data.atividades.map((atividade) => (
-              <tr>
+              <tr key={atividade.atividade.descricao}>
                 <td className="text-md-left">{atividade.name}</td>
                 <td className="text-md-right">{atividade.totalTime.toFixed(2).concat('h')}</td>
-                <td className="text-md-right">
-                  {atividade.atividade.tipo === 'produtiva'
-                    ? atividade.atividade.unidade_medida === 'metros'
-                      ? atividade.quantidade.toFixed(2).concat('m')
-                      : String(atividade.quantidade).concat(' un')
-                    : '-'}
-                </td>
+                {showQuantitativo && (
+                  <td className="text-md-right">
+                    {atividade.atividade.tipo === 'produtiva'
+                      ? atividade.atividade.unidade_medida === 'metros'
+                        ? atividade.quantidade.toFixed(2).concat('m')
+                        : String(atividade.quantidade).concat(' un')
+                      : '-'}
+                  </td>
+                )}
+                {showQuantitativo && (
+                  <td className="text-md-right">
+                    {(atividade.quantidade / atividade.totalTime).toFixed(2)}
+                    {atividade.atividade.unidade_medida === 'metros' ? ' m/h' : ' un/h'}
+                  </td>
+                )}
               </tr>
             ))}
+            <tr>
+              <td className="text-md-left text-bold text-primary">Total</td>
+              <td className="text-md-right">{data.totalTime}</td>
+              {showQuantitativo && (
+                <React.Fragment>
+                  <td className="text-md-right"> - </td> <td className="text-md-right"> - </td>
+                </React.Fragment>
+              )}
+            </tr>
           </tbody>
         </table>
       )}
@@ -143,7 +165,7 @@ const DistribuicaoAtividades: React.FC<DistribuicaoAtividadesProps> = ({ summary
           <Chart data={summary.totalTimes} dataKey="value" labelKey="name" />
         </Row>
       )}
-      <Card title="Distribuição de horas produtivas" data={summary.produtivas} />
+      <Card title="Distribuição de horas produtivas" showQuantitativo data={summary.produtivas} />
       <Card title="Distribuição de horas improdutivas" data={summary.improdutivas} />
       <Card title="Distribuição de horas paradas" data={summary.paradas} />
     </Container>

@@ -21,6 +21,20 @@ export default class UserLog extends BaseModel {
   @column()
   public method: string
 
+  @computed()
+  public get acao() {
+    switch (this.method) {
+      case 'GET':
+        return 'Leitura'
+      case 'POST':
+        return 'Criação'
+      case 'PUT':
+        return 'Atualização'
+      case 'DELETE':
+        return 'Exclusão'
+    }
+  }
+
   @belongsTo(() => User)
   public user: BelongsTo<typeof User>
 

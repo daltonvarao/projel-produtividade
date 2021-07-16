@@ -45,12 +45,22 @@ test.group('DistribuicaoAtividadesService', async (group) => {
       {
         equipamentoId: equipamentos[0].id,
         contratoId: contrato.id,
-        data: DateTime.fromISO('2021-01-15T08:00:00'),
+        data: DateTime.fromISO('2021-02-01T08:00:00'),
+      },
+      {
+        equipamentoId: equipamentos[0].id,
+        contratoId: contrato.id,
+        data: DateTime.fromISO('2021-02-15T08:00:00'),
       },
       {
         equipamentoId: equipamentos[1].id,
         contratoId: contrato.id,
-        data: DateTime.fromISO('2021-01-31T08:00:00'),
+        data: DateTime.fromISO('2021-02-28T08:00:00'),
+      },
+      {
+        equipamentoId: equipamentos[1].id,
+        contratoId: contrato.id,
+        data: DateTime.fromISO('2021-03-31T08:00:00'),
       },
     ])
       .with('rdoAtividades', 3, (ra) => {
@@ -72,16 +82,16 @@ test.group('DistribuicaoAtividadesService', async (group) => {
           },
         ])
       })
-      .createMany(3)
+      .createMany(5)
   })
 
   group.after(async () => {
     await Database.rollbackGlobalTransaction()
   })
 
-  test('should AtividadesImprodutivasService.build returns a list of atividades.tipo = "improdutivas" in period', async (assert) => {
-    const initialDate = '2021-01-01'
-    const finalDate = '2021-01-31'
+  test('should AtividadesImprodutivasService.build returns a summary by tipo atividade', async (assert) => {
+    const initialDate = '2021-02-01'
+    const finalDate = '2021-02-28'
 
     const service = new DistribuicaoAtividadesService(contrato.id, initialDate, finalDate)
     const summary = await service.build()
@@ -101,13 +111,12 @@ test.group('DistribuicaoAtividadesService', async (group) => {
     assert.equal(summary.paradas.totalTime, 0)
 
     // summary
-    assert.equal(summary.totalTime, 9)
     assert.lengthOf(summary.totalTimes, 3)
   })
 
   test('should AtividadesImprodutivasService.build returns a list of atividades for specific equipamento when equipamentoId is defined', async (assert) => {
-    const initialDate = '2021-01-01'
-    const finalDate = '2021-01-31'
+    const initialDate = '2021-02-01'
+    const finalDate = '2021-02-28'
     const equipamentoId = equipamentos[0].id
 
     const service = new DistribuicaoAtividadesService(
@@ -133,7 +142,6 @@ test.group('DistribuicaoAtividadesService', async (group) => {
     assert.equal(summary.paradas.totalTime, 0)
 
     // summary
-    assert.equal(summary.totalTime, 6)
     assert.lengthOf(summary.totalTimes, 3)
   })
 })

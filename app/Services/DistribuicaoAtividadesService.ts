@@ -1,5 +1,5 @@
 import Atividade from 'App/Models/Atividade'
-import AtividadeRdo from 'App/Models/AtividadeRdo'
+import { DateTime } from 'luxon'
 
 export default class DistribuicaoAtividadesService {
   public contractId: number
@@ -37,7 +37,7 @@ export default class DistribuicaoAtividadesService {
     return Number(num.toFixed(2))
   }
 
-  public _summaryByTipoAtividade(atvds: Atividade[]) {
+  protected _summaryByTipoAtividade(atvds: Atividade[]) {
     const atividades = atvds.filter((atividade) => {
       return atividade.rdoAtividades.length > 0
     })
@@ -47,7 +47,14 @@ export default class DistribuicaoAtividadesService {
       let quantidade = 0
 
       atividade.rdoAtividades.map((atividadeRdo) => {
-        const time = atividadeRdo.horaFim.diff(atividadeRdo.horaInicio).as('hour')
+        const horaFim = atividadeRdo.horaFim.toFormat('HH:mm:ss')
+        const finalDate = DateTime.fromFormat(horaFim, 'HH:mm:ss')
+
+        const horaInicio = atividadeRdo.horaInicio.toFormat('HH:mm:ss')
+        const initialDate = DateTime.fromFormat(horaInicio, 'HH:mm:ss')
+
+        const time = finalDate.diff(initialDate).as('hours')
+
         totalTime += time
         quantidade += Number(atividadeRdo.quantidade)
       })
@@ -72,35 +79,10 @@ export default class DistribuicaoAtividadesService {
     }
   }
 
-  public _totalTime(rdoAtividades: AtividadeRdo[]) {
-    let totalTime = 0
-
-    rdoAtividades.map((atividadeRdo) => {
-      const time = atividadeRdo.horaFim.diff(atividadeRdo.horaInicio).as('hour')
-      totalTime += time
-    })
-
-    return this.round(totalTime)
-  }
-
   public async build() {
-    const atividades = await AtividadeRdo.query()
-      .whereHas('rdo', (qr) => {
-        qr.whereBetween('data', [this.initialDate, this.finalDate]).andWhere({
-          contrato_id: this.contractId,
-        })
-
-        if (this.equipamentoId) {
-          qr.andWhere({ equipamentoId: this.equipamentoId })
-        }
-      })
-      .preload('rdo')
-
     const produtivas = await this._baseQuery().where({ tipo: 'produtiva' })
     const improdutivas = await this._baseQuery().where({ tipo: 'improdutiva' })
     const paradas = await this._baseQuery().where({ tipo: 'parada' })
-
-    const totalTime = this._totalTime(atividades)
 
     const summary = {
       produtivas: this._summaryByTipoAtividade(produtivas),
@@ -124,7 +106,6 @@ export default class DistribuicaoAtividadesService {
           value: summary.paradas.totalTime,
         },
       ],
-      totalTime,
     }
   }
 }

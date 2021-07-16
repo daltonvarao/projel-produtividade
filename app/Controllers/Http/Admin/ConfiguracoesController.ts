@@ -27,6 +27,8 @@ export default class ConfiguracoesController {
       session.put('contratoId', contratoId)
     }
 
+    session.flash('success', 'Configurações atualizadas.')
+
     return response.redirect().back()
   }
 }
