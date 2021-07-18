@@ -29,14 +29,14 @@ export default class AtividadeRdo extends BaseModel {
 
   @column.dateTime({
     serialize: (value?: DateTime) => {
-      return value ? value.toFormat('HH:ss') : value
+      return value ? value.toFormat('HH:mm') : value
     },
   })
   public horaInicio: DateTime
 
   @column.dateTime({
     serialize: (value?: DateTime) => {
-      return value ? value.toFormat('HH:ss') : value
+      return value ? value.toFormat('HH:mm') : value
     },
   })
   public horaFim: DateTime
