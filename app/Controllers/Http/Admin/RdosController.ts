@@ -47,7 +47,7 @@ export default class RdosController {
       const rdo = await Rdo.query()
         .where({ id })
         .preload('rdoAtividades', (qra) => {
-          qra.preload('atividade').preload('furo').orderBy('hora_fim')
+          qra.preload('atividade').preload('furo').orderBy('hora_inicio')
         })
         .preload('rdoEquipamentos', (qre) => {
           qre.preload('equipamento')
