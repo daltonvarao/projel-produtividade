@@ -93,17 +93,18 @@ test.group('ProducaoUserService', async (group) => {
     await Database.rollbackGlobalTransaction()
   })
 
-  test('should ProducaoUserService.build returns a list of users with their production in period', async (assert) => {
+  test.only('should ProducaoUserService.build returns a list of users with their production in period', async (assert) => {
     const initialDate = '2021-01-01'
     const finalDate = '2021-01-31'
 
     const service = new ProducaoUserService(contrato.id, initialDate, finalDate)
     const producaoUsers = await service.build()
 
-    assert.lengthOf(producaoUsers, 3)
-    assert.equal(producaoUsers[0].producaoTotal, 12)
-    assert.equal(producaoUsers[1].producaoTotal, 12)
-    assert.equal(producaoUsers[2].producaoTotal, 12)
+    assert.lengthOf(producaoUsers.users, 3)
+    assert.equal(producaoUsers.users[0].valor, 12)
+    assert.equal(producaoUsers.users[1].valor, 12)
+    assert.equal(producaoUsers.users[2].valor, 12)
+    assert.equal(producaoUsers.valorTotal, 36)
   })
 
   test('should ProducaoUserService.build returns a unique user with their production in period when userId is provided', async (assert) => {
@@ -113,7 +114,8 @@ test.group('ProducaoUserService', async (group) => {
     const service = new ProducaoUserService(contrato.id, initialDate, finalDate, users[1].id)
     const producaoUsers = await service.build()
 
-    assert.lengthOf(producaoUsers, 1)
-    assert.equal(producaoUsers[0].producaoTotal, 12)
+    assert.lengthOf(producaoUsers.users, 1)
+    assert.equal(producaoUsers.users[0].valor, 12)
+    assert.equal(producaoUsers.valorTotal, 12)
   })
 })

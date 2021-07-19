@@ -22,7 +22,7 @@ export default class DistribuicaoAtividadesController {
       contratoId,
       initialDate,
       finalDate,
-      equipamentoId === 'undefined' ? undefined : equipamentoId
+      equipamentoId
     )
     const summary = await service.build()
 
