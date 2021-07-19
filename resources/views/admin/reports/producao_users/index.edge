@@ -24,15 +24,28 @@
         valuekey='id'
         name='userId'
         placeholder='Selecione um funcionário'
-        value='{{ request.qs().userId }}'
+        value='{{ request.qs().userId ?? '' }}'
       >
       </div>
     </div>
 
     <div class="form-group">
-      <label class="text-white" for="">label</label>
+      <label class="text-white">label</label>
       <button class="btn btn-primary">Filtrar</button>
     </div>
+
+    @if(producaoUsers?.users)
+      <div class="form-group">
+        <label class="text-white">label</label>
+        <a 
+          class="btn btn-success" 
+          href="{{ route('admin.reports.producao-usuarios-excel', {}, { qs: request.qs() }) }}"
+        >
+          Excel
+        </a>
+      </div>
+    @endif
+
   </form>
   <div class="table-container">
     <table>
@@ -53,30 +66,31 @@
       </thead>
       
       <tbody>
-        @set('total', 0)
-        @each(producaoUser in producaoUsers)
-          @set('total', total + producaoUser.producaoTotal)
+        @each(user in producaoUsers?.users)
           <tr>
-            <td class="text-left" title="Nome">{{ producaoUser.user.nome }}</td>
-            <td class="text-left" title="Cargo">{{ producaoUser.user.cargo.titulo }}</td>
-            <td class="text-md-center" title="Cpf">{{ producaoUser.user.maskedCpf }}</td>
-            <td class="text-md-center" title="Banco">{{ producaoUser.user.banco }}</td>
-            <td class="text-md-center" title="Agência">{{ producaoUser.user.agencia }}</td>
-            <td class="text-md-center" title="Operação Caixa">{{ producaoUser.user.operacaoCaixa ?? '-' }}</td>
-            <td class="text-md-center" title="Conta" >{{ producaoUser.user.conta }}</td>
+            <td class="text-left" title="Nome">{{ user.nome }}</td>
+            <td class="text-left" title="Cargo">{{ user.cargo.titulo }}</td>
+            <td class="text-md-center" title="Cpf">{{ user.maskedCpf }}</td>
+            <td class="text-md-center" title="Banco">{{ user.banco }}</td>
+            <td class="text-md-center" title="Agência">{{ user.agencia }}</td>
+            <td class="text-md-center" title="Operação Caixa">{{ user.operacaoCaixa ?? '-' }}</td>
+            <td class="text-md-center" title="Conta" >{{ user.conta }}</td>
             <td class="text-md-right" title="Produção no Período">
-              {{ Number(producaoUser.producaoTotal).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) }}
+              {{ Number(user.valor).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) }}
             </td>
           </tr>
         @else
           @!emptyMessage()
         @endeach
 
-        @if(producaoUsers?.length)
+        @if(producaoUsers?.users?.length)
           <tr>
             <td class="text-left text-bold text-primary" colspan="7">Total</td>
             <td class="text-md-right">
-              {{{ Number(total).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) }}}
+              {{{ 
+                Number(producaoUsers.valorTotal.toFixed(2))
+                  .toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})
+              }}}
             </td>
           </tr>
         @endif

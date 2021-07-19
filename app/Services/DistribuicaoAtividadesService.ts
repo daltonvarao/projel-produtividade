@@ -47,11 +47,10 @@ export default class DistribuicaoAtividadesService {
       let quantidade = 0
 
       atividade.rdoAtividades.map((atividadeRdo) => {
-        const horaFim = atividadeRdo.horaFim.toFormat('HH:mm:ss')
-        const finalDate = DateTime.fromFormat(horaFim, 'HH:mm:ss')
+        const rdoAtividade = atividadeRdo.toJSON()
 
-        const horaInicio = atividadeRdo.horaInicio.toFormat('HH:mm:ss')
-        const initialDate = DateTime.fromFormat(horaInicio, 'HH:mm:ss')
+        const finalDate = DateTime.fromFormat(rdoAtividade.hora_fim, 'HH:mm')
+        const initialDate = DateTime.fromFormat(rdoAtividade.hora_inicio, 'HH:mm')
 
         const time = finalDate.diff(initialDate).as('hours')
 

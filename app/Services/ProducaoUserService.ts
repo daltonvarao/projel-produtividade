@@ -47,8 +47,8 @@ export default class DistribuicaoAtividadesService {
   }
 
   protected _computeProducao(users: User[]) {
-    return users.map((user) => {
-      let producaoTotal = 0
+    const usersWithValues = users.map((user) => {
+      let valor = 0
 
       user.rdoUsers.map((rdoUser) =>
         rdoUser.rdo.rdoAtividades.map((rdoAtividade) => {
@@ -63,13 +63,25 @@ export default class DistribuicaoAtividadesService {
 
           if (atividadeCargoValor) {
             const producaoUser = atividadeCargoValor.valorUnitario * rdoAtividade.quantidade
-            producaoTotal += producaoUser
+            valor += producaoUser
           }
         })
       )
 
-      return { user: user.toJSON(), producaoTotal }
+      return { ...user.toJSON(), valor }
     })
+
+    const valorTotal = this._computeTotal(usersWithValues)
+
+    return { users: usersWithValues, valorTotal }
+  }
+
+  protected _computeTotal(users: { valor: number }[]) {
+    return users.reduce((previousValue, currentValue) => {
+      return {
+        valor: previousValue.valor + currentValue.valor,
+      }
+    }).valor
   }
 
   public async build() {

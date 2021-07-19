@@ -1,6 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 import ProducaoUserService from 'App/Services/ProducaoUserService'
+import ProducaoUsersExcel from 'App/Services/ProducaoUsersExcel'
 
 export default class ProducaoUsersController {
   public async index({ view, request, session, logger }: HttpContextContract) {
@@ -19,12 +20,7 @@ export default class ProducaoUsersController {
     }
 
     try {
-      const service = new ProducaoUserService(
-        contratoId,
-        initialDate,
-        finalDate,
-        userId === 'undefined' ? undefined : userId
-      )
+      const service = new ProducaoUserService(contratoId, initialDate, finalDate, userId)
       const producaoUsers = await service.build()
 
       return view.render('admin/reports/producao_users/index', {
@@ -38,5 +34,26 @@ export default class ProducaoUsersController {
         users: users.map((i) => i.toJSON()),
       })
     }
+  }
+
+  public async downloadExcel({ request, response, session }: HttpContextContract) {
+    const contratoId: number = session.get('contratoId')
+
+    const { initialDate, finalDate, userId } = request.qs()
+
+    const service = new ProducaoUserService(contratoId, initialDate, finalDate, userId)
+
+    const producaoUsers = await service.build()
+    const producaoUsersExcel = new ProducaoUsersExcel()
+    const workbook = producaoUsersExcel.build(producaoUsers)
+    const excelReportBuffer = await workbook.xlsx.writeBuffer()
+
+    return response
+      .header(
+        'Content-Type',
+        'application/application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      )
+      .header('Content-Disposition', `attachment; filename="relatorio-funcionarios.xlsx"`)
+      .send(excelReportBuffer)
   }
 }

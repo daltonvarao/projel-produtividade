@@ -127,13 +127,17 @@ button {
 }
 
 .btn-primary:hover {
-  background: rgba(28, 60, 107, 0.8) !important;
-  cursor: pointer;
+  background: rgba(28, 60, 107, 0.8);
 }
 
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed !important;
+}
+
+a.btn:hover,
+button:hover {
+  cursor: pointer;
 }
 
 select,
@@ -215,6 +219,7 @@ button.btn-primary:focus {
 .btn.btn-success {
   background: var(--success);
   color: var(--white);
+  border: 1px solid var(--success);
 }
 
 .login-container form input + button,

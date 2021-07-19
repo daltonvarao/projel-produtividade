@@ -6,4 +6,5 @@ coverage
 .env
 .env.production
 tmp
+*.xlsx
 public/assets
