@@ -29,7 +29,7 @@
         valuekey='id'
         name='equipamentoId'
         placeholder='Selecione um equipamento'
-        value='{{ request.qs().equipamentoId }}'
+        value='{{ request.qs().equipamentoId ?? '' }}'
       >
       </div>
     </div>

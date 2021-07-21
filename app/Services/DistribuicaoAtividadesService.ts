@@ -17,6 +17,8 @@ export default class DistribuicaoAtividadesService {
     this.initialDate = initialDate
     this.finalDate = finalDate
     this.equipamentoId = equipamentoId
+
+    this._validateParams()
   }
 
   protected _baseQuery() {
@@ -75,6 +77,16 @@ export default class DistribuicaoAtividadesService {
     return {
       atividades: summary.sort((a, b) => b.totalTime - a.totalTime),
       totalTime: this.round(totalTime),
+    }
+  }
+
+  protected _validateParams() {
+    if (!this.contractId) {
+      throw Error('Contrato inválido, selecione um para continuar')
+    }
+
+    if (this.initialDate > this.finalDate) {
+      throw Error('Datas inválidas, data final deve ser maior que data inicial')
     }
   }
 
