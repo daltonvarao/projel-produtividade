@@ -2,6 +2,7 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 import ProducaoUserService from 'App/Services/ProducaoUserService'
 import ProducaoUsersExcel from 'App/Services/ProducaoUsersExcel'
+import { DateTime } from 'luxon'
 
 export default class ProducaoUsersController {
   public async index({ view, request, session, logger }: HttpContextContract) {
@@ -48,12 +49,16 @@ export default class ProducaoUsersController {
     const workbook = producaoUsersExcel.build(producaoUsers)
     const excelReportBuffer = await workbook.xlsx.writeBuffer()
 
+    const filename = `RelatorioProducaoFuncionarios_${DateTime.fromISO(initialDate).toFormat(
+      'dd-MM-yyyy'
+    )}_${DateTime.fromISO(finalDate).toFormat('dd-MM-yyyy')}.xlsx`
+
     return response
       .header(
         'Content-Type',
         'application/application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       )
-      .header('Content-Disposition', `attachment; filename="relatorio-funcionarios.xlsx"`)
+      .header('Content-Disposition', `attachment; filename="${filename}"`)
       .send(excelReportBuffer)
   }
 }
