@@ -1,6 +1,11 @@
 @layout('layouts/master')
 
 @set('title', 'Configurações')
+@set('rightLink', {
+  'address': route('admin.apps_download.index'),
+  'payload': 'Baixar app'
+})
+
 
 
 @section('content')

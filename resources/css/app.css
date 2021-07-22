@@ -140,6 +140,7 @@ button:hover {
   cursor: pointer;
 }
 
+textarea,
 select,
 input {
   background: var(--white);
@@ -149,6 +150,11 @@ input {
   outline: none;
   font-size: 13px;
   height: 40px;
+}
+
+textarea {
+  height: auto;
+  width: 100%;
 }
 
 input:read-only {
