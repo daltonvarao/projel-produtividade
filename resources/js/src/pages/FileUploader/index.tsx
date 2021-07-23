@@ -73,7 +73,7 @@ const FileUploader: React.FC = () => {
       {file && (
         <PreviewContainer>
           <PreviewItem>
-            <FaAndroid size={32} color="lightgreen" />
+            <FaAndroid size={30} color="lightgreen" />
             <span>{file.name}</span>
             <span>{bytesToMb(file.size)} mb</span>
             <button onClick={handleRemoveFile} type="button">

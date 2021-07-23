@@ -1,6 +1,11 @@
 @layout('layouts/master')
 
 @set('title', 'Apps')
+@set('rightLink', {
+  'address': route('admin.apps_upload.create'),
+  'payload': 'Novo'
+})
+
 
 @section('content')
 <div class="table-container">

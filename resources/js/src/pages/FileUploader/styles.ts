@@ -42,11 +42,12 @@ export const PreviewItem = styled.div`
   border-radius: 8px;
   display: grid;
   align-items: center;
-  grid-template-columns: 1fr 7fr 2fr 1fr;
+  grid-template-columns: 1fr 7fr 4fr 1fr;
+  gap: 0.5rem;
   padding: 1rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  font-size: 14px;
   color: #676767;
+  font-size: 11px;
 
   :hover {
     background: rgba(0, 0, 0, 0.01);
@@ -57,6 +58,10 @@ export const PreviewItem = styled.div`
     align-items: center;
     justify-content: flex-end;
     padding: 0 !important;
+  }
+
+  @media screen and (min-width: 768px) {
+    font-size: 14px;
   }
 `
 
