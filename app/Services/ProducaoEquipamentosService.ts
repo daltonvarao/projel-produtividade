@@ -1,7 +1,7 @@
 import Atividade from 'App/Models/Atividade'
 import { DateTime } from 'luxon'
 
-export default class DistribuicaoAtividadesService {
+export default class ProducaoEquipamentosService {
   public contractId: number
   public initialDate: string
   public finalDate: string

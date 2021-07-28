@@ -1,8 +1,8 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Equipamento from 'App/Models/Equipamento'
-import DistribuicaoAtividadesService from 'App/Services/DistribuicaoAtividadesService'
+import ProducaoEquipamentosService from 'App/Services/ProducaoEquipamentosService'
 
-export default class DistribuicaoAtividadesController {
+export default class ProducaoEquipamentosController {
   public async index({ view, request, session, response }: HttpContextContract) {
     const contratoId: number = session.get('contratoId')
 
@@ -14,7 +14,7 @@ export default class DistribuicaoAtividadesController {
     const { initialDate, finalDate, equipamentoId } = request.qs()
 
     if (Object.keys(request.qs()).length === 0) {
-      return view.render('admin/reports/distribuicao_atividades/index', {
+      return view.render('admin/reports/producao_equipamentos/index', {
         equipamentos,
       })
     } else {
@@ -25,7 +25,7 @@ export default class DistribuicaoAtividadesController {
     }
 
     try {
-      const service = new DistribuicaoAtividadesService(
+      const service = new ProducaoEquipamentosService(
         contratoId,
         initialDate,
         finalDate,
@@ -33,7 +33,7 @@ export default class DistribuicaoAtividadesController {
       )
       const summary = await service.build()
 
-      return view.render('admin/reports/distribuicao_atividades/index', {
+      return view.render('admin/reports/producao_equipamentos/index', {
         summary,
         equipamentos,
       })

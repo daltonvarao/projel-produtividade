@@ -52,7 +52,7 @@ Route.group(() => {
     Route.get('producao-usuarios-excel', 'ProducaoUsersController.downloadExcel').as(
       'producao-usuarios-excel'
     )
-    Route.resource('distribuicao-atividades', 'DistribuicaoAtividadesController').only(['index'])
+    Route.resource('producao-equipamentos', 'ProducaoEquipamentosController').only(['index'])
   })
     .namespace('App/Controllers/Http/Admin/Reports')
     .as('reports')

@@ -34,6 +34,8 @@ export default class AtividadeRdoUsersController {
       )
       .firstOrFail()
 
+    user.rdoUsers.sort((a, b) => a.rdo.data.toMillis() - b.rdo.data.toMillis())
+
     return view.render('admin/reports/atividade_rdo_users/index', {
       users: users.map((u) => u.toJSON()),
       user: user.toJSON(),

@@ -11,10 +11,10 @@ import {
 import Database from '@ioc:Adonis/Lucid/Database'
 import Atividade from 'App/Models/Atividade'
 import Contrato from 'App/Models/Contrato'
-import DistribuicaoAtividadesService from 'App/Services/DistribuicaoAtividadesService'
+import ProducaoEquipamentosService from 'App/Services/ProducaoEquipamentosService'
 import Equipamento from 'App/Models/Equipamento'
 
-test.group('DistribuicaoAtividadesService', async (group) => {
+test.group('ProducaoEquipamentosService', async (group) => {
   let atividades: Atividade[]
   let contrato: Contrato
   let equipamentos: Equipamento[]
@@ -93,7 +93,7 @@ test.group('DistribuicaoAtividadesService', async (group) => {
     const initialDate = '2021-02-01'
     const finalDate = '2021-02-28'
 
-    const service = new DistribuicaoAtividadesService(contrato.id, initialDate, finalDate)
+    const service = new ProducaoEquipamentosService(contrato.id, initialDate, finalDate)
     const summary = await service.build()
 
     // produtivas
@@ -119,7 +119,7 @@ test.group('DistribuicaoAtividadesService', async (group) => {
     const finalDate = '2021-02-28'
     const equipamentoId = equipamentos[0].id
 
-    const service = new DistribuicaoAtividadesService(
+    const service = new ProducaoEquipamentosService(
       contrato.id,
       initialDate,
       finalDate,

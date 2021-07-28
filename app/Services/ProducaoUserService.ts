@@ -1,6 +1,6 @@
 import User from 'App/Models/User'
 
-export default class DistribuicaoAtividadesService {
+export default class ProducaoUserService {
   public contractId: number
   public initialDate: string
   public finalDate: string

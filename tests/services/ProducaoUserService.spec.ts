@@ -93,7 +93,7 @@ test.group('ProducaoUserService', async (group) => {
     await Database.rollbackGlobalTransaction()
   })
 
-  test.only('should ProducaoUserService.build returns a list of users with their production in period', async (assert) => {
+  test('should ProducaoUserService.build returns a list of users with their production in period', async (assert) => {
     const initialDate = '2021-01-01'
     const finalDate = '2021-01-31'
 

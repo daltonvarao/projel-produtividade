@@ -47,16 +47,6 @@ export default class ProducaoUsersExcel {
         },
       },
       {
-        header: 'Conta',
-        key: 'conta',
-        width: 18,
-        style: {
-          alignment: {
-            horizontal: 'center',
-          },
-        },
-      },
-      {
         header: 'Agência',
         key: 'agencia',
         width: 12,
@@ -70,6 +60,16 @@ export default class ProducaoUsersExcel {
         header: 'O.C',
         key: 'operacao_caixa',
         width: 10,
+        style: {
+          alignment: {
+            horizontal: 'center',
+          },
+        },
+      },
+      {
+        header: 'Conta',
+        key: 'conta',
+        width: 18,
         style: {
           alignment: {
             horizontal: 'center',

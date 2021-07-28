@@ -73,7 +73,7 @@
             <td class="text-md-center" title="Cpf">{{ user.maskedCpf }}</td>
             <td class="text-md-center" title="Banco">{{ user.banco }}</td>
             <td class="text-md-center" title="Agência">{{ user.agencia }}</td>
-            <td class="text-md-center" title="Operação Caixa">{{ user.operacaoCaixa ?? '-' }}</td>
+            <td class="text-md-center" title="Operação Caixa">{{ user.operacao_caixa ?? '-' }}</td>
             <td class="text-md-center" title="Conta" >{{ user.conta }}</td>
             <td class="text-md-right" title="Produção no Período">
               {{ Number(user.valor).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) }}

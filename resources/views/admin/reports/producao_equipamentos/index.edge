@@ -1,6 +1,6 @@
 @layout('layouts/master')
 
-@set('title', 'Distribuição Atividades')
+@set('title', 'Produção Equipamentos')
 
 @section('content')
   <form class="form-filter" action="">
@@ -46,7 +46,7 @@
   </form>
 
   @if(summary)
-    <div id="react-distribuicao-atividades" data-summary='{{{ JSON.stringify(summary) }}}'></div>  
+    <div id="react-producao-equipamentos" data-summary='{{{ JSON.stringify(summary) }}}'></div>  
   @else
     @!emptyMessage()
   @endif
