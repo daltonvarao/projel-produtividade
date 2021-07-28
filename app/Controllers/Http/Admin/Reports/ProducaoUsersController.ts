@@ -9,8 +9,8 @@ export default class ProducaoUsersController {
     const contratoId: number = session.get('contratoId')
 
     const users = await User.query()
-      .orderBy('nome')
       .apply((scopes) => scopes.inContract(contratoId))
+      .orderBy('nome')
 
     const { initialDate, finalDate, userId } = request.qs()
 

@@ -7,7 +7,9 @@ export default class AtividadeRdoUsersController {
 
     const { userId, initialDate, finalDate } = request.qs()
 
-    const users = await User.query().apply((scopes) => scopes.inContract(contratoId))
+    const users = await User.query()
+      .apply((scopes) => scopes.inContract(contratoId))
+      .orderBy('nome')
 
     if (!initialDate || !finalDate || !userId) {
       return view.render('admin/reports/atividade_rdo_users/index', {
