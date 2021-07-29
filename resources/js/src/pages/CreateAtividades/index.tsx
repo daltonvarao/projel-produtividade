@@ -127,10 +127,11 @@ const CreateAtividades: React.FC<CreateAtividadesProps> = ({ cargos, flashMessag
 const container = document.querySelector('#react-create-atividade')
 
 if (container) {
-  const cargosRaw = container.getAttribute('data-cargos')
-  const cargos = JSON.parse(cargosRaw ?? '[]')
-  const flashMessagesRaw = container.getAttribute('data-flashmessages')
-  const flashMessages = JSON.parse(flashMessagesRaw ?? '[]')
+  const cargosRaw = unescape(container.getAttribute('data-cargos') || '')
+  const cargos = JSON.parse(cargosRaw || '[]')
+
+  const flashMessagesRaw = unescape(container.getAttribute('data-flashmessages') || '')
+  const flashMessages = JSON.parse(flashMessagesRaw || '[]')
 
   ReactDOM.render(<CreateAtividades cargos={cargos} flashMessages={flashMessages} />, container)
 }

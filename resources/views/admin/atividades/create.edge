@@ -17,8 +17,8 @@
 
         <div 
           id="react-create-atividade" 
-          data-cargos='{{{ JSON.stringify(cargos) }}}'
-          data-flashmessages='{{{ JSON.stringify(flashMessages.all()) }}}'
+          data-cargos='{{{ escape(JSON.stringify(cargos)) }}}'
+          data-flashmessages='{{{ escape(JSON.stringify(flashMessages.all())) }}}'
         >
         </div>
 
