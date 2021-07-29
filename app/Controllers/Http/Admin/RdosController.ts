@@ -39,9 +39,17 @@ export default class RdosController {
     const { id } = request.params()
     const contratoId = session.get('contratoId')
 
-    const users = await User.query().apply((scopes) => scopes.inContract(contratoId))
-    const atividades = await Atividade.query().apply((scopes) => scopes.inContract(contratoId))
-    const equipamentos = await Equipamento.query().apply((scopes) => scopes.inContract(contratoId))
+    const users = await User.query()
+      .apply((scopes) => scopes.inContract(contratoId))
+      .orderBy('nome')
+
+    const atividades = await Atividade.query()
+      .apply((scopes) => scopes.inContract(contratoId))
+      .orderBy('descricao')
+
+    const equipamentos = await Equipamento.query()
+      .apply((scopes) => scopes.inContract(contratoId))
+      .orderBy('tag')
 
     try {
       const rdo = await Rdo.query()

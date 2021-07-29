@@ -133,8 +133,8 @@ const CreateCargoPermissions: React.FC<CreateCargoPermissionsProps> = ({ resourc
 
 const container = document.querySelector('#react-create-cargos')
 if (container) {
-  const rawResources = container.getAttribute('data-resources') || '[]'
-  const resources = JSON.parse(rawResources) as Resource[]
+  const rawResources = container.getAttribute('data-resources')
+  const resources = JSON.parse(rawResources ?? '[]') as Resource[]
 
   ReactDOM.render(<CreateCargoPermissions resources={resources} />, container)
 }

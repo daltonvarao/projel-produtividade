@@ -174,8 +174,8 @@ const ProducaoEquipamentos: React.FC<ProducaoEquipamentosProps> = ({ summary }) 
 
 const container = document.querySelector('#react-producao-equipamentos')
 if (container) {
-  const summaryRaw = container.getAttribute('data-summary') || ''
-  const summary = JSON.parse(summaryRaw)
+  const summaryRaw = container.getAttribute('data-summary')
+  const summary = JSON.parse(summaryRaw ?? '[]')
 
   ReactDOM.render(<ProducaoEquipamentos summary={summary} />, container)
 }

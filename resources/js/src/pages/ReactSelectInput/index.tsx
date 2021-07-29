@@ -6,7 +6,7 @@ const containers = document.querySelectorAll('.react-select-input')
 
 containers.forEach((container) => {
   const collectionRaw = container.getAttribute('collection')
-  const collection = JSON.parse(collectionRaw || '')
+  const collection = JSON.parse(collectionRaw ?? '[]')
 
   const labelKey = container.getAttribute('labelkey') || ''
   const valueKey = container.getAttribute('valuekey') || ''
