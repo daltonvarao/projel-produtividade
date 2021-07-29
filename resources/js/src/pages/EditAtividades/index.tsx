@@ -159,11 +159,11 @@ const EditAtividades: React.FC<CreateAtividadesProps> = ({ atividade, flashMessa
 const container = document.querySelector('#react-edit-atividade')
 
 if (container) {
-  const cargosRaw = container.getAttribute('data-cargos')
-  const cargos = JSON.parse(cargosRaw ?? '[]')
-  const atividadeRaw = container.getAttribute('data-atividade')
+  const cargosRaw = unescape(container.getAttribute('data-cargos') || '')
+  const cargos = JSON.parse(cargosRaw || '[]')
+  const atividadeRaw = unescape(container.getAttribute('data-atividade') || '')
   const atividade = JSON.parse(atividadeRaw ?? '[]')
-  const flashMessagesRaw = container.getAttribute('data-flashmessages')
+  const flashMessagesRaw = unescape(container.getAttribute('data-flashmessages') || '[]')
   const flashMessages = JSON.parse(flashMessagesRaw ?? '[]')
 
   ReactDOM.render(

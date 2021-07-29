@@ -17,9 +17,9 @@
 
         <div 
           id="react-edit-atividade" 
-          data-atividade='{{{ JSON.stringify(atividade) }}}'
-          data-cargos='{{{ JSON.stringify(cargos) }}}'
-          data-flashmessages='{{{ JSON.stringify(flashMessages.all()) }}}'
+          data-atividade='{{{ escape(JSON.stringify(atividade)) }}}'
+          data-cargos='{{{ escape(JSON.stringify(cargos)) }}}'
+          data-flashmessages='{{{ escape(JSON.stringify(flashMessages.all())) }}}'
         >
         </div>
 
