@@ -57,8 +57,8 @@
 
     <form class="logout-container" method="post" action="{{ route('admin.sessions.destroy', {id: 1}) }}?_method=DELETE">
       <div class="logged-info">
-        <p>{{ truncate(auth.user.nome, 10) }}</p>
-        <p>{{ truncate(request.currentContrato.numero, 10) }}</p>
+        <p title="{{ auth.user.nome }}">{{ truncate(auth.user.nome, 10) }}</p>
+        <p title="{{ request.currentContrato?.numero ?? 'Selecione um contrato' }}">{{ truncate(request.currentContrato?.numero ?? 'Não selecionado', 10) }}</p>
       </div>
 
       <button>
