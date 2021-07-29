@@ -117,11 +117,11 @@ const CreateRdoAtividades: React.FC<CreateRdoAtividadesProps> = ({ atividades, f
 const container = document.querySelector('#create-rdo-atividades')
 
 if (container) {
-  const atividadesRaw = unescape(container.getAttribute('data-atividades') ?? '')
-  const atividades: Atividade[] = JSON.parse(atividadesRaw ?? '[]')
+  const atividadesRaw = unescape(container.getAttribute('data-atividades') || '')
+  const atividades: Atividade[] = JSON.parse(atividadesRaw || '[]')
 
   const furosRaw = container.getAttribute('data-furos')
-  const furos: Furo[] = JSON.parse(furosRaw ?? '[]')
+  const furos: Furo[] = JSON.parse(furosRaw || '[]')
 
   ReactDOM.render(<CreateRdoAtividades furos={furos} atividades={atividades} />, container)
 }

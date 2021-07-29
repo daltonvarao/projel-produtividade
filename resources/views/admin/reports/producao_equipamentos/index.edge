@@ -46,7 +46,7 @@
   </form>
 
   @if(summary)
-    <div id="react-producao-equipamentos" data-summary='{{{ JSON.stringify(summary) }}}'></div>  
+    <div id="react-producao-equipamentos" data-summary='{{{ escape(JSON.stringify(summary)) }}}'></div>  
   @else
     @!emptyMessage()
   @endif

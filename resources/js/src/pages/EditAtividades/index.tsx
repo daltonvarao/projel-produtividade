@@ -162,9 +162,9 @@ if (container) {
   const cargosRaw = unescape(container.getAttribute('data-cargos') || '')
   const cargos = JSON.parse(cargosRaw || '[]')
   const atividadeRaw = unescape(container.getAttribute('data-atividade') || '')
-  const atividade = JSON.parse(atividadeRaw ?? '[]')
+  const atividade = JSON.parse(atividadeRaw || '[]')
   const flashMessagesRaw = unescape(container.getAttribute('data-flashmessages') || '[]')
-  const flashMessages = JSON.parse(flashMessagesRaw ?? '[]')
+  const flashMessages = JSON.parse(flashMessagesRaw || '[]')
 
   ReactDOM.render(
     <EditAtividades cargos={cargos} atividade={atividade} flashMessages={flashMessages} />,

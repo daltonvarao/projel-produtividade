@@ -146,10 +146,10 @@ const CreateCargoPermissions: React.FC<EditCargoPermissionsProps> = ({
 const container = document.querySelector('#react-edit-cargos')
 if (container) {
   const rawResources = unescape(container.getAttribute('data-resources') || '')
-  const resources = JSON.parse(rawResources ?? '[]') as Resource[]
+  const resources = JSON.parse(rawResources || '[]') as Resource[]
 
   const rawPermissions = unescape(container.getAttribute('data-permissions') || '')
-  const permissions = JSON.parse(rawPermissions ?? '[]') as CargoPermission[]
+  const permissions = JSON.parse(rawPermissions || '[]') as CargoPermission[]
 
   ReactDOM.render(
     <CreateCargoPermissions resources={resources} permissions={permissions} />,
