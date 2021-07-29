@@ -19,8 +19,8 @@
 
         <div 
           id="react-edit-cargos"
-          data-resources='{{{ JSON.stringify(resources) }}}'
-          data-permissions='{{{ JSON.stringify(permissions) }}}'
+          data-resources='{{{ escape(JSON.stringify(resources)) }}}'
+          data-permissions='{{{ escape(JSON.stringify(permissions)) }}}'
         >
         </div>
 
