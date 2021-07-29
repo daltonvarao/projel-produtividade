@@ -117,7 +117,7 @@ const CreateRdoAtividades: React.FC<CreateRdoAtividadesProps> = ({ atividades, f
 const container = document.querySelector('#create-rdo-atividades')
 
 if (container) {
-  const atividadesRaw = container.getAttribute('data-atividades')
+  const atividadesRaw = unescape(container.getAttribute('data-atividades') ?? '')
   const atividades: Atividade[] = JSON.parse(atividadesRaw ?? '[]')
 
   const furosRaw = container.getAttribute('data-furos')

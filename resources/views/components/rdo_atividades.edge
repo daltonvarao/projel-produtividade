@@ -91,7 +91,7 @@
       <div
         id="create-rdo-atividades"
         data-furos='{{{ JSON.stringify(furos) }}}'
-        data-atividades='{{{ JSON.stringify(atividades) }}}'></div>
+        data-atividades='{{{ escape(JSON.stringify(atividades)) }}}'></div>
     </form>
   @endslot
 

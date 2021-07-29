@@ -9,12 +9,12 @@ export default class RdoAtividadesController {
 
     const validationSchema = schema.create({
       atividadeId: schema.number(),
-      quantidade: schema.number(),
+      horaInicio: schema.date(),
+      horaFim: schema.date(),
+      quantidade: schema.number.optional(),
       quantidadeInicial: schema.number.optional(),
       quantidadeFinal: schema.number.optional(),
-      horaInicio: schema.date(),
-      furoId: schema.number(),
-      horaFim: schema.date(),
+      furoId: schema.number.optional(),
     })
 
     const data = await request.validate({
