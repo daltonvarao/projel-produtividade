@@ -495,25 +495,40 @@ body.modal-open {
   stroke: var(--primary);
 }
 
-.sidebar .logout-container button {
-  padding: 1rem 1.75rem;
+.sidebar .logout-container {
+  padding: 0.5rem 1rem;
   width: 100%;
 
   display: flex;
   justify-content: space-between;
+  align-items: center;
   border-radius: 0;
   font-size: 16px !important;
   font-weight: 500;
   background: transparent;
 
-  border-top: 1px solid rgba(255, 99, 71, 0.164);
+  border-top: 1px solid var(--shadow-color);
   color: var(--error);
   stroke: var(--error);
   transition: background 0.3s;
 }
 
+.sidebar .logout-container .logged-info p {
+  font-size: 14px;
+  color: var(--font-secondary);
+}
+
+.sidebar .logout-container button {
+  color: var(--error);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  padding: 0.25rem;
+  background: transparent;
+}
+
 .sidebar .logout-container button:hover {
-  background: rgba(255, 99, 71, 0.164);
+  opacity: 0.8;
 }
 
 /* PAGE TITLE */
@@ -1017,13 +1032,11 @@ table + button {
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 
-  width: 500px;
   justify-content: space-between;
 }
 
 .profile-card .profile-info {
   padding: 1rem;
-  background: #fff;
   border-radius: 0.25rem;
 }
 
@@ -1122,6 +1135,12 @@ table + button {
     left: 0;
     box-shadow: 0 0 12px 0 var(--shadow-color);
     transition: all 0.3s;
+  }
+
+  .close-menu {
+    padding: 0;
+    display: flex;
+    align-items: center;
   }
 
   .show-menu {
@@ -1252,7 +1271,6 @@ table + button {
   }
 
   .profile-card .profile-info {
-    width: fit-content;
     display: block;
     background: transparent;
     padding: 1rem;

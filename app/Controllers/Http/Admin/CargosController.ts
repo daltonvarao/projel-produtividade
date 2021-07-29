@@ -104,6 +104,7 @@ export default class CargosController {
 
   public async update({ request, session, params, response, logger }: HttpContextContract) {
     const { id } = params
+    const contratoId: number = session.get('contratoId')
 
     const cargoSchema = schema.create({
       titulo: schema.string({}, [
@@ -111,6 +112,7 @@ export default class CargosController {
           table: 'cargos',
           column: 'titulo',
           whereNot: { id },
+          where: { contrato_id: contratoId },
         }),
       ]),
       name: schema.array().members(schema.string()),

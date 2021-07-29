@@ -88,6 +88,7 @@ export default class EquipamentosController {
 
   public async update({ params, session, request, response, logger }: HttpContextContract) {
     const { id } = params
+    const contratoId: number = session.get('contratoId')
 
     const equipamentoSchema = schema.create({
       tag: schema.string({}, [
@@ -95,6 +96,9 @@ export default class EquipamentosController {
           table: 'equipamentos',
           column: 'tag',
           whereNot: { id },
+          where: {
+            contrato_id: contratoId,
+          },
         }),
       ]),
       descricao: schema.string(),

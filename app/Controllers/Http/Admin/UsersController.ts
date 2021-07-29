@@ -129,6 +129,7 @@ export default class UsersController {
 
   public async update({ params, request, response, session, logger }: HttpContextContract) {
     const { id } = params
+    const contratoId: number = session.get('contratoId')
 
     const userSchema = schema.create({
       nome: schema.string(),
@@ -137,6 +138,7 @@ export default class UsersController {
           table: 'users',
           column: 'cpf',
           whereNot: { id },
+          where: { contrato_id: contratoId },
         }),
       ]),
       password: schema.string.optional({}, [rules.confirmed('password_confirmation')]),

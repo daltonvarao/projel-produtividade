@@ -5,7 +5,9 @@
       <h1>Projel</h1>
     </div>
 
-    <button class="close-menu">&times;</button>
+    <button class="close-menu">
+      <span data-feather="x"></span>
+    </button>
   </div>
 
   <div class="navigation">
@@ -52,9 +54,14 @@
       </a>
     </div>
 
+
     <form class="logout-container" method="post" action="{{ route('admin.sessions.destroy', {id: 1}) }}?_method=DELETE">
+      <div class="logged-info">
+        <p>{{ truncate(auth.user.nome, 10) }}</p>
+        <p>{{ truncate(request.currentContrato.numero, 10) }}</p>
+      </div>
+
       <button>
-        Sair
         <span data-feather="log-out"></span>
       </button>
     </form>

@@ -124,6 +124,7 @@ export default class AtividadesController {
 
   public async update({ request, session, response, params, logger }: HttpContextContract) {
     const { id } = params
+    const contratoId: number = session.get('contratoId')
 
     const atividadeSchema = schema.create({
       descricao: schema.string({}, [
@@ -131,6 +132,7 @@ export default class AtividadesController {
           column: 'descricao',
           table: 'atividades',
           whereNot: { id },
+          where: { contrato_id: contratoId },
         }),
       ]),
       unidade_medida: schema.string.optional({}, [rules.requiredWhen('tipo', '=', 'produtiva')]),
