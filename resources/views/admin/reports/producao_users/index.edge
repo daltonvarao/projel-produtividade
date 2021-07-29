@@ -19,7 +19,7 @@
       <div
         class="react-select-input"
         inputid='funcionario'
-        collection='{{{ JSON.stringify(users) }}}'
+        collection='{{{ escape(JSON.stringify(users)) }}}'
         labelkey='nome'
         valuekey='id'
         name='userId'

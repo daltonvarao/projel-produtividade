@@ -9,7 +9,7 @@
       <div
         class="react-select-input"
         inputid='equipamento'
-        collection='{{{ JSON.stringify(equipamentos) }}}'
+        collection='{{{ escape(JSON.stringify(equipamentos)) }}}'
         labelkey='tag'
         valuekey='id'
         name='equipamentoId'
