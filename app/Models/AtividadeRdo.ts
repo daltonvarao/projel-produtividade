@@ -27,6 +27,9 @@ export default class AtividadeRdo extends BaseModel {
   @column()
   public quantidadeFinal: number
 
+  @column()
+  public observacao: string
+
   @column.dateTime({
     serialize: (value?: DateTime) => {
       return value ? value.toLocal().toFormat('HH:mm') : value

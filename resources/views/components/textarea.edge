@@ -1,0 +1,19 @@
+<div class="form-group {{ className || '' }}">
+  @if(label)
+    <label for="{{ id || name }}">{{ label }}</label>
+  @endif
+  <textarea
+    placeholder="{{ placeholder || label }}"
+    name="{{ name }}"
+    step="{{ step ?? '' }}"
+    min="{{ min ?? '' }}"
+    max="{{ max ?? '' }}"
+    id="{{ id || name }}"
+    rows="{{ rows || 3 }}"
+    {{ maxLength ? `maxlength=${maxLength}` : ''}}
+    {{ minLength ? `minlength=${minLength}` : ''}}
+    
+    {{ disabled ? 'disabled' : '' }}
+    {{ readonly ? 'readonly' : '' }}
+  >{{ value ?? '' }}</textarea>
+</div>

@@ -22,6 +22,7 @@ interface Atividade {
   quantidadeInicial: number
   quantidadeFinal: number
   furoNome?: string
+  observacao?: string
 }
 
 interface Data extends RdoData {

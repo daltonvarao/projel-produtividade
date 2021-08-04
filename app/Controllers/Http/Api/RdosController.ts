@@ -24,6 +24,7 @@ export default class RdosController {
               quantidadeFinal: schema.number(),
               quantidade: schema.number(),
               furoNome: schema.string.optional(),
+              observacao: schema.string.optional(),
             })
           ),
           equipamentos: schema.array().members(

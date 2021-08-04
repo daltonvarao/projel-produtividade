@@ -10,6 +10,7 @@
         <th title="Horário Inicial" class="text-left">H. Inicio</th>
         <th title="Horário Final" class="text-left">H. Fim</th>
         <th class="text-left">Atividade</th>
+        <th class="text-md-left">Observação</th>
         <th class="text-md-center">Furo</th>
         <th title="Quantidade Inicial" class="text-center">Q. Inicial</th>
         <th title="Quantidade Final" class="text-center">Q. Final</th>
@@ -23,7 +24,8 @@
             <td title="Horário Inicial" class="text-left">{{ rdo_atividade.hora_inicio }}</td>
             <td title="Horário Final" class="text-left">{{ rdo_atividade.hora_fim  }}</td>
             <td title="Descrição" class="text-left">{{ (rdo_atividade.atividade.descricao) }}</td>
-            <td title="Furo" class="text-md-center">{{ rdo_atividade.furo?.nome ?? '-' }}</td>
+            <td title="Furo" class="text-md-center">{{ rdo_atividade.observacao || '-' }}</td>
+            <td title="Observação" class="text-md-left">{{ rdo_atividade.furo?.nome || '-' }}</td>
             <td title="Quantidade Inicial" class="text-md-center">
               {{ 
                 rdo_atividade.atividade.tipo === 'produtiva' 
@@ -88,7 +90,13 @@
         })
       </div>
 
+      @!textarea({
+        name: 'observacao',
+        label: 'Observação',
+      })
+
       <div
+        style="margin-top: .5rem;"
         id="create-rdo-atividades"
         data-furos='{{{ JSON.stringify(furos) }}}'
         data-atividades='{{{ escape(JSON.stringify(atividades)) }}}'></div>

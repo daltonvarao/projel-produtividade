@@ -15,6 +15,7 @@ export default class RdoAtividadesController {
       quantidadeInicial: schema.number.optional(),
       quantidadeFinal: schema.number.optional(),
       furoId: schema.number.optional(),
+      observacao: schema.string.optional(),
     })
 
     const data = await request.validate({
