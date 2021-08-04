@@ -29,22 +29,28 @@
       </div>
     </div>
 
-    <div class="form-group">
-      <label class="text-white">label</label>
-      <button class="btn btn-primary">Filtrar</button>
+    <div class="filter-button-group">
+      <div class="filter-button">
+        <label class="text-white" for="">label</label>
+        <button class="filter-submit">Filtrar</button>
+      </div>
+      <div class="filter-button">
+        <label class="text-white" for="">label</label>
+        <a href="{{ request.url() }}" class="filter-clear">Limpar</a>
+      </div>
+      @if(producaoUsers?.users)
+        <div class="filter-button">
+          <label class="text-white">label</label>
+          <a 
+            class="excel-button" 
+            href="{{ route('admin.reports.producao-usuarios-excel', {}, { qs: request.qs() }) }}"
+          >
+            Excel
+          </a>
+        </div>
+      @endif
     </div>
 
-    @if(producaoUsers?.users)
-      <div class="form-group">
-        <label class="text-white">label</label>
-        <a 
-          class="btn btn-success" 
-          href="{{ route('admin.reports.producao-usuarios-excel', {}, { qs: request.qs() }) }}"
-        >
-          Excel
-        </a>
-      </div>
-    @endif
 
   </form>
   <div class="table-container">

@@ -119,7 +119,7 @@ button {
   border: 0;
   border-radius: 0.25rem;
   outline: none;
-  font-size: 13px !important;
+  font-size: 13px;
 }
 
 .btn {
@@ -628,17 +628,6 @@ form .form-group-inline .switch + label,
   margin-top: 0.5rem;
 }
 
-form .form-group label,
-.form-filter div label,
-.form-filter .form-group label,
-.card-form form .form-group label {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--primary);
-  margin-bottom: 0.25rem;
-  display: block;
-}
-
 .card-form form .form-group input[type='checkbox'] {
   width: auto;
 }
@@ -925,33 +914,6 @@ table + button {
   transition: border-color 0.3s;
 }
 
-/* FORM FILTER */
-.form-filter {
-  background: var(--white);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 0 25px 0 var(--shadow-color);
-  display: flex;
-}
-
-.form-filter .form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-filter .form-group button {
-  padding: 0.5rem 0.75rem;
-  font-size: 14px;
-  border: 1px solid var(--primary);
-}
-
-.form-filter div + .form-group,
-.form-filter .form-group + div,
-.form-filter .form-group + .form-group {
-  margin-left: 0.5rem;
-}
-
 /* CARDS */
 .cards-container {
   margin-bottom: 1rem;
@@ -1052,6 +1014,76 @@ table + button {
   margin-top: 1.5rem;
 }
 
+form .form-group label,
+.card-form form .form-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--primary);
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+/* FORM FILTER */
+.form-filter {
+  background: var(--white);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 25px 0 var(--shadow-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-button-group {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-top: 0.5rem;
+  gap: 0.5rem;
+}
+
+.filter-button-group .filter-button {
+  width: 100%;
+}
+
+.filter-button-group .filter-button .excel-button,
+.filter-button-group .filter-button .filter-submit,
+.filter-button-group .filter-button .filter-clear {
+  padding: 0.5rem 1rem;
+  font-size: 16px;
+  border-radius: 0.25rem;
+  text-align: center;
+  width: 100%;
+  border: 1px solid transparent;
+  display: block;
+}
+
+.filter-button-group .filter-button .filter-submit {
+  background: var(--primary);
+  color: #fff;
+}
+
+.filter-button-group .filter-button .excel-button {
+  background: var(--success);
+  color: #fff;
+}
+
+.filter-button-group .filter-button .filter-clear {
+  border-color: var(--primary);
+}
+
+.filter-button-group .filter-button label {
+  display: none;
+}
+
+.form-filter div label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--primary);
+  margin-bottom: 0.35rem;
+  display: block;
+}
+
 /* MEDIA QUERIES */
 
 @media screen and (min-width: 768px) {
@@ -1091,6 +1123,67 @@ table + button {
   .page-title h1 {
     font-size: 28px;
   }
+
+  .form-filter {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  /* verificar essa quebra de texto */
+
+  .filter-button-group {
+    margin: 0;
+    width: 20%;
+  }
+
+  .filter-button-group .filter-button .filter-submit,
+  .filter-button-group .filter-button .excel-button,
+  .filter-button-group .filter-button .filter-clear {
+    font-size: 14px;
+    height: 40px;
+  }
+
+  .form-filter div label,
+  .filter-button-group .filter-button label {
+    display: block;
+  }
+}
+
+/* GLOBALS */
+.w-25 {
+  width: 25% !important;
+}
+
+.w-50 {
+  width: 50% !important;
+}
+
+.w-75 {
+  width: 75% !important;
+}
+
+.w-100 {
+  width: 100% !important;
+}
+
+.bg-light {
+  background: var(--light);
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+}
+
+.form-row .form-group {
+  margin-top: 0 !important;
+  width: 100%;
+}
+
+.form-row .form-group + .form-group {
+  margin-left: 0.5rem;
 }
 
 @media screen and (max-width: 768px) {
@@ -1287,41 +1380,6 @@ table + button {
   }
 }
 
-/* GLOBALS */
-.w-25 {
-  width: 25% !important;
-}
-
-.w-50 {
-  width: 50% !important;
-}
-
-.w-75 {
-  width: 75% !important;
-}
-
-.w-100 {
-  width: 100% !important;
-}
-
-.bg-light {
-  background: var(--light);
-}
-
-.form-row {
-  display: flex;
-  align-items: center;
-}
-
-.form-row .form-group {
-  margin-top: 0 !important;
-  width: 100%;
-}
-
-.form-row .form-group + .form-group {
-  margin-left: 0.5rem;
-}
-
 @media print {
   .sidebar {
     display: none;
@@ -1364,15 +1422,6 @@ table + button {
   .form-filter {
     padding: 1rem;
     box-shadow: none;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-  }
-
-  .form-filter button,
-  .form-filter label.text-white {
-    display: none;
-  }
-
-  .form-filter input {
     border: 1px solid rgba(0, 0, 0, 0.1);
   }
 }
