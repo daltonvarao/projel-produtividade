@@ -3,105 +3,119 @@
 @set('title', 'Produção Funcionários')
 
 @section('content')
-  <form class="form-filter" action="">
-    <div class="form-group">
-      <label for="initialDate">Data inicial</label>
-      <input type="date" value="{{ request.qs().initialDate || '' }}" name="initialDate" />
-    </div>
-    
-    <div class="form-group">
-      <label for="finalDate">Data final</label>
-      <input type="date" value="{{ request.qs().finalDate || '' }}" name="finalDate" />
-    </div>
-
-    <div>
-      <label for="funcionario">Funcionário (opcional)</label>
-      <div
-        class="react-select-input"
-        inputid='funcionario'
-        collection='{{{ escape(JSON.stringify(users)) }}}'
-        labelkey='nome'
-        valuekey='id'
-        name='userId'
-        placeholder='Selecione um funcionário'
-        value='{{ request.qs().userId ?? '' }}'
-      >
-      </div>
-    </div>
-
-    <div class="filter-button-group">
-      <div class="filter-button">
-        <label class="text-white" for="">label</label>
-        <button class="filter-submit">Filtrar</button>
-      </div>
-      <div class="filter-button">
-        <label class="text-white" for="">label</label>
-        <a href="{{ request.url() }}" class="filter-clear">Limpar</a>
-      </div>
-      @if(producaoUsers?.users)
-        <div class="filter-button">
-          <label class="text-white">label</label>
-          <a 
-            class="excel-button" 
-            href="{{ route('admin.reports.producao-usuarios-excel', {}, { qs: request.qs() }) }}"
-          >
-            Excel
-          </a>
+  <div class="card">
+    <div class="card-content">
+      <form class="" action="">
+        <div class="form-md-row">
+          <div class="form-group">
+            <label for="initialDate">Data inicial *</label>
+            <input type="date" value="{{ request.qs().initialDate || '' }}" name="initialDate" />
+          </div>
+          <div class="form-group">
+            <label for="finalDate">Data final *</label>
+            <input type="date" value="{{ request.qs().finalDate || '' }}" name="finalDate" />
+          </div>
+          <div class="form-group">
+            <label for="funcionario">Funcionário</label>
+            <div
+              class="react-select-input"
+              inputid='funcionario'
+              collection='{{{ escape(JSON.stringify(users)) }}}'
+              labelkey='nome'
+              valuekey='id'
+              name='userId'
+              placeholder='Funcionário'
+              value='{{ request.qs().userId ?? '' }}'
+            >
+            </div>
+          </div>
         </div>
-      @endif
+
+        <div class="form-row mt-2">
+          <button class="btn btn-primary">Filtrar</button>
+          {{--  <button type="button" id="print_report" class="btn btn-error">Imprimir</button>  --}}
+          <a href="{{ request.url() }}" class="btn btn-light">Limpar</a>
+          @if(producaoUsers?.users)
+            <a 
+              class="btn btn-success" 
+              href="{{ route('admin.reports.producao-usuarios-excel', {}, { qs: request.qs() }) }}"
+            >
+            Excel
+            <span style="width: 16px; margin-left: .5rem;" data-feather="download"></span>
+          </a>
+          @endif
+        </div>
+      </form>
     </div>
-
-
-  </form>
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th class="text-left" rowspan="2">Nome</th>
-          <th class="text-left" rowspan="2">Cargo</th>
-          <th class="text-md-center" rowspan="2">Cpf</th>
-          <th class="text-center" colspan="4">Dados bancários</th>
-          <th class="text-md-right" rowspan="2">Valor (R$)</th>
-        </tr>
-        <tr>
-          <th class="text-md-cente">Banco</th>
-          <th class="text-md-center">Agência</th>
-          <th class="text-md-center" title="Operação da Caixa">O. C.</th>
-          <th class="text-md-center">Conta</th>
-        </tr>
-      </thead>
-      
-      <tbody>
-        @each(user in producaoUsers?.users)
-          <tr>
-            <td class="text-left" title="Nome">{{ user.nome }}</td>
-            <td class="text-left" title="Cargo">{{ user.cargo.titulo }}</td>
-            <td class="text-md-center" title="Cpf">{{ user.maskedCpf }}</td>
-            <td class="text-md-center" title="Banco">{{ user.banco }}</td>
-            <td class="text-md-center" title="Agência">{{ user.agencia }}</td>
-            <td class="text-md-center" title="Operação Caixa">{{ user.operacao_caixa ?? '-' }}</td>
-            <td class="text-md-center" title="Conta" >{{ user.conta }}</td>
-            <td class="text-md-right" title="Produção no Período">
-              {{ Number(user.valor).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) }}
-            </td>
-          </tr>
-        @else
-          @!emptyMessage()
-        @endeach
-
-        @if(producaoUsers?.users?.length)
-          <tr>
-            <td class="text-left text-bold text-primary" colspan="7">Total</td>
-            <td class="text-md-right">
-              {{{ 
-                Number(producaoUsers.valorTotal.toFixed(2))
-                  .toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})
-              }}}
-            </td>
-          </tr>
-        @endif
-        <tr></tr>
-      </tbody>
-    </table>
   </div>
+
+  <div class="card mt-4">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="text-left">Nome</th>
+            <th class="text-left">Cargo</th>
+            <th class="text-md-center">Cpf</th>
+            <th class="text-md-cente">Banco</th>
+            <th class="text-md-center">Agência</th>
+            <th class="text-md-center" title="Operação da Caixa">O. C.</th>
+            <th class="text-md-center">Conta</th>
+            <th class="text-md-right">Valor (R$)</th>
+          </tr>
+        </thead>
+        
+        <tbody>
+          @each(user in producaoUsers?.users)
+            <tr>
+              <td class="text-left">{{ user.nome }}</td>
+              <td class="text-left" data-tooltip="{{ user.cargo.titulo }}">{{ truncate(user.cargo.titulo, 10) }}</td>
+              <td class="text-md-center">{{ user.maskedCpf }}</td>
+              <td class="text-md-center" data-tooltip-place="right"  data-tooltip="{{ user.banco }}">{{ truncate(user.banco, 10) }}</td>
+              <td class="text-md-center" data-tooltip-place="bottom"  data-tooltip="{{ user.agencia }}">{{ user.agencia }}</td>
+              <td class="text-md-center">{{ user.operacao_caixa ?? '-' }}</td>
+              <td class="text-md-center">{{ user.conta }}</td>
+              <td class="text-md-right">
+                {{ Number(user.valor).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) }}
+              </td>
+            </tr>
+          @else
+            @!emptyMessage()
+          @endeach
+
+          @if(producaoUsers?.users?.length)
+            <tr>
+              <td class="text-left text-bold text-primary" colspan="7">Total</td>
+              <td class="text-md-right">
+                {{{ 
+                  Number(producaoUsers.valorTotal.toFixed(2))
+                    .toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})
+                }}}
+              </td>
+            </tr>
+          @endif
+          <tr></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!--script>
+      const printButton = document.getElementById('print_report')
+      const table = document.querySelector('.data-table')
+
+      printButton.addEventListener('click', function() {
+        const winPrint = window.open('', '_blank', '');
+
+        winPrint.document.head.appendChild(document.querySelector('head').cloneNode(true))
+        winPrint.document.body.appendChild(table.cloneNode(true))
+        winPrint.document.close();
+        
+        winPrint.focus();
+        winPrint.print();
+
+        setTimeout(() => { winPrint.close() }, 1)
+      })
+
+    </!--script -->
 @endsection
+

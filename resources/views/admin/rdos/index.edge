@@ -3,7 +3,7 @@
 @set('title', 'Rdo\'s')
 
 @section('content')
-  <form class="form-filter" action="">
+  {{--  <form action="">
     <div>
       <label for="equipamento">Equipamento</label>
       <div
@@ -19,53 +19,55 @@
       </div>
     </div>
 
-    <div class="filter-button-group">
-      <div class="filter-button">
-        <label class="text-white" for="">label</label>
-        <button class="filter-submit">Filtrar</button>
-      </div>
-      <div class="filter-button">
-        <label class="text-white" for="">label</label>
-        <a href="{{ request.url() }}" class="filter-clear">Limpar</a>
-      </div>
+    <div>
+      <button>Filtrar</button>
+      <a class="btn" href="{{ request.url() }}">Limpar</a>
     </div>
 
-  </form>
-  <div class="table-container">
-    <table>
-      <thead>
-        <th class="text-left">Data</th>
-        <th class="text-left">Nome</th>
-        <th class="text-left">Responsável</th>
-        <th class="text-md-center">Equipamento</th>
-        <th class="text-md-center">Status</th>
-        <th class="text-right">Ações</th>
-      </thead>
-      <tbody>
-        @each(rdo in rdos.data)
-          <tr>
-            <td title="Nome" class="text-left">{{ rdo.formattedData }}</td>
-            <td title="Nome" class="text-left">{{ rdo.nome }}</td>
-            <td title="Responsável" class="text-left">{{ rdo?.user?.nome }}</td>
-            <td title="Equipamento" class="text-md-center">{{ rdo?.equipamentoPrincipal?.tag }}</td>
-            <td title="Status" class="text-md-center">{{ rdo.status }}</td>
-            <td class="text-right">
-              <a href="{{ route('admin.rdos.show', { id: rdo.id }) }}">
-                <span class="edit-icon" data-feather="eye"></span>
-              </a>
-              <form class="delete-form" action="{{ route('admin.rdos.destroy', { id: rdo.id }) }}?_method=DELETE" method="post">
-                <button type="button" class="btn-link">
-                  <span class="delete-icon" data-feather="trash"></span>
-                </button>
-              </form>
-            </td>
-          </tr>
-        @else
-          @!emptyMessage()
-        @endeach
-      </tbody>
-    </table>
-  </div>
+  </form>  --}}
 
+  <div class="card">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <th class="text-left">Data</th>
+          <th class="text-left">Nome</th>
+          <th class="text-left">Responsável</th>
+          <th class="text-md-center">Equipamento</th>
+          <th class="text-md-center">Estrutura</th>
+          <th class="text-md-center">Status</th>
+          <th class="text-right">Ações</th>
+        </thead>
+        <tbody>
+          @each(rdo in rdos.data)
+            <tr>
+              <td title="{{ rdo.formattedData }}" class="text-left">{{ rdo.formattedData }}</td>
+              <td title="{{ rdo.nome }}" class="text-left">{{ truncate(rdo.nome) }}</td>
+              <td title="{{ rdo?.user?.nome }}" class="text-left">{{ truncate(rdo?.user?.nome, 12) }}</td>
+              <td title="{{ rdo?.equipamentoPrincipal?.tag }}" class="text-md-center">{{ rdo?.equipamentoPrincipal?.tag }}</td>
+              <td title="{{ rdo?.estrutura?.nome }}" class="text-md-center">{{ rdo?.estrutura?.nome }}</td>
+              <td title="{{ rdo.status }}" class="text-md-center">
+                <div class="badge bg-{{ rdo.status === 'finalizado' ? 'success' :  'warning' }} text-white text-uppercase">
+                  {{ rdo.status }}
+                </div>
+              </td>
+              <td class="text-right">
+                <a href="{{ route('admin.rdos.show', { id: rdo.id }) }}">
+                  <span class="edit-icon" data-feather="eye"></span>
+                </a>
+                <form class="delete-form" action="{{ route('admin.rdos.destroy', { id: rdo.id }) }}?_method=DELETE" method="post">
+                  <button type="button" class="btn-link">
+                    <span class="delete-icon" data-feather="trash"></span>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          @else
+            @!emptyMessage()
+          @endeach
+        </tbody>
+      </table>
+    </div>
+  </div>
   @!pagination(collection=rdos)
 @endsection

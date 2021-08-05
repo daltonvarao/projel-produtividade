@@ -17,6 +17,7 @@ export default class RdosController {
       .preload('user')
       .preload('equipamentoPrincipal')
       .preload('contrato')
+      .preload('estrutura')
 
     if (equipamentoId && equipamentoId !== 'undefined') {
       query.where({ equipamentoId })

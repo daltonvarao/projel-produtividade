@@ -8,39 +8,44 @@
 
 
 @section('content')
-  <div class="table-container">
-    <table>
-      <thead>
-        <th class="text-left">Nome</th>
-        <th class="text-left">Cpf</th>
-        <th class="text-left">Cargo</th>
-        <th class="text-right">Ações</th>
-      </thead>
+  {{--  <div>
+    <h3>Resultados</h3>
+  </div>  --}}
+
+  <div class="card">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <th class="text-left">Nome</th>
+          <th class="text-center">Cpf</th>
+          <th class="text-left">Cargo</th>
+          <th class="text-right">Ações</th>
+        </thead>
       
-      <tbody>
-        @each(user in users.data)
-          <tr>
-            <td title="Nome" class="text-left">{{ user.nome }}</td>
-            <td title="Cpf" class="text-left">{{ user.maskedCpf }}</td>
-            <td title="Cargo" class="text-left">{{ user.cargo.titulo }}</td>
-            <td class="text-right table-actions">
-              <a href="{{ route('admin.users.edit', { id: user.id }) }}">
-                <span class="edit-icon" data-feather="edit"></span>
-              </a>
+        <tbody>
+          @each(user in users.data)
+            <tr>
+              <td class="text-left">{{ user.nome }}</td>
+              <td class="text-center">{{ user.maskedCpf }}</td>
+              <td class="text-left">{{ user.cargo.titulo }}</td>
+              <td class="text-right table-actions">
+                <a href="{{ route('admin.users.edit', { id: user.id }) }}">
+                  <span class="edit-icon" data-feather="edit"></span>
+                </a>
 
-              <form class="delete-form" action="{{ route('admin.users.destroy', { id: user.id }) }}?_method=DELETE" method="post">
-                <button type="button" class="btn-link">
-                  <span class="delete-icon" data-feather="trash"></span>
-                </button>
-              </form>
-            </td>
-          </tr>
-        @else
-          @!emptyMessage()
-        @endeach
-      </tbody>
-    </table>
+                <form class="delete-form" action="{{ route('admin.users.destroy', { id: user.id }) }}?_method=DELETE" method="post">
+                  <button type="button" class="btn-link">
+                    <span class="delete-icon" data-feather="trash"></span>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          @else
+            @!emptyMessage()
+          @endeach
+        </tbody>
+      </table>
+    </div>
   </div>
-
   @!component('components/pagination', collection=users)
 @endsection

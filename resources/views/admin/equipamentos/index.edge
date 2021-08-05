@@ -8,39 +8,40 @@
 
 
 @section('content')
-  <div class="table-container">
-    <table>
-      <thead>
-        <th class="text-left">Tag</th>
-        <th class="text-left">Descrição</th>
-        <th class="text-left">Sonda</th>
-        <th class="text-right">Ações</th>
-      </thead>
-      
-      <tbody>
-        @each(equipamento in equipamentos.data)
-          <tr>
-            <td title="Tag" class="text-left">{{ equipamento.tag }}</td>
-            <td title="Descrição" class="text-left">{{ equipamento.descricao }}</td>
-            <td title="Sonda" class="text-left">{{ equipamento.sonda ? 'Sim' : 'Não' }}</td>
-            <td class="text-right">
-              <a href="{{ route('admin.equipamentos.edit', { id: equipamento.id }) }}">
-                <span class="edit-icon" data-feather="edit"></span>
-              </a>
+  <div class="card">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <th class="text-left">Tag</th>
+          <th class="text-left">Descrição</th>
+          <th class="text-left">Sonda</th>
+          <th class="text-right">Ações</th>
+        </thead>
+        
+        <tbody>
+          @each(equipamento in equipamentos.data)
+            <tr>
+              <td title="Tag" class="text-left">{{ equipamento.tag }}</td>
+              <td title="Descrição" class="text-left">{{ equipamento.descricao }}</td>
+              <td title="Sonda" class="text-left">{{ equipamento.sonda ? 'Sim' : 'Não' }}</td>
+              <td class="text-right">
+                <a href="{{ route('admin.equipamentos.edit', { id: equipamento.id }) }}">
+                  <span class="edit-icon" data-feather="edit"></span>
+                </a>
 
-              <form class="delete-form" action="{{ route('admin.equipamentos.destroy', { id: equipamento.id }) }}?_method=DELETE" method="post">
-                <button type="button" class="btn-link">
-                  <span class="delete-icon" data-feather="trash"></span>
-                </button>
-              </form>
-            </td>
-          </tr>
-        @else
-          @!emptyMessage()
-        @endeach
-      </tbody>
-    </table>
+                <form class="delete-form" action="{{ route('admin.equipamentos.destroy', { id: equipamento.id }) }}?_method=DELETE" method="post">
+                  <button type="button" class="btn-link">
+                    <span class="delete-icon" data-feather="trash"></span>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          @else
+            @!emptyMessage()
+          @endeach
+        </tbody>
+      </table>
+    </div>
   </div>
-
   @!component('components/pagination', collection=equipamentos)
 @endsection

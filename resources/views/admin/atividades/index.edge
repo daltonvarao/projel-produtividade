@@ -30,37 +30,39 @@
       <a href="{{ request.url() }}" class="btn btn-light">Limpar</a>
     </div>
   </form>
-  <div class="table-container">
-    <table>
-      <thead>
-        <th class="text-left">Descrição</th>
-        <th class="text-md-center">Tipo</th>
-        <th class="text-right">Ações</th>
-      </thead>
-      
-      <tbody>
-        @each(atividade in atividades.data)
-          <tr>
-            <td title="Descrição" class="text-left">{{ truncate(atividade.descricao, 70) }}</td>
-            <td title="Tipo" class="text-md-center">{{ titleCase(atividade.tipo) }}</td>
-            <td class="text-right">
-              <a href="{{ route('admin.atividades.edit', { id: atividade.id }) }}">
-                <span class="edit-icon" data-feather="edit"></span>
-              </a>
 
-              <form class="delete-form" action="{{ route('admin.atividades.destroy', { id: atividade.id }) }}?_method=DELETE" method="post">
-                <button type="button" class="btn-link">
-                  <span class="delete-icon" data-feather="trash"></span>
-                </button>
-              </form>
-            </td>
-          </tr>
-        @else
-          @!emptyMessage()
-        @endeach
-      </tbody>
-    </table>
+  <div class="card">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <th class="text-left">Descrição</th>
+          <th class="text-md-center">Tipo</th>
+          <th class="text-right">Ações</th>
+        </thead>
+        
+        <tbody>
+          @each(atividade in atividades.data)
+            <tr>
+              <td title="Descrição" class="text-left">{{ truncate(atividade.descricao, 70) }}</td>
+              <td title="Tipo" class="text-md-center">{{ titleCase(atividade.tipo) }}</td>
+              <td class="text-right">
+                <a href="{{ route('admin.atividades.edit', { id: atividade.id }) }}">
+                  <span class="edit-icon" data-feather="edit"></span>
+                </a>
+
+                <form class="delete-form" action="{{ route('admin.atividades.destroy', { id: atividade.id }) }}?_method=DELETE" method="post">
+                  <button type="button" class="btn-link">
+                    <span class="delete-icon" data-feather="trash"></span>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          @else
+            @!emptyMessage()
+          @endeach
+        </tbody>
+      </table>
+    </div>
   </div>
-
   @!pagination(collection=atividades)
 @endsection

@@ -129,3 +129,52 @@ if (cpfField) {
     this.value = cpf(ev.target.value)
   })
 }
+
+// tooltips
+const tooltipTriggers = document.querySelectorAll('[data-tooltip]')
+
+if (tooltipTriggers) {
+  tooltipTriggers.forEach((trigger) => {
+    const tooltip = document.createElement('span')
+    tooltip.style.opacity = '0'
+    tooltip.classList.add('tooltip')
+
+    const tooltipData = trigger.getAttribute('data-tooltip')
+    const tooltipPlace = trigger.getAttribute('data-tooltip-place')
+
+    tooltip.innerHTML = tooltipData ?? trigger.innerHTML
+
+    trigger.onmouseover = () => {
+      trigger.appendChild(tooltip)
+
+      switch (tooltipPlace) {
+        case 'top':
+          tooltip.style.top = `${-trigger.clientHeight / 2}px`
+          tooltip.style.left = `${trigger.clientWidth / 2 - tooltip.clientWidth / 2}px`
+          tooltip.classList.add('top')
+          break
+        case 'bottom':
+          tooltip.style.bottom = `${-trigger.clientHeight / 2}px`
+          tooltip.style.left = `${trigger.clientWidth / 2 - tooltip.clientWidth / 2}px`
+          tooltip.classList.add('bottom')
+          break
+        case 'right':
+          tooltip.classList.add('right')
+          tooltip.style.top = `${trigger.clientHeight / 2 - tooltip.clientHeight / 2}px`
+          break
+        case 'left':
+        default:
+          tooltip.style.top = `${trigger.clientHeight / 2 - tooltip.clientHeight / 2}px`
+          tooltip.style.left = `${trigger.clientWidth}px`
+          tooltip.classList.add('left')
+          break
+      }
+
+      tooltip.style.opacity = '1'
+    }
+
+    trigger.onmouseleave = () => {
+      trigger.removeChild(tooltip)
+    }
+  })
+}
