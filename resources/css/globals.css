@@ -1,13 +1,13 @@
 .text-left {
-  text-align: left;
+  text-align: left !important;
 }
 
 .text-right {
-  text-align: right;
+  text-align: right !important;
 }
 
 .text-center {
-  text-align: center;
+  text-align: center !important;
 }
 
 .text-primary {
@@ -24,6 +24,10 @@
 
 .flex {
   display: flex;
+}
+
+.flex.justify-content-end {
+  justify-content: flex-end;
 }
 
 .flex.flex-row {
@@ -83,12 +87,25 @@
   margin-top: 0.5rem;
 }
 
+.ml-2 {
+  margin-left: 0.5rem;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
 .mt-3 {
   margin-top: 0.75rem;
 }
 
 .mt-4 {
   margin-top: 1rem;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .bg-light {
@@ -195,6 +212,12 @@
 
 .menu-dropdown.show {
   display: block;
+}
+
+@media screen and (max-width: 768px) {
+  .w-sm-100 {
+    width: 100%;
+  }
 }
 
 @media screen and (min-width: 768px) {

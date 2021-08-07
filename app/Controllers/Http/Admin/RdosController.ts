@@ -27,32 +27,6 @@ export default class RdosController {
       .preload('contrato')
       .preload('estrutura')
 
-    // if (initialDate && finalDate) {
-    //   if (finalDate > initialDate) {
-    //   } else {
-    //     session.flash('error', 'Datas inválidas, data final deve ser maior ou igual data inicial')
-    //     return response.redirect().back()
-    //   }
-    // }
-
-    // // criar scope de filtro
-
-    // if (equipamentoId) {
-    //   query.where({ equipamentoId })
-    // }
-
-    // if (estruturaId) {
-    //   query.where({ estruturaId })
-    // }
-
-    // if (nome) {
-    //   query.where('nome', 'ilike', `%${nome}%`)
-    // }
-
-    // if (status) {
-    //   query.where({ status })
-    // }
-
     const rdos = await query.orderBy('data', 'desc').paginate(page || 1)
 
     const equipamentos = await Equipamento.query().apply((scopes) => {

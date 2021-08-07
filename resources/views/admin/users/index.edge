@@ -8,11 +8,53 @@
 
 
 @section('content')
-  {{--  <div>
-    <h3>Resultados</h3>
-  </div>  --}}
+  <div class="dropdown w-md-50">
+    <button class="btn btn-primary" data-toggle="dropdown" data-target="dropdown-filter">
+      Filtrar
+      <span data-feather="filter" style="width: 18px; margin-left: .5rem"></span>
+    </button>
+    <div class="menu-dropdown fade" id="dropdown-filter">
+      <form action="">
+        @!input({
+          name: 'nome',
+          value: request.qs().nome || '',
+          label: 'Nome'
+        })
+        <div class="form-row mt-2">
+          @!component('components/input', { 
+            name: 'cpf',
+            label: 'Cpf',
+            value: request.qs().cpf ?? "",
+            maxLength: 14,
+            minLength: 14,
+            id: 'cpf'
+          })
+        </div>
+        <div class="form-row mt-2">
+          <div class="form-group">
+            <label for="cargo">Cargo</label>
+            <div
+              class="react-select-input"
+              inputid='cargo'
+              collection='{{{ escape(JSON.stringify(cargos)) }}}'
+              labelkey='titulo'
+              valuekey='id'
+              name='cargoId'
+              placeholder='Cargo'
+              value='{{ request.qs().cargoId ?? ""}}'
+            >
+            </div>
+          </div>
+        </div>
+        <div class="form-row mt-2">
+          <button class="btn btn-primary">Filtrar</button>
+          <a href="{{ request.url() }}" class="btn btn-light">Limpar</a>
+        </div>
+      </form>
+    </div>
+  </div>
 
-  <div class="card">
+  <div class="card mt-4">
     <div class="table-responsive">
       <table class="data-table">
         <thead>

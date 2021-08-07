@@ -7,7 +7,7 @@
 })
 
 @section('content')
-  <div class="dropdown mx-auto w-md-50">
+  <div class="dropdown w-md-50">
     <button class="btn btn-primary" data-toggle="dropdown" data-target="dropdown-filter">
       Filtrar
       <span data-feather="filter" style="width: 18px; margin-left: .5rem"></span>
@@ -20,14 +20,14 @@
           value: request.qs().descricao || '',
           label: 'Descrição'
         })
-
-        @!component('components/select2', {
-          name: 'tipo',
-          label: 'Tipo',
-          value: request.qs().tipo || '',
-          collection: ['parada', 'produtiva', 'improdutiva']
-        })
-
+        <div class="form-row mt-2">
+          @!component('components/select2', {
+            name: 'tipo',
+            label: 'Tipo',
+            value: request.qs().tipo || '',
+            collection: ['parada', 'produtiva', 'improdutiva']
+          })
+        </div>
         <div class="form-row mt-2">
           <button class="btn btn-primary">Filtrar</button>
           <a href="{{ request.url() }}" class="btn btn-light">Limpar</a>

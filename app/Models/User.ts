@@ -88,4 +88,16 @@ export default class User extends BaseModel {
   public static inContract = scope((query, contratoId: number) => {
     query.where({ contratoId })
   })
+
+  public static whereNomeLike = scope((query, nome: string) => {
+    if (nome) query.where('nome', 'ilike', `%${nome}%`)
+  })
+
+  public static whereCargoId = scope((query, cargoId: number) => {
+    if (cargoId) query.where({ cargoId })
+  })
+
+  public static whereCpf = scope((query, cpf: string) => {
+    if (cpf) query.where({ cpf: cpf.replace(/\D/g, '') })
+  })
 }

@@ -3,6 +3,8 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Cargo from 'App/Models/Cargo'
 import User from 'App/Models/User'
 
+import bancos from '../../../../resources/utils/bancos'
+
 export default class UsersController {
   private validationMessages = {
     'required': '{{ field }} é obrigatório.',
@@ -29,19 +31,25 @@ export default class UsersController {
   }
 
   public async index({ view, request, session }: HttpContextContract) {
-    const { page } = request.qs()
+    const { page, nome, cargoId, cpf } = request.qs()
     const contratoId: number = session.get('contratoId')
 
     const users = await User.query()
       .apply((scopes) => {
         scopes.inContract(contratoId)
+        scopes.whereCargoId(cargoId)
+        scopes.whereNomeLike(nome)
+        scopes.whereCpf(cpf)
       })
-      .orderBy(['nome', 'cpf'])
+      .orderBy(['nome'])
       .preload('cargo')
       .paginate(page || 1)
 
+    const cargos = await this.getCargos(contratoId)
+
     return view.render('admin/users/index', {
       users: users.baseUrl('users').toJSON(),
+      cargos: cargos.map((i) => i.toJSON()),
     })
   }
 
@@ -52,6 +60,7 @@ export default class UsersController {
 
     return view.render('admin/users/create', {
       cargos,
+      bancos,
     })
   }
 
@@ -118,6 +127,7 @@ export default class UsersController {
       return view.render('admin/users/edit', {
         user,
         cargos,
+        bancos,
       })
     } catch (error) {
       logger.error(error)

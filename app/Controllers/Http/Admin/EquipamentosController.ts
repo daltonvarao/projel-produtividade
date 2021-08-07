@@ -10,11 +10,18 @@ export default class EquipamentosController {
   }
 
   public async index({ view, request, session }: HttpContextContract) {
-    const { page } = request.qs()
+    const { page, sonda, descricao, tag } = request.qs()
     const contratoId: number = session.get('contratoId')
 
     const equipamentos = await Equipamento.query()
-      .apply((scopes) => scopes.inContract(contratoId))
+      .apply((scopes) => {
+        scopes.inContract(contratoId)
+        scopes.whereDescricaoLike(descricao)
+        scopes.whereTagLike(tag)
+        if (sonda) {
+          scopes.isSonda()
+        }
+      })
       .orderBy('tag')
       .paginate(page || 1)
 
