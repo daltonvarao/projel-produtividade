@@ -7,37 +7,39 @@
 })
 
 @section('content')
-  <div class="table-container">
-    <table>
-      <thead>
-        <th class="text-left">Número</th>
-        <th class="text-left">Centro de custo</th>
-        <th class="text-left">Descrição</th>
-        <th class="text-right">Ações</th>
-      </thead>
-      
-      <tbody>
-        @each(contrato in contratos.data)
-          <tr>
-            <td title="Número" class="text-left">{{ contrato.numero }}</td>
-            <td title="Centro de custo" class="text-left">{{ contrato.centroCusto }}</td>
-            <td title="Descrição" class="text-left">{{ contrato.descricao }}</td>
-            <td class="text-right">
-              <a href="{{ route('admin.contratos.edit', { id: contrato.id }) }}">
-                <span class="edit-icon" data-feather="edit"></span>
-              </a>
-              <form class="delete-form" action="{{ route('admin.contratos.destroy', { id: contrato.id }) }}?_method=DELETE" method="post">
-                <button type="button" class="btn-link">
-                  <span class="delete-icon" data-feather="trash"></span>
-                </button>
-              </form>
-            </td>
-          </tr>
-        @else
-          @!emptyMessage()
-        @endeach
-      </tbody>
-    </table>
+  <div class="card">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <th class="text-left">Número</th>
+          <th class="text-center">Centro de custo</th>
+          <th class="text-left">Descrição</th>
+          <th class="text-right">Ações</th>
+        </thead>
+        
+        <tbody>
+          @each(contrato in contratos.data)
+            <tr>
+              <td class="text-left">{{ contrato.numero }}</td>
+              <td class="text-center">{{ contrato.centroCusto }}</td>
+              <td class="text-left">{{ contrato.descricao }}</td>
+              <td class="text-right">
+                <a href="{{ route('admin.contratos.edit', { id: contrato.id }) }}">
+                  <span class="edit-icon" data-feather="edit"></span>
+                </a>
+                <form class="delete-form" action="{{ route('admin.contratos.destroy', { id: contrato.id }) }}?_method=DELETE" method="post">
+                  <button type="button" class="btn-link">
+                    <span class="delete-icon" data-feather="trash"></span>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          @else
+            @!emptyMessage()
+          @endeach
+        </tbody>
+      </table>
+    </div>
   </div>
 
   @!component('components/pagination', collection=contratos)

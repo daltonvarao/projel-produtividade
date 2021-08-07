@@ -8,39 +8,75 @@
 
 
 @section('content')
-  <div class="table-container">
-    <table>
-      <thead>
-        <th class="text-left">Tag</th>
-        <th class="text-left">Descrição</th>
-        <th class="text-left">Sonda</th>
-        <th class="text-right">Ações</th>
-      </thead>
-      
-      <tbody>
-        @each(equipamento in equipamentos.data)
-          <tr>
-            <td title="Tag" class="text-left">{{ equipamento.tag }}</td>
-            <td title="Descrição" class="text-left">{{ equipamento.descricao }}</td>
-            <td title="Sonda" class="text-left">{{ equipamento.sonda ? 'Sim' : 'Não' }}</td>
-            <td class="text-right">
-              <a href="{{ route('admin.equipamentos.edit', { id: equipamento.id }) }}">
-                <span class="edit-icon" data-feather="edit"></span>
-              </a>
+  <div class="dropdown w-md-50">
+    <button class="btn btn-primary" data-toggle="dropdown" data-target="dropdown-filter">
+      Filtrar
+      <span data-feather="filter" style="width: 18px; margin-left: .5rem"></span>
+    </button>
 
-              <form class="delete-form" action="{{ route('admin.equipamentos.destroy', { id: equipamento.id }) }}?_method=DELETE" method="post">
-                <button type="button" class="btn-link">
-                  <span class="delete-icon" data-feather="trash"></span>
-                </button>
-              </form>
-            </td>
-          </tr>
-        @else
-          @!emptyMessage()
-        @endeach
-      </tbody>
-    </table>
+    <div class="menu-dropdown w-sm-100" id="dropdown-filter">
+      <form action="">
+        @!input({
+          name: 'descricao',
+          value: request.qs().descricao || '',
+          label: 'Descrição'
+        })
+
+        <div class="form-row mt-2">
+          @!input({
+            name: 'tag',
+            value: request.qs().tag || '',
+            label: 'Tag'
+          })
+        </div>
+
+        <div class="form-group-inline">
+          <input type="checkbox" name="sonda" id="sonda" {{ request.qs().sonda ? "checked" : '' }}>
+          <label class="ml-2" for="sonda">Sonda</label>
+        </div>
+
+        <div class="form-row mt-2">
+          <button class="btn btn-primary">Filtrar</button>
+          <a href="{{ request.url() }}" class="btn btn-light">Limpar</a>
+        </div>
+      </form>
+    </div>
   </div>
 
+  <div class="card mt-4">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <th class="text-left">Tag</th>
+          <th class="text-left">Descrição</th>
+          <th class="text-center">Sonda</th>
+          <th class="text-right">Ações</th>
+        </thead>
+        
+        <tbody>
+          @each(equipamento in equipamentos.data)
+            <tr>
+              <td title="Tag" class="text-left">{{ equipamento.tag }}</td>
+              <td title="Descrição" class="text-left">{{ equipamento.descricao }}</td>
+              <td title="Sonda" class="text-center">{{ equipamento.sonda ? 'Sim' : 'Não' }}</td>
+              <td class="text-right">
+                <a href="{{ route('admin.equipamentos.edit', { id: equipamento.id }) }}">
+                  <span class="edit-icon" data-feather="edit"></span>
+                </a>
+
+                <form class="delete-form" action="{{ route('admin.equipamentos.destroy', { id: equipamento.id }) }}?_method=DELETE" method="post">
+                  <button type="button" class="btn-link">
+                    <span class="delete-icon" data-feather="trash"></span>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          @else
+            @!emptyMessage()
+          @endeach
+        </tbody>
+      </table>
+    </div>
+  </div>
   @!component('components/pagination', collection=equipamentos)
 @endsection

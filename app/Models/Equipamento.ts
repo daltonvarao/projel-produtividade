@@ -52,4 +52,12 @@ export default class Equipamento extends BaseModel {
   public static isSonda = scope((query) => {
     query.andWhere({ sonda: true })
   })
+
+  public static whereDescricaoLike = scope((query, descricao: string) => {
+    if (descricao) query.andWhere('descricao', 'ilike', `%${descricao}%`)
+  })
+
+  public static whereTagLike = scope((query, tag: string) => {
+    if (tag) query.andWhere('tag', 'ilike', `%${tag}%`)
+  })
 }

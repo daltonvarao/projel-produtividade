@@ -51,10 +51,13 @@
 
         <h2>Dados Bancários</h2>
 
-        @!component('components/input', {
+        @!component('components/select', {
           name: 'banco',
           label: 'Banco',
           value: flashMessages.get('banco') || user.banco,
+          collection: bancos,
+          valueKey: 'longName',
+          labelKey: 'shortName',
           error: 'errors.banco'
         })
 

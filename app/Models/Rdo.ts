@@ -97,4 +97,24 @@ export default class Rdo extends BaseModel {
   public static inContract = scope((query, contratoId: number) => {
     query.where({ contratoId })
   })
+
+  public static inPeriod = scope((query, initialDate: string, finalDate: string) => {
+    if (finalDate && initialDate) query.whereBetween('data', [initialDate, finalDate])
+  })
+
+  public static whereNameLike = scope((query, nome: string) => {
+    if (nome) query.where('nome', 'ilike', `%${nome}%`)
+  })
+
+  public static whereEstruturaId = scope((query, estruturaId: number) => {
+    if (estruturaId) query.where({ estruturaId })
+  })
+
+  public static whereEquipamentoId = scope((query, equipamentoId: number) => {
+    if (equipamentoId) query.where({ equipamentoId })
+  })
+
+  public static whereStatus = scope((query, status: string) => {
+    if (status) query.where({ status })
+  })
 }

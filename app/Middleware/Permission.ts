@@ -65,6 +65,7 @@ export default class Permission {
 
     if (!hasPermission) {
       session.flash('error', 'Você não possui permissão para acessar este recurso')
+
       return response.redirect().back()
     }
 

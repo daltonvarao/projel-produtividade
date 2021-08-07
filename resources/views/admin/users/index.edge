@@ -8,39 +8,86 @@
 
 
 @section('content')
-  <div class="table-container">
-    <table>
-      <thead>
-        <th class="text-left">Nome</th>
-        <th class="text-left">Cpf</th>
-        <th class="text-left">Cargo</th>
-        <th class="text-right">Ações</th>
-      </thead>
-      
-      <tbody>
-        @each(user in users.data)
-          <tr>
-            <td title="Nome" class="text-left">{{ user.nome }}</td>
-            <td title="Cpf" class="text-left">{{ user.maskedCpf }}</td>
-            <td title="Cargo" class="text-left">{{ user.cargo.titulo }}</td>
-            <td class="text-right table-actions">
-              <a href="{{ route('admin.users.edit', { id: user.id }) }}">
-                <span class="edit-icon" data-feather="edit"></span>
-              </a>
-
-              <form class="delete-form" action="{{ route('admin.users.destroy', { id: user.id }) }}?_method=DELETE" method="post">
-                <button type="button" class="btn-link">
-                  <span class="delete-icon" data-feather="trash"></span>
-                </button>
-              </form>
-            </td>
-          </tr>
-        @else
-          @!emptyMessage()
-        @endeach
-      </tbody>
-    </table>
+  <div class="dropdown w-md-50">
+    <button class="btn btn-primary" data-toggle="dropdown" data-target="dropdown-filter">
+      Filtrar
+      <span data-feather="filter" style="width: 18px; margin-left: .5rem"></span>
+    </button>
+    <div class="menu-dropdown fade" id="dropdown-filter">
+      <form action="">
+        @!input({
+          name: 'nome',
+          value: request.qs().nome || '',
+          label: 'Nome'
+        })
+        <div class="form-row mt-2">
+          @!component('components/input', { 
+            name: 'cpf',
+            label: 'Cpf',
+            value: request.qs().cpf ?? "",
+            maxLength: 14,
+            minLength: 14,
+            id: 'cpf'
+          })
+        </div>
+        <div class="form-row mt-2">
+          <div class="form-group">
+            <label for="cargo">Cargo</label>
+            <div
+              class="react-select-input"
+              inputid='cargo'
+              collection='{{{ escape(JSON.stringify(cargos)) }}}'
+              labelkey='titulo'
+              valuekey='id'
+              name='cargoId'
+              placeholder='Cargo'
+              value='{{ request.qs().cargoId ?? ""}}'
+            >
+            </div>
+          </div>
+        </div>
+        <div class="form-row mt-2">
+          <button class="btn btn-primary">Filtrar</button>
+          <a href="{{ request.url() }}" class="btn btn-light">Limpar</a>
+        </div>
+      </form>
+    </div>
   </div>
 
+  <div class="card mt-4">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <th class="text-left">Nome</th>
+          <th class="text-center">Cpf</th>
+          <th class="text-left">Cargo</th>
+          <th class="text-right">Ações</th>
+        </thead>
+      
+        <tbody>
+          @each(user in users.data)
+            <tr>
+              <td class="text-left">{{ user.nome }}</td>
+              <td class="text-center">{{ user.maskedCpf }}</td>
+              <td class="text-left">{{ user.cargo.titulo }}</td>
+              <td class="text-right table-actions">
+                <a href="{{ route('admin.users.edit', { id: user.id }) }}">
+                  <span class="edit-icon" data-feather="edit"></span>
+                </a>
+
+                <form class="delete-form" action="{{ route('admin.users.destroy', { id: user.id }) }}?_method=DELETE" method="post">
+                  <button type="button" class="btn-link">
+                    <span class="delete-icon" data-feather="trash"></span>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          @else
+            @!emptyMessage()
+          @endeach
+        </tbody>
+      </table>
+    </div>
+  </div>
   @!component('components/pagination', collection=users)
 @endsection

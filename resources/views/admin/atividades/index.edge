@@ -7,60 +7,67 @@
 })
 
 @section('content')
-  <form class="form-filter" action="">
-    @!input({
-      name: 'descricao',
-      value: request.qs().descricao || '',
-      label: 'Descrição'
-    })
+  <div class="dropdown w-md-50">
+    <button class="btn btn-primary" data-toggle="dropdown" data-target="dropdown-filter">
+      Filtrar
+      <span data-feather="filter" style="width: 18px; margin-left: .5rem"></span>
+    </button>
 
-    @!component('components/select2', {
-      name: 'tipo',
-      label: 'Tipo',
-      value: request.qs().tipo || '',
-      collection: ['parada', 'produtiva', 'improdutiva']
-    })
-
-    <div class="form-group">
-      <label class="text-white" for="">label</label>
-      <button class="btn btn-primary">Filtrar</button>
-    </div>    
-    <div class="form-group">
-      <label class="text-white" for="">label</label>
-      <a href="{{ request.url() }}" class="btn btn-light">Limpar</a>
+    <div class="menu-dropdown fade" id="dropdown-filter">
+      <form action="">
+        @!input({
+          name: 'descricao',
+          value: request.qs().descricao || '',
+          label: 'Descrição'
+        })
+        <div class="form-row mt-2">
+          @!component('components/select2', {
+            name: 'tipo',
+            label: 'Tipo',
+            value: request.qs().tipo || '',
+            collection: ['parada', 'produtiva', 'improdutiva']
+          })
+        </div>
+        <div class="form-row mt-2">
+          <button class="btn btn-primary">Filtrar</button>
+          <a href="{{ request.url() }}" class="btn btn-light">Limpar</a>
+        </div>
+      </form>
     </div>
-  </form>
-  <div class="table-container">
-    <table>
-      <thead>
-        <th class="text-left">Descrição</th>
-        <th class="text-md-center">Tipo</th>
-        <th class="text-right">Ações</th>
-      </thead>
-      
-      <tbody>
-        @each(atividade in atividades.data)
-          <tr>
-            <td title="Descrição" class="text-left">{{ truncate(atividade.descricao, 70) }}</td>
-            <td title="Tipo" class="text-md-center">{{ titleCase(atividade.tipo) }}</td>
-            <td class="text-right">
-              <a href="{{ route('admin.atividades.edit', { id: atividade.id }) }}">
-                <span class="edit-icon" data-feather="edit"></span>
-              </a>
-
-              <form class="delete-form" action="{{ route('admin.atividades.destroy', { id: atividade.id }) }}?_method=DELETE" method="post">
-                <button type="button" class="btn-link">
-                  <span class="delete-icon" data-feather="trash"></span>
-                </button>
-              </form>
-            </td>
-          </tr>
-        @else
-          @!emptyMessage()
-        @endeach
-      </tbody>
-    </table>
   </div>
 
+  <div class="card mt-4">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <th class="text-left">Descrição</th>
+          <th class="text-md-center">Tipo</th>
+          <th class="text-right">Ações</th>
+        </thead>
+        
+        <tbody>
+          @each(atividade in atividades.data)
+            <tr>
+              <td title="Descrição" class="text-left">{{ truncate(atividade.descricao, 70) }}</td>
+              <td title="Tipo" class="text-md-center">{{ titleCase(atividade.tipo) }}</td>
+              <td class="text-right">
+                <a href="{{ route('admin.atividades.edit', { id: atividade.id }) }}">
+                  <span class="edit-icon" data-feather="edit"></span>
+                </a>
+
+                <form class="delete-form" action="{{ route('admin.atividades.destroy', { id: atividade.id }) }}?_method=DELETE" method="post">
+                  <button type="button" class="btn-link">
+                    <span class="delete-icon" data-feather="trash"></span>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          @else
+            @!emptyMessage()
+          @endeach
+        </tbody>
+      </table>
+    </div>
+  </div>
   @!pagination(collection=atividades)
 @endsection

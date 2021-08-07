@@ -21,7 +21,8 @@ export const CardContainer = styled.div`
   background: var(--white);
   border-radius: 8px;
   padding: 2rem 2rem;
-  box-shadow: 0 0 35px 0 var(--shadow-color);
+  /* box-shadow: 0 0 35px 0 var(--shadow-color); */
+  box-shadow: var(--card-shadow);
 `
 export const HeaderContainer = styled.div`
   display: flex;
