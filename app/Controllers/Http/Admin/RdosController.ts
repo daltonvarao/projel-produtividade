@@ -9,7 +9,7 @@ import Rdo from 'App/Models/Rdo'
 import Estrutura from 'App/Models/Estrutura'
 
 export default class RdosController {
-  public async index({ view, request, session, response }: HttpContextContract) {
+  public async index({ view, request, session }: HttpContextContract) {
     const { page, equipamentoId, estruturaId, nome, status, initialDate, finalDate } = request.qs()
     const contratoId: number = session.get('contratoId')
 
