@@ -5,7 +5,7 @@
 @section('content')
   <div class="card">
     <div class="card-content">
-      <form class="" action="">
+      <form action="">
         <div class="form-md-row">
           <div class="form-group">
             <label for="initialDate">Data inicial *</label>
@@ -69,10 +69,10 @@
           @each(user in producaoUsers?.users)
             <tr>
               <td class="text-left">{{ user.nome }}</td>
-              <td class="text-left" data-tooltip="{{ user.cargo.titulo }}">{{ truncate(user.cargo.titulo, 10) }}</td>
+              <td class="text-left" data-tooltip-place="top" data-tooltip="{{ user.cargo.titulo }}">{{ truncate(user.cargo.titulo, 10) }}</td>
               <td class="text-md-center">{{ user.maskedCpf }}</td>
-              <td class="text-md-center" data-tooltip-place="right"  data-tooltip="{{ user.banco }}">{{ truncate(user.banco, 10) }}</td>
-              <td class="text-md-center" data-tooltip-place="bottom"  data-tooltip="{{ user.agencia }}">{{ user.agencia }}</td>
+              <td class="text-md-center" data-tooltip-place="top" data-tooltip="{{ user.banco }}">{{ truncate(user.banco, 5) }}</td>
+              <td class="text-md-center">{{ user.agencia }}</td>
               <td class="text-md-center">{{ user.operacao_caixa ?? '-' }}</td>
               <td class="text-md-center">{{ user.conta }}</td>
               <td class="text-md-right">
@@ -99,23 +99,5 @@
       </table>
     </div>
   </div>
-  <!--script>
-      const printButton = document.getElementById('print_report')
-      const table = document.querySelector('.data-table')
-
-      printButton.addEventListener('click', function() {
-        const winPrint = window.open('', '_blank', '');
-
-        winPrint.document.head.appendChild(document.querySelector('head').cloneNode(true))
-        winPrint.document.body.appendChild(table.cloneNode(true))
-        winPrint.document.close();
-        
-        winPrint.focus();
-        winPrint.print();
-
-        setTimeout(() => { winPrint.close() }, 1)
-      })
-
-    </!--script -->
 @endsection
 

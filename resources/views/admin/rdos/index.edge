@@ -3,30 +3,77 @@
 @set('title', 'Rdo\'s')
 
 @section('content')
-  {{--  <form action="">
-    <div>
-      <label for="equipamento">Equipamento</label>
-      <div
-        class="react-select-input"
-        inputid='equipamento'
-        collection='{{{ escape(JSON.stringify(equipamentos)) }}}'
-        labelkey='tag'
-        valuekey='id'
-        name='equipamentoId'
-        placeholder='Selecione um equipamento'
-        value='{{ request.qs().equipamentoId }}'
-      >
-      </div>
+  <div class="dropdown mx-auto w-md-50">
+    <button class="btn btn-primary" data-toggle="dropdown" data-target="dropdown-filter">
+      Filtrar
+      <span data-feather="filter" style="width: 18px; margin-left: .5rem"></span>
+    </button>
+
+    <div class="menu-dropdown fade" id="dropdown-filter">
+      <form action="">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="initialDate">Data inicial *</label>
+            <input type="date" value="{{ request.qs().initialDate || '' }}" name="initialDate" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="finalDate">Data final *</label>
+          <input type="date" value="{{ request.qs().finalDate || '' }}" name="finalDate" />
+        </div>
+        <div class="form-group">
+          <label for="nome">Nome</label>
+          <input placeholder="Nome" type="text" value="{{ request.qs().nome || '' }}" name="nome" />
+        </div>
+
+        <div class="form-group">
+          <label for="equipamento">Equipamento</label>
+          <div
+            class="react-select-input"
+            inputid='equipamento'
+            collection='{{{ escape(JSON.stringify(equipamentos)) }}}'
+            labelkey='tag'
+            valuekey='id'
+            name='equipamentoId'
+            placeholder='Equipamento'
+            value='{{ request.qs().equipamentoId ?? ""}}'
+          >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="estrutura">Estrutura</label>
+          <div
+            class="react-select-input"
+            inputid='estrutura'
+            collection='{{{ escape(JSON.stringify(estruturas)) }}}'
+            labelkey='nome'
+            valuekey='id'
+            name='estruturaId'
+            placeholder='Estrutura'
+            value='{{ request.qs().estruturaId ?? ""}}'
+          >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select name="status" id="status">
+            <option {{ !request.qs().status ? 'selected' : '' }} value="">Selecione...</option>
+            <option {{ request.qs().status === 'andamento' && 'selected' }} value="andamento">Andamento</option>
+            <option {{ request.qs().status === 'finalizado' && 'selected' }} value="finalizado">Finalizado</option>
+          </select>
+        </div>    
+        <div class="form-row mt-2">
+          <button class="btn btn-primary">Filtrar</button>
+          <a href="{{ request.url() }}" class="btn btn-light">Limpar</a>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <div>
-      <button>Filtrar</button>
-      <a class="btn" href="{{ request.url() }}">Limpar</a>
-    </div>
-
-  </form>  --}}
-
-  <div class="card">
+  <div class="card mt-4">
     <div class="table-responsive">
       <table class="data-table">
         <thead>
@@ -42,11 +89,11 @@
           @each(rdo in rdos.data)
             <tr>
               <td title="{{ rdo.formattedData }}" class="text-left">{{ rdo.formattedData }}</td>
-              <td title="{{ rdo.nome }}" class="text-left">{{ truncate(rdo.nome) }}</td>
-              <td title="{{ rdo?.user?.nome }}" class="text-left">{{ truncate(rdo?.user?.nome, 12) }}</td>
-              <td title="{{ rdo?.equipamentoPrincipal?.tag }}" class="text-md-center">{{ rdo?.equipamentoPrincipal?.tag }}</td>
-              <td title="{{ rdo?.estrutura?.nome }}" class="text-md-center">{{ rdo?.estrutura?.nome }}</td>
-              <td title="{{ rdo.status }}" class="text-md-center">
+              <td data-tooltip-place="top" data-tooltip="{{ rdo.nome }}" class="text-left">{{ truncate(rdo.nome) }}</td>
+              <td data-tooltip-place="top" data-tooltip="{{ rdo.user?.nome }}" class="text-left">{{ truncate(rdo?.user?.nome, 12) }}</td>
+              <td class="text-md-center">{{ rdo?.equipamentoPrincipal?.tag }}</td>
+              <td class="text-md-center">{{ rdo?.estrutura?.nome }}</td>
+              <td class="text-md-center">
                 <div class="badge bg-{{ rdo.status === 'finalizado' ? 'success' :  'warning' }} text-white text-uppercase">
                   {{ rdo.status }}
                 </div>

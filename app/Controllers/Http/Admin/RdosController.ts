@@ -6,22 +6,52 @@ import Atividade from 'App/Models/Atividade'
 import User from 'App/Models/User'
 import Furo from 'App/Models/Furo'
 import Rdo from 'App/Models/Rdo'
+import Estrutura from 'App/Models/Estrutura'
 
 export default class RdosController {
-  public async index({ view, request, session }: HttpContextContract) {
-    const { page, equipamentoId } = request.qs()
+  public async index({ view, request, session, response }: HttpContextContract) {
+    const { page, equipamentoId, estruturaId, nome, status, initialDate, finalDate } = request.qs()
     const contratoId: number = session.get('contratoId')
 
     const query = Rdo.query()
-      .apply((scopes) => scopes.inContract(contratoId))
+      .apply((scopes) => {
+        scopes.inContract(contratoId)
+        scopes.inPeriod(initialDate, finalDate)
+        scopes.whereEquipamentoId(equipamentoId)
+        scopes.whereEstruturaId(estruturaId)
+        scopes.whereNameLike(nome)
+        scopes.whereStatus(status)
+      })
       .preload('user')
       .preload('equipamentoPrincipal')
       .preload('contrato')
       .preload('estrutura')
 
-    if (equipamentoId && equipamentoId !== 'undefined') {
-      query.where({ equipamentoId })
-    }
+    // if (initialDate && finalDate) {
+    //   if (finalDate > initialDate) {
+    //   } else {
+    //     session.flash('error', 'Datas inválidas, data final deve ser maior ou igual data inicial')
+    //     return response.redirect().back()
+    //   }
+    // }
+
+    // // criar scope de filtro
+
+    // if (equipamentoId) {
+    //   query.where({ equipamentoId })
+    // }
+
+    // if (estruturaId) {
+    //   query.where({ estruturaId })
+    // }
+
+    // if (nome) {
+    //   query.where('nome', 'ilike', `%${nome}%`)
+    // }
+
+    // if (status) {
+    //   query.where({ status })
+    // }
 
     const rdos = await query.orderBy('data', 'desc').paginate(page || 1)
 
@@ -30,9 +60,16 @@ export default class RdosController {
       scopes.isSonda()
     })
 
+    const estruturas = await Estrutura.query()
+      .has('rdos')
+      .apply((scopes) => {
+        scopes.inContract(contratoId)
+      })
+
     return view.render('admin/rdos/index', {
       rdos: rdos.queryString(request.qs()).baseUrl('rdos').toJSON(),
       equipamentos: equipamentos.map((i) => i.toJSON()),
+      estruturas: estruturas.map((i) => i.toJSON()),
     })
   }
 

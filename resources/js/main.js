@@ -142,31 +142,31 @@ if (tooltipTriggers) {
     const tooltipData = trigger.getAttribute('data-tooltip')
     const tooltipPlace = trigger.getAttribute('data-tooltip-place')
 
-    tooltip.innerHTML = tooltipData ?? trigger.innerHTML
-
     trigger.onmouseover = () => {
+      tooltip.innerHTML = tooltipData
       trigger.appendChild(tooltip)
 
       switch (tooltipPlace) {
         case 'top':
-          tooltip.style.top = `${-trigger.clientHeight / 2}px`
+          tooltip.style.top = `${-tooltip.clientHeight - 7}px`
           tooltip.style.left = `${trigger.clientWidth / 2 - tooltip.clientWidth / 2}px`
           tooltip.classList.add('top')
           break
         case 'bottom':
-          tooltip.style.bottom = `${-trigger.clientHeight / 2}px`
+          tooltip.style.bottom = `${-tooltip.clientHeight - 7}px`
           tooltip.style.left = `${trigger.clientWidth / 2 - tooltip.clientWidth / 2}px`
           tooltip.classList.add('bottom')
           break
         case 'right':
           tooltip.classList.add('right')
           tooltip.style.top = `${trigger.clientHeight / 2 - tooltip.clientHeight / 2}px`
+          tooltip.style.right = `${-tooltip.clientWidth - 7}px`
           break
         case 'left':
         default:
-          tooltip.style.top = `${trigger.clientHeight / 2 - tooltip.clientHeight / 2}px`
-          tooltip.style.left = `${trigger.clientWidth}px`
           tooltip.classList.add('left')
+          tooltip.style.top = `${trigger.clientHeight / 2 - tooltip.clientHeight / 2}px`
+          tooltip.style.left = `${-tooltip.clientWidth - 7}px`
           break
       }
 
@@ -178,3 +178,38 @@ if (tooltipTriggers) {
     }
   })
 }
+
+// Dropdown
+const dropdownTriggers = document.querySelectorAll('[data-toggle]')
+
+if (dropdownTriggers) {
+  dropdownTriggers.forEach((trigger) => {
+    if (trigger.getAttribute('data-toggle') !== 'dropdown') return
+
+    const target = document.getElementById(trigger.getAttribute('data-target'))
+
+    trigger.addEventListener('click', () => {
+      target.classList.toggle('show')
+    })
+  })
+}
+
+// const printButton = document.getElementById('print_report')
+// const table = document.querySelector('.data-table')
+
+// if (printButton) {
+//   printButton.addEventListener('click', function () {
+//     const winPrint = window.open('', '_blank', '')
+
+//     winPrint.document.head.appendChild(document.querySelector('head').cloneNode(true))
+//     winPrint.document.body.appendChild(table.cloneNode(true))
+//     winPrint.document.close()
+
+//     winPrint.focus()
+//     winPrint.print()
+
+//     setTimeout(() => {
+//       winPrint.close()
+//     }, 1)
+//   })
+// }

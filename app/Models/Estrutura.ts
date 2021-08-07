@@ -9,7 +9,8 @@ import {
   scope,
 } from '@ioc:Adonis/Lucid/Orm'
 import Mina from 'App/Models/Mina'
-import Furo from './Furo'
+import Furo from 'App/Models/Furo'
+import Rdo from 'App/Models/Rdo'
 
 export default class Estrutura extends BaseModel {
   @column({ isPrimary: true })
@@ -29,6 +30,9 @@ export default class Estrutura extends BaseModel {
 
   @hasMany(() => Furo)
   public furos: HasMany<typeof Furo>
+
+  @hasMany(() => Rdo)
+  public rdos: HasMany<typeof Rdo>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

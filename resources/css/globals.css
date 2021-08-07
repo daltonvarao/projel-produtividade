@@ -50,6 +50,11 @@
   color: var(--white) !important;
 }
 
+.row {
+  display: block;
+  width: 100%;
+}
+
 .w-25 {
   width: 25% !important;
 }
@@ -133,7 +138,7 @@
   border-radius: 5px;
   color: #fff;
   white-space: nowrap;
-  z-index: 45;
+  z-index: 55;
   display: inline-flex;
   align-items: center;
 
@@ -141,23 +146,24 @@
 }
 
 .tooltip.right {
-  right: 100%;
+  right: -100%;
 }
 
 .tooltip::before {
   content: '';
   position: absolute;
   border: 7px solid transparent;
+  z-index: 55;
 }
 
 .tooltip.left::before {
-  left: -14px;
-  border-right-color: var(--tooltipbg);
+  right: -14px;
+  border-left-color: var(--tooltipbg);
 }
 
 .tooltip.right::before {
-  right: -14px;
-  border-left-color: var(--tooltipbg);
+  left: -14px;
+  border-right-color: var(--tooltipbg);
 }
 
 .tooltip.top::before {
@@ -172,7 +178,32 @@
   left: calc(50% - 7px);
 }
 
-@media screen and (min-width: 920px) {
+.dropdown {
+  position: relative;
+}
+
+.menu-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  display: none;
+  padding: 1rem;
+  background: #fff;
+  box-shadow: var(--card-shadow);
+  border-radius: 0.35rem;
+  z-index: 45;
+}
+
+.menu-dropdown.show {
+  display: block;
+}
+
+@media screen and (min-width: 768px) {
+  .w-md-50 {
+    width: 50%;
+  }
+}
+
+@media screen and (min-width: 1020px) {
   .form-md-row {
     flex-direction: row;
   }

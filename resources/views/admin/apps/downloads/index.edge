@@ -3,31 +3,33 @@
 @set('title', 'Apps')
 
 @section('content')
-<div class="table-container">
-  <table>
-    <thead>
-      <th class="text-left">Nome</th>
-      <th class="text-md-center">Versão</th>
-      <th class="text-md-center">Tamanho (mb)</th>
-      <th class="text-md-center">Ultima atualização</th>
-      <th class="text-right">Opções</th>
-    </thead>
-    <tbody>
-      @each(app in apps)
-        <tr>
-          <td title="Nome" class="text-left">{{ app.name }}</td>
-          <td title="Versão" class="text-md-center">{{ app.version }}</td>
-          <td title="Tamanho" class="text-md-center">{{{ app.sizeToMb }}}</td>
-          <td title="Tamanho" class="text-md-center">{{{ app.last_modified }}}</td>
-          <td class="text-right">
-            <a href="{{ route('admin.apps_download.show', { id: app.id }) }}">
-              <span title="Download" class="edit-icon" data-feather="download"></span>
-            </a>
-          </td>
-        </tr>
-      @else
-        @!emptyMessage()
-      @endeach
-    </tbody>
-  </table>
+<div class="card">
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <th class="text-left">Nome</th>
+        <th class="text-md-center">Versão</th>
+        <th class="text-md-center">Tamanho (mb)</th>
+        <th class="text-md-center">Ultima atualização</th>
+        <th class="text-right">Opções</th>
+      </thead>
+      <tbody>
+        @each(app in apps)
+          <tr>
+            <td title="Nome" class="text-left">{{ app.name }}</td>
+            <td title="Versão" class="text-md-center">{{ app.version }}</td>
+            <td title="Tamanho" class="text-md-center">{{{ app.sizeToMb }}}</td>
+            <td title="Tamanho" class="text-md-center">{{{ app.last_modified }}}</td>
+            <td class="text-right">
+              <a href="{{ route('admin.apps_download.show', { id: app.id }) }}">
+                <span title="Download" class="edit-icon" data-feather="download"></span>
+              </a>
+            </td>
+          </tr>
+        @else
+          @!emptyMessage()
+        @endeach
+      </tbody>
+    </table>
+  </div>
 @endsection
