@@ -14,7 +14,7 @@ Route.group(() => {
   Route.resource('users', 'UsersController').except(['show'])
   Route.resource('rdos', 'RdosController').except(['create', 'store'])
   Route.resource('apps/download', 'AppDownloadersController').only(['index', 'show'])
-  Route.resource('apps/upload', 'AppFileUploadersController').except(['edit', 'update'])
+  Route.resource('apps/upload', 'AppFileUploadersController').except(['edit'])
 
   Route.group(() => {
     Route.resource('logs', 'UserLogsController').only(['index'])
