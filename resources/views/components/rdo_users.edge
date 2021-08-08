@@ -5,31 +5,32 @@
     </button>
   @endslot
   @slot('content')
-    <table class="table no-shadow">
-      <thead>
-        <th class="text-left">Nome</th>
-        <th class="text-left">Cargo</th>
-        <th class="text-md-center">Cpf</th>
-        <th class="text-md-right">Ações</th>
-      </thead>
-      
-      <tbody>
-        @each(rdo_user in rdo.rdoUsers)
-          <tr>
-            <td title="Nome" class="text-left">{{ rdo_user.user.nome  }}</td>
-            <td title="Cargo" class="text-left">{{ rdo_user.user.cargo.titulo }}</td>
-            <td title="Cpf" class="text-md-center">{{ rdo_user.user.maskedCpf  }}</td>
-            <td class="text-md-right">
-              <form class="delete-form" action="{{ route('admin.rdo_users.destroy', { rdoId: rdo.id, id: rdo_user.id }) }}?_method=DELETE" method="post">
-                <button type="button" class="btn-link">
-                  <span class="delete-icon" data-feather="trash"></span>
-                </button>
-              </form>
-            </td>
-          </tr>
-        @endeach
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <th class="text-left">Nome</th>
+          <th class="text-left">Cargo</th>
+          <th class="text-md-center">Cpf</th>
+          <th class="text-md-right">Ações</th>
+        </thead>
+        <tbody>
+          @each(rdo_user in rdo.rdoUsers)
+            <tr>
+              <td title="Nome" class="text-left">{{ rdo_user.user.nome  }}</td>
+              <td title="Cargo" class="text-left">{{ rdo_user.user.cargo.titulo }}</td>
+              <td title="Cpf" class="text-md-center">{{ rdo_user.user.maskedCpf  }}</td>
+              <td class="text-md-right">
+                <form class="delete-form" action="{{ route('admin.rdo_users.destroy', { rdoId: rdo.id, id: rdo_user.id }) }}?_method=DELETE" method="post">
+                  <button type="button" class="btn-link">
+                    <span class="delete-icon" data-feather="trash"></span>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          @endeach
+        </tbody>
+      </table>
+    </div>
   @endslot
 @end
 

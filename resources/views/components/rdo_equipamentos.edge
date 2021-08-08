@@ -6,34 +6,34 @@
   @endslot
 
   @slot('content')
-    <table class="table no-shadow">
-      <thead>
-        <th class="text-left">Tag</th>
-        <th class="text-left">Descrição</th>
-        <th class="text-md-center">Quantidade</th>
-        <th class="text-md-right">Ações</th>
-      </thead>
-      
-      <tbody>
-        @each(rdo_equipamento in rdo.rdoEquipamentos)
-          <tr>
-            <td title="Tag" class="text-left">{{ rdo_equipamento.equipamento.tag  }}</td>
-            <td title="Descrição" class="text-left">{{ rdo_equipamento.equipamento.descricao }}</td>
-            <td title="Quantidade" class="text-md-center">
-              {{{ Number(rdo_equipamento.quantidade) }}}
-            </td>
-
-            <td class="text-md-right">
-              <form class="delete-form" action="{{ route('admin.rdo_equipamentos.destroy', { rdoId: rdo.id, id: rdo_equipamento.id }) }}?_method=DELETE" method="post">
-                <button type="button" class="btn-link">
-                  <span class="delete-icon" data-feather="trash"></span>
-                </button>
-              </form>
-            </td>
-          </tr>
-        @endeach
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <th class="text-left">Tag</th>
+          <th class="text-left">Descrição</th>
+          <th class="text-md-center">Quantidade</th>
+          <th class="text-md-right">Ações</th>
+        </thead>
+        <tbody>
+          @each(rdo_equipamento in rdo.rdoEquipamentos)
+            <tr>
+              <td title="Tag" class="text-left">{{ rdo_equipamento.equipamento.tag  }}</td>
+              <td title="Descrição" class="text-left">{{ rdo_equipamento.equipamento.descricao }}</td>
+              <td title="Quantidade" class="text-md-center">
+                {{{ Number(rdo_equipamento.quantidade) }}}
+              </td>
+              <td class="text-md-right">
+                <form class="delete-form" action="{{ route('admin.rdo_equipamentos.destroy', { rdoId: rdo.id, id: rdo_equipamento.id }) }}?_method=DELETE" method="post">
+                  <button type="button" class="btn-link">
+                    <span class="delete-icon" data-feather="trash"></span>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          @endeach
+        </tbody>
+      </table>
+    </div>
   @endslot
 @end
 

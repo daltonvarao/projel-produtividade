@@ -7,6 +7,7 @@ import User from 'App/Models/User'
 import Furo from 'App/Models/Furo'
 import Rdo from 'App/Models/Rdo'
 import Estrutura from 'App/Models/Estrutura'
+import AtividadeRdo from 'App/Models/AtividadeRdo'
 
 export default class RdosController {
   public async index({ view, request, session }: HttpContextContract) {
@@ -67,7 +68,7 @@ export default class RdosController {
       const rdo = await Rdo.query()
         .where({ id })
         .preload('rdoAtividades', (qra) => {
-          qra.preload('atividade').preload('furo').orderBy('hora_inicio')
+          qra.preload('atividade').preload('furo').orderByRaw('hora_inicio::TIME')
         })
         .preload('rdoEquipamentos', (qre) => {
           qre.preload('equipamento')

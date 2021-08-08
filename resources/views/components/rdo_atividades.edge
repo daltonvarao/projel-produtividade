@@ -5,69 +5,69 @@
     </button>
   @endslot
   @slot('content')
-    <table class="table no-shadow">
-      <thead>
-        <th title="Horário Inicial" class="text-left">H. Inicio</th>
-        <th title="Horário Final" class="text-left">H. Fim</th>
-        <th class="text-left">Atividade</th>
-        <th class="text-md-left">Observação</th>
-        <th class="text-md-center">Furo</th>
-        <th title="Quantidade Inicial" class="text-center">Q. Inicial</th>
-        <th title="Quantidade Final" class="text-center">Q. Final</th>
-        <th title="Quantidade Total" class="text-center">Q. Total</th>
-        <th class="text-center">Ações</th>
-      </thead>
-      
-      <tbody>
-        @each(rdo_atividade in rdo.rdoAtividades)
-          <tr>
-            <td title="Horário Inicial" class="text-left">{{ rdo_atividade.hora_inicio }}</td>
-            <td title="Horário Final" class="text-left">{{ rdo_atividade.hora_fim  }}</td>
-            <td title="Descrição" class="text-left">{{ (rdo_atividade.atividade.descricao) }}</td>
-            <td title="Furo" class="text-md-center">{{ rdo_atividade.observacao || '-' }}</td>
-            <td title="Observação" class="text-md-left">{{ rdo_atividade.furo?.nome || '-' }}</td>
-            <td title="Quantidade Inicial" class="text-md-center">
-              {{ 
-                rdo_atividade.atividade.tipo === 'produtiva' 
-                  ? (rdo_atividade.atividade.unidade_medida === 'metros' 
-                      ? Number(rdo_atividade.quantidade_inicial).toLocaleString('pt-BR', { minimumFractionDigits: 2 }).concat('m')
-                      : '-'
-                    )
-                  : '-' 
-              }}
-            </td>
-            <td title="Quantidade Final" class="text-md-center">
-              {{ 
-                rdo_atividade.atividade.tipo === 'produtiva' 
-                  ? (rdo_atividade.atividade.unidade_medida === 'metros' 
-                      ? Number(rdo_atividade.quantidade_final).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) .concat('m')
-                      : '-'
-                    )
-                  : '-' 
-              }}
-            </td>
-            <td title="Quantidade" class="text-md-center">
-              {{{
-                rdo_atividade.atividade.tipo === 'produtiva' 
-                  ? (rdo_atividade.atividade.unidade_medida === 'metros' 
-                      ? Number(rdo_atividade.quantidade).toLocaleString('pt-BR', { minimumFractionDigits: 2 }).concat('m')
-                      : Number(rdo_atividade.quantidade)
-                    ) 
-                  : '-' 
-              }}}
-            </td>
-
-            <td class="text-md-right">
-              <form class="delete-form" action="{{ route('admin.rdo_atividades.destroy', { rdoId: rdo.id, id: rdo_atividade.id }) }}?_method=DELETE" method="post">
-                <button type="button" class="btn-link">
-                  <span class="delete-icon" data-feather="trash"></span>
-                </button>
-              </form>
-            </td>
-          </tr>
-        @endeach
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <th title="Horário Inicial" class="text-left">H. Inicio</th>
+          <th title="Horário Final" class="text-left">H. Fim</th>
+          <th class="text-left">Atividade</th>
+          <th class="text-md-left">Observação</th>
+          <th class="text-md-center">Furo</th>
+          <th title="Quantidade Inicial" class="text-center">Q. Inicial</th>
+          <th title="Quantidade Final" class="text-center">Q. Final</th>
+          <th title="Quantidade Total" class="text-center">Q. Total</th>
+          <th class="text-center">Ações</th>
+        </thead>
+        <tbody>
+          @each(rdo_atividade in rdo.rdoAtividades)
+            <tr>
+              <td title="Horário Inicial" class="text-left">{{ rdo_atividade.hora_inicio }}</td>
+              <td title="Horário Final" class="text-left">{{ rdo_atividade.hora_fim  }}</td>
+              <td title="Descrição" class="text-left">{{ (rdo_atividade.atividade.descricao) }}</td>
+              <td title="Furo" class="text-md-center">{{ rdo_atividade.observacao || '-' }}</td>
+              <td title="Observação" class="text-md-left">{{ rdo_atividade.furo?.nome || '-' }}</td>
+              <td title="Quantidade Inicial" class="text-md-center">
+                {{ 
+                  rdo_atividade.atividade.tipo === 'produtiva' 
+                    ? (rdo_atividade.atividade.unidade_medida === 'metros' 
+                        ? Number(rdo_atividade.quantidade_inicial).toLocaleString('pt-BR', { minimumFractionDigits: 2 }).concat('m')
+                        : '-'
+                      )
+                    : '-' 
+                }}
+              </td>
+              <td title="Quantidade Final" class="text-md-center">
+                {{ 
+                  rdo_atividade.atividade.tipo === 'produtiva' 
+                    ? (rdo_atividade.atividade.unidade_medida === 'metros' 
+                        ? Number(rdo_atividade.quantidade_final).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) .concat('m')
+                        : '-'
+                      )
+                    : '-' 
+                }}
+              </td>
+              <td title="Quantidade" class="text-md-center">
+                {{{
+                  rdo_atividade.atividade.tipo === 'produtiva' 
+                    ? (rdo_atividade.atividade.unidade_medida === 'metros' 
+                        ? Number(rdo_atividade.quantidade).toLocaleString('pt-BR', { minimumFractionDigits: 2 }).concat('m')
+                        : Number(rdo_atividade.quantidade)
+                      ) 
+                    : '-' 
+                }}}
+              </td>
+              <td class="text-md-right">
+                <form class="delete-form" action="{{ route('admin.rdo_atividades.destroy', { rdoId: rdo.id, id: rdo_atividade.id }) }}?_method=DELETE" method="post">
+                  <button type="button" class="btn-link">
+                    <span class="delete-icon" data-feather="trash"></span>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          @endeach
+        </tbody>
+      </table>
+    </div>
   @endslot
 @end
 

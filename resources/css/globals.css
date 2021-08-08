@@ -26,20 +26,24 @@
   display: flex;
 }
 
-.flex.justify-content-end {
-  justify-content: flex-end;
-}
-
 .flex.flex-row {
-  flex-direction: row;
+  flex-direction: column;
 }
 
 .flex.flex-row + .flex.flex-row {
   margin-top: 1rem;
 }
 
+.flex.flex-row div + div {
+  margin-top: 1rem;
+}
+
 .flex.flex-row div {
   width: 100%;
+}
+
+.flex.justify-content-end {
+  justify-content: flex-end;
 }
 
 .text-capitalize {
@@ -229,5 +233,21 @@
 @media screen and (min-width: 1020px) {
   .form-md-row {
     flex-direction: row;
+  }
+
+  .flex.flex-row {
+    flex-direction: row;
+  }
+
+  .flex.flex-row + .flex.flex-row {
+    margin-top: 1rem;
+  }
+
+  .flex.flex-row div {
+    width: 100%;
+  }
+
+  .flex.flex-row div + div {
+    margin-top: 0;
   }
 }
