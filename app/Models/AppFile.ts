@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column, computed } from '@ioc:Adonis/Lucid/Orm'
-
+import Application from '@ioc:Adonis/Core/Application'
+import fs from 'fs'
 export default class AppFile extends BaseModel {
   @column({ isPrimary: true })
   public id: number
@@ -17,9 +18,17 @@ export default class AppFile extends BaseModel {
   @column()
   public size: number
 
+  @column()
+  public currentRelease: boolean
+
   @computed()
   public get sizeToMb() {
     return (this.size / 10 ** 6).toFixed(1)
+  }
+
+  @computed()
+  public get fileExists() {
+    return fs.existsSync(Application.tmpPath('/uploads/apps', this.filename))
   }
 
   @column()

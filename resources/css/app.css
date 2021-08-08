@@ -686,6 +686,10 @@ button.checked::after {
   stroke: var(--error);
 }
 
+.check-icon {
+  stroke: var(--success);
+}
+
 /* PAGINATION */
 .pagination .disabled {
   pointer-events: none;

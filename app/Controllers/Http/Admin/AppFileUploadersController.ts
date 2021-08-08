@@ -60,13 +60,31 @@ export default class AppFileUploadersController {
     }
   }
 
+  public async update({ response, request, logger, session }: HttpContextContract) {
+    const id = request.param('id')
+
+    try {
+      await AppFile.query().update({ current_release: false })
+      await AppFile.query().where({ id }).update({ current_release: true })
+
+      session.flash('success', 'Versão Atual modificada')
+    } catch (error) {
+      logger.error(error)
+      session.flash('error', error.message)
+    }
+
+    return response.redirect().back()
+  }
+
   public async destroy({ request, response, logger, session }: HttpContextContract) {
     const id = request.param('id')
 
     try {
       const file = await AppFile.findOrFail(id)
 
-      fs.unlinkSync(Application.tmpPath('/uploads/apps', file.filename))
+      if (fs.existsSync(Application.tmpPath('/uploads/apps', file.filename))) {
+        fs.unlinkSync(Application.tmpPath('/uploads/apps', file.filename))
+      }
 
       await file.delete()
       session.flash('success', 'App removido')

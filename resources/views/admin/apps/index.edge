@@ -15,16 +15,33 @@
           <th class="text-left">Nome</th>
           <th class="text-md-center">Versão</th>
           <th class="text-md-center">Tamanho (mb)</th>
+          <th class="text-md-center">Status Arquivo</th>
+          <th class="text-md-center">Versão Atual</th>
           <th class="text-right">Ações</th>
         </thead>
         <tbody>
           @each(app in apps)
             <tr>
-              <td title="Nome" class="text-left">{{ app.name }}</td>
-              <td title="Versão" class="text-md-center">{{ app.version }}</td>
-              <td title="Tamanho" class="text-md-center">{{{ app.sizeToMb }}}</td>
+              <td class="text-left">{{ app.name }}</td>
+              <td class="text-md-center">{{ app.version }}</td>
+              <td class="text-md-center">{{{ app.sizeToMb }}}</td>
+              <td class="text-md-center">{{{ app.fileExists ? 'Ok' : 'Faltando' }}}</td>
+              <td class="text-center">
+                @if(app.current_release)
+                  <button class="btn text-center btn-link" disabled="disabled">
+                    <span class="check-icon" data-feather="check"></span>
+                  </button>
+                @else
+                  <form method="post" action="{{ route('admin.apps_upload.update', { id: app.id }, {qs: {_method: 'PUT'}}) }}">
+                    <button class="btn btn-link" data-tooltip="Tornar versão atual" data-tooltip-place="left">
+                      <span class="delete-icon" data-feather="x"></span>
+                    </button>
+                  </form>
+                @endif
+
+              </td>
               <td class="text-right">
-                <a href="{{ route('admin.apps_download.show', { id: app.id }) }}">
+                <a href="{{ route('admin.apps_upload.update', { id: app.id }) }}">
                   <span title="Download" class="edit-icon" data-feather="download"></span>
                 </a>
                 <form 

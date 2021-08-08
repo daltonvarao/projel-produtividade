@@ -4,7 +4,7 @@ import AppFile from 'App/Models/AppFile'
 
 export default class AppDownloadersController {
   public async index({ view }: HttpContextContract) {
-    const apps = await AppFile.all()
+    const apps = await AppFile.query().where({ currentRelease: true })
 
     return view.render('admin/apps/downloads/index', {
       apps: apps.map((i) => i.toJSON()),
