@@ -7,7 +7,6 @@ import User from 'App/Models/User'
 import Furo from 'App/Models/Furo'
 import Rdo from 'App/Models/Rdo'
 import Estrutura from 'App/Models/Estrutura'
-import AtividadeRdo from 'App/Models/AtividadeRdo'
 
 export default class RdosController {
   public async index({ view, request, session }: HttpContextContract) {
