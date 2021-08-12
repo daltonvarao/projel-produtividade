@@ -16,6 +16,7 @@ export default class RdosController {
     const query = Rdo.query()
       .apply((scopes) => {
         scopes.inContract(contratoId)
+        if (initialDate && !finalDate) scopes.inDate(initialDate)
         scopes.inPeriod(initialDate, finalDate)
         scopes.whereEquipamentoId(equipamentoId)
         scopes.whereEstruturaId(estruturaId)

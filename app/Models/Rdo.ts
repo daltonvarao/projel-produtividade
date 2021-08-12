@@ -102,6 +102,10 @@ export default class Rdo extends BaseModel {
     if (finalDate && initialDate) query.whereBetween('data', [initialDate, finalDate])
   })
 
+  public static inDate = scope((query, initialDate: string) => {
+    if (initialDate) query.where('data', initialDate)
+  })
+
   public static whereNameLike = scope((query, nome: string) => {
     if (nome) query.where('nome', 'ilike', `%${nome}%`)
   })

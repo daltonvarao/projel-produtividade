@@ -1,5 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
+import AtividadeFuncionarioService from 'App/Services/AtividadeFuncionarioService'
 
 export default class AtividadeRdoUsersController {
   public async index({ view, request, session }: HttpContextContract) {
@@ -17,30 +18,14 @@ export default class AtividadeRdoUsersController {
       })
     }
 
-    const user = await User.query()
-      .where({ id: userId })
-      .preload('rdoUsers', (qru) =>
-        qru
-          .whereHas('rdo', (qr) =>
-            qr.whereBetween('data', [initialDate, finalDate]).andWhere({ contratoId })
-          )
-          .preload('rdo', (qr) =>
-            qr.preload('rdoAtividades', (qra) => {
-              qra
-                .whereHas('atividade', (qa) => qa.where('tipo', 'produtiva'))
-                .preload('atividade')
-                .preload('rdo')
-                .preload('furo')
-            })
-          )
-      )
-      .firstOrFail()
-
-    user.rdoUsers.sort((a, b) => a.rdo.data.toMillis() - b.rdo.data.toMillis())
+    const service = new AtividadeFuncionarioService(contratoId, userId, initialDate, finalDate)
+    const { days, atividades, totals } = await service.build()
 
     return view.render('admin/reports/atividade_rdo_users/index', {
       users: users.map((u) => u.toJSON()),
-      user: user.toJSON(),
+      atividadeUsuarios: days,
+      atividades,
+      totals,
     })
   }
 }

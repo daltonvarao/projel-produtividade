@@ -46,4 +46,8 @@ export default class Atividade extends BaseModel {
   public static inContract = scope((query, contratoId: number) => {
     query.where('contratoId', contratoId)
   })
+
+  public static produtivas = scope((query) => {
+    query.where('tipo', 'produtiva')
+  })
 }
