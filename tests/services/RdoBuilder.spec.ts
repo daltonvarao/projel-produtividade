@@ -37,6 +37,7 @@ test.group('RdoBuilderService', async (group) => {
         pluviometria: 0,
         status: 'andamento',
         contratoId: contratos[0].id,
+        turno: '1T',
         atividades: [
           {
             horaFim: DateTime.fromISO('2021-02-11T20:55:33.278Z'),
@@ -64,6 +65,7 @@ test.group('RdoBuilderService', async (group) => {
         pluviometria: 0,
         status: 'andamento',
         contratoId: contratos[0].id,
+        turno: '1T',
         atividades: [
           {
             horaFim: DateTime.fromISO('2021-02-11T20:55:33.278Z'),
