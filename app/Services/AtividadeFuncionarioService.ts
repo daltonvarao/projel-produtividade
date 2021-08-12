@@ -95,7 +95,7 @@ export default class AtividadeFuncionarioService {
     return {
       days,
       atividades: atividades.map((i) => i.toJSON()),
-      totals: totals.reduce((pv, cv) => ({ ...pv, ...cv })),
+      totals: totals.length ? totals.reduce((pv, cv) => ({ ...pv, ...cv })) : [],
     }
   }
 }

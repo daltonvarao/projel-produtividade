@@ -45,47 +45,51 @@
 
   <div class="card mt-4">
     <div class="table-responsive">
-      <table class="data-table bordered">
-        <thead>
-          <tr>
-            <th class="text-center" rowspan="2">Dia</th>
-            @each(atividade in atividades)
-              <th class="text-center" colspan="2" style="white-space: nowrap">{{ atividade.descricao }}</th>
-            @endeach
-          </tr>
-          <tr>
-            @each(atividade in atividades)
-              <th class="text-center">Furo</th>
-              <th class="text-center" style="white-space: nowrap;">Quantidade ({{ atividade.unidade_medida === 'metros' ? 'm' : 'un' }})</th>
-            @endeach
-          </tr>
-        </thead>
-        
-        <tbody>
-          @each(day in atividadeUsuarios)
+      @if(atividadeUsuarios?.length)
+        <table class="data-table bordered">
+          <thead>
             <tr>
-              <th>{{ day.formattedDay }}</th>
+              <th class="text-center" rowspan="2">Dia</th>
               @each(atividade in atividades)
-                <td class="text-center" style="white-space: nowrap;">{{ day.atividades[atividade.descricao]?.furo || '-' }}</td>
-                <td class="text-center">
-                  {{ 
-                    day.atividades[atividade.descricao]?.quantidade.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || '-' 
-                  }}
-                </td>
+                <th class="text-center" colspan="2" style="white-space: nowrap">{{ atividade.descricao }}</th>
               @endeach
             </tr>
-          @endeach
-          <tfoot>
             <tr>
-              <th>Total</th>
               @each(atividade in atividades)
-                <th class="text-center">-</th>
-                <th class="text-center">{{ totals[atividade.descricao].toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || '-' }}</th>
+                <th class="text-center">Furo</th>
+                <th class="text-center" style="white-space: nowrap;">Quantidade ({{ atividade.unidade_medida === 'metros' ? 'm' : 'un' }})</th>
               @endeach
             </tr>
-          </tfoot>
-        </tbody>
-      </table>
+          </thead>
+          
+          <tbody>
+            @each(day in atividadeUsuarios)
+              <tr>
+                <th>{{ day.formattedDay }}</th>
+                @each(atividade in atividades)
+                  <td class="text-center" style="white-space: nowrap;">{{ day.atividades[atividade.descricao]?.furo || '-' }}</td>
+                  <td class="text-center">
+                    {{ 
+                      day.atividades[atividade.descricao]?.quantidade.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || '-' 
+                    }}
+                  </td>
+                @endeach
+              </tr>
+            @endeach
+            <tfoot>
+              <tr>
+                <th>Total</th>
+                @each(atividade in atividades)
+                  <th class="text-center">-</th>
+                  <th class="text-center">{{ totals[atividade.descricao].toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || '-' }}</th>
+                @endeach
+              </tr>
+            </tfoot>
+          </tbody>
+        </table>
+      @else
+        @!emptyMessage()
+      @endif
     </div>
   </div>
 @endsection
