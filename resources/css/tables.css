@@ -17,6 +17,8 @@ table {
   overflow: hidden;
 }
 
+table tfoot th,
+table tbody th,
 table thead th {
   color: rgba(107, 114, 128, 1);
   font-weight: 500;
@@ -46,16 +48,29 @@ table tbody tr td {
   }
 }
 
+table.bordered {
+  border-collapse: collapse;
+}
+
+table.bordered tbody td,
+table.bordered tfoot th,
+table.bordered tbody th,
+table.bordered thead th {
+  border: 1px solid var(--border-color);
+}
+
 table.data-table {
   border-spacing: 0;
   border-radius: 0.5rem;
   overflow: hidden;
 }
 
+table.data-table tfoot,
 table.data-table thead {
   background: rgba(249, 250, 251, 1);
 }
 
+table.data-table tfoot th,
 table.data-table thead th {
   padding: 0.75rem 1.25rem;
   color: rgba(107, 114, 128, 1);

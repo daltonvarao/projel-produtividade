@@ -45,72 +45,45 @@
 
   <div class="card mt-4">
     <div class="table-responsive">
-      <table class="data-table">
+      <table class="data-table bordered">
         <thead>
-          <th class="text-left">Atividade</th>
-          <th class="text-left">Observação</th>
-          <th class="text-left">Furo</th>
-          <th class="text-md-center" title="Quantidade Inicial">Q. Inicial</th>
-          <th class="text-md-center" title="Quantidade Final">Q. Final</th>
-          <th class="text-md-center" title="Quantidade Total">Q. Total</th>
+          <tr>
+            <th class="text-center" rowspan="2">Dia</th>
+            @each(atividade in atividades)
+              <th class="text-center" colspan="2" style="white-space: nowrap">{{ atividade.descricao }}</th>
+            @endeach
+          </tr>
+          <tr>
+            @each(atividade in atividades)
+              <th class="text-center">Furo</th>
+              <th class="text-center" style="white-space: nowrap;">Quantidade ({{ atividade.unidade_medida === 'metros' ? 'm' : 'un' }})</th>
+            @endeach
+          </tr>
         </thead>
         
         <tbody>
-          @each(rdoUser in user?.rdoUsers)
+          @each(day in atividadeUsuarios)
             <tr>
-              <td class="text-left text-primary text-semibold" colspan="5">
-                {{ rdoUser.rdo.data }} - {{ rdoUser.rdo.nome }}
-              </td>
-              <td class="text-center">
-                {{rdoUser.rdo.rdoAtividades.length > 0 ? `${rdoUser.rdo.rdoAtividades.length} atividades` : ''}}
-              </td>
+              <th>{{ day.formattedDay }}</th>
+              @each(atividade in atividades)
+                <td class="text-center" style="white-space: nowrap;">{{ day.atividades[atividade.descricao]?.furo || '-' }}</td>
+                <td class="text-center">
+                  {{ 
+                    day.atividades[atividade.descricao]?.quantidade.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || '-' 
+                  }}
+                </td>
+              @endeach
             </tr>
-
-            @if(rdoUser.rdo.rdoAtividades.length === 0)
-              <tr>
-                <td colspan="5" style="border-top: 0; padding-top: 0rem;">Nenhuma atividade encontrada</td>
-              </tr>
-            @endif
-            @each((atividade, index) in rdoUser.rdo.rdoAtividades)
-              <tr>
-                <td>{{ truncate(atividade.atividade.descricao) }}</td>
-                <td class="text-md-left">{{ truncate(atividade.observacao) || '-' }}</td>
-                <td class="text-md-left">{{{ atividade.furo?.nome || '-' }}}</td>
-                <td class="text-md-center">
-                  {{ 
-                    atividade.atividade.tipo === 'produtiva' 
-                      ? (atividade.atividade.unidade_medida === 'metros' 
-                          ? Number(atividade.quantidade_inicial).toLocaleString('pt-BR', { minimumFractionDigits: 2 }).concat('m')
-                          : '-'
-                        )
-                      : '-' 
-                  }}
-                </td>
-                <td class="text-md-center">
-                  {{ 
-                    atividade.atividade.tipo === 'produtiva' 
-                      ? (atividade.atividade.unidade_medida === 'metros' 
-                          ? Number(atividade.quantidade_final).toLocaleString('pt-BR', { minimumFractionDigits: 2 }).concat('m')
-                          : '-'
-                        )
-                      : '-' 
-                  }}
-                </td>
-                <td class="text-md-center">
-                  {{ 
-                    atividade.atividade.tipo === 'produtiva' 
-                      ? (atividade.atividade.unidade_medida === 'metros' 
-                          ? Number(atividade.quantidade).toLocaleString('pt-BR', { minimumFractionDigits: 2 }).concat('m')
-                          : Number(atividade.quantidade)
-                        )
-                      : '-' 
-                  }}
-                </td>
-              </tr>
-            @endeach
-          @else
-            @!emptyMessage()
           @endeach
+          <tfoot>
+            <tr>
+              <th>Total</th>
+              @each(atividade in atividades)
+                <th class="text-center">-</th>
+                <th class="text-center">{{ totals[atividade.descricao].toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || '-' }}</th>
+              @endeach
+            </tr>
+          </tfoot>
         </tbody>
       </table>
     </div>
