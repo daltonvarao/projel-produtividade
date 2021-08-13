@@ -39,6 +39,7 @@ export default class ProducaoUserService {
             qra
               .preload('atividade', (qa) => qa.preload('atividadeCargoValores'))
               .whereHas('atividade', (qa) => qa.where({ tipo: 'produtiva' }))
+              .whereHas('furo', (qf) => qf.where({ invalid: false }))
           })
         )
     )

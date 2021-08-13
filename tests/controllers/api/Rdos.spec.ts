@@ -83,6 +83,7 @@ test.group('Api RdosController', (group) => {
         contratoId: contratos[0].id,
         equipamentoId: equipamentos[0].id,
         estruturaId: estruturas[0].id,
+        turno: '1T',
         atividades: [
           {
             atividadeId: atividades[0].id,

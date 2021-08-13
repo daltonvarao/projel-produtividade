@@ -33,18 +33,6 @@
           <h4 class="text-primary">Status</h4>
           {{ rdo.status }}
         </div>
-
-        <div class="text-capitalize">
-          <h4 class="text-primary">Condições do Tempo</h4>
-          {{ rdo.condicoes_tempo }}
-        </div>
-  
-        @if(rdo.condicoes_tempo === 'chuvoso')
-          <div>
-            <h4 class="text-primary">Pluviometria</h4>
-            {{ rdo.pluviometria }}
-          </div>
-        @endif
       </div>
 
       <div class="flex flex-row">
@@ -59,6 +47,24 @@
         </div>
       </div>
 
+      <div class="flex flex-row">
+        <div class="text-capitalize">
+          <h4 class="text-primary">Turno</h4>
+          {{ rdo.turno }}
+        </div>
+  
+        <div class="text-capitalize">
+          <h4 class="text-primary">Condições do Tempo</h4>
+          {{ rdo.condicoes_tempo }}
+        </div>
+  
+        @if(rdo.condicoes_tempo === 'chuvoso')
+          <div>
+            <h4 class="text-primary">Pluviometria</h4>
+            {{ rdo.pluviometria }}
+          </div>
+        @endif
+      </div>
     @endslot
   @end
 

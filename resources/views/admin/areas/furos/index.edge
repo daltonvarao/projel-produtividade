@@ -14,14 +14,20 @@
         <thead>
           <th class="text-left">Nome</th>
           <th class="text-left">Estrutura</th>
+          <th class="text-center">Status</th>
           <th class="text-right">Ações</th>
         </thead>
         
         <tbody>
           @each(furo in furos.data)
             <tr>
-              <td title="Nome" class="text-left">{{ furo.nome }}</td>
-              <td title="Nome" class="text-left">{{ furo.estrutura.nome }}</td>
+              <td class="text-left">{{ furo.nome }}</td>
+              <td class="text-left">{{ furo.estrutura.nome }}</td>
+              <td class="text-center">
+                <span class="badge bg-{{ furo.invalid ? 'warning' : 'success' }} text-uppercase text-bold text-white">
+                  {{ furo.invalid ? 'Inválido' : 'Válido' }}
+                </span>
+              </td>
               <td class="text-right">
                 <a href="{{ route('admin.areas.furos.edit', { id: furo.id }) }}">
                   <span class="edit-icon" data-feather="edit"></span>
@@ -30,6 +36,16 @@
                 <form class="delete-form" action="{{ route('admin.areas.furos.destroy', { id: furo.id}) }}?_method=DELETE" method="post">
                   <button type="button" class="btn-link">
                     <span class="delete-icon" data-feather="trash"></span>
+                  </button>
+                </form>
+
+                <form data-confirm="Tem certeza de que deseja {{furo.invalid ? 'v' : 'inv'}}alidar o furo?" class="inline-form" action="{{ route('admin.areas.furos.update', { id: furo.id}) }}?_method=PUT" method="post">
+                  <input type="hidden" value="{{ !furo.invalid }}" name="invalid">
+                  <input type="hidden" value="{{ furo.nome }}" name="nome">
+                  <input type="hidden" value="{{ furo.estruturaId }}" name="estrutura_id">
+                  
+                  <button data-tooltip="{{ furo.invalid ? 'V' : 'Inv' }}alidar furo" data-tooltip-place="left" class="btn-link">
+                    <span class="{{ !furo.invalid ? 'warning' : 'success' }}-icon" data-feather="{{ !furo.invalid ? 'alert-triangle' : 'check'}}"></span>
                   </button>
                 </form>
               </td>

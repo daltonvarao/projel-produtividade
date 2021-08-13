@@ -10,11 +10,11 @@
     </button>
     <div class="menu-dropdown fade" id="dropdown-filter">
       <form action="">
-        <div class="form-group">
-          <label for="initialDate">Data inicial</label>
-          <input type="date" value="{{ request.qs().initialDate || '' }}" name="initialDate" />
-        </div>
-        <div class="form-row mt-2">
+        <div class="form-md-row mt-2">
+          <div class="form-group">
+            <label for="initialDate">Data inicial</label>
+            <input type="date" value="{{ request.qs().initialDate || '' }}" name="initialDate" />
+          </div>
           <div class="form-group">
             <label for="finalDate">Data final</label>
             <input type="date" value="{{ request.qs().finalDate || '' }}" name="finalDate" />
@@ -58,12 +58,18 @@
             </div>
           </div>
         </div>
-        <div class="form-row mt-2">
+        <div class="form-md-row mt-2">
           @!component('components/select2', {
             name: 'status',
             label: 'Status',
             value: request.qs().status || '',
             collection: ['andamento', 'finalizado']
+          })
+          @!component('components/select2', {
+            name: 'turno',
+            label: 'Turno',
+            value: request.qs().turno || '',
+            collection: ['1T', '2T']
           })
         </div>
         <div class="form-row mt-2">
@@ -79,6 +85,7 @@
       <table class="data-table">
         <thead>
           <th class="text-left">Data</th>
+          <th class="text-center">Turno</th>
           <th class="text-left">Nome</th>
           <th class="text-left">Responsável</th>
           <th class="text-md-center">Equipamento</th>
@@ -89,7 +96,8 @@
         <tbody>
           @each(rdo in rdos.data)
             <tr>
-              <td title="{{ rdo.formattedData }}" class="text-left">{{ rdo.formattedData }}</td>
+              <td class="text-left">{{ rdo.formattedData }}</td>
+              <td class="text-center">{{ rdo.turno }}</td>
               <td data-tooltip-place="top" data-tooltip="{{ rdo.nome }}" class="text-left">{{ truncate(rdo.nome) }}</td>
               <td data-tooltip-place="top" data-tooltip="{{ rdo.user?.nome }}" class="text-left">{{ truncate(rdo?.user?.nome, 12) }}</td>
               <td class="text-md-center">{{ rdo?.equipamentoPrincipal?.tag }}</td>

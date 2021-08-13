@@ -45,13 +45,16 @@ export default class AtividadeFuncionarioService {
             qr.preload('rdoUsers', (qru) => qru.where({ userId: this.userId }))
           })
           .preload('furo')
+          .whereHas('furo', (qf) => qf.where({ invalid: false }))
       })
       .whereHas('rdoAtividades', (qra) => {
-        qra.whereHas('rdo', (qr) => {
-          qr.whereHas('rdoUsers', (qru) => qru.where({ userId: this.userId }))
-            .whereBetween('data', [this.initialDate, this.finalDate])
-            .apply((scopes) => scopes.inContract(this.contractId))
-        })
+        qra
+          .whereHas('rdo', (qr) => {
+            qr.whereHas('rdoUsers', (qru) => qru.where({ userId: this.userId }))
+              .whereBetween('data', [this.initialDate, this.finalDate])
+              .apply((scopes) => scopes.inContract(this.contractId))
+          })
+          .whereHas('furo', (qf) => qf.where({ invalid: false }))
       })
 
     const data = {}

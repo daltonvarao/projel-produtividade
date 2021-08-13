@@ -5,6 +5,8 @@ import {
   AtividadeFactory,
   CargoFactory,
   ContratoFactory,
+  EstruturaFactory,
+  FuroFactory,
   RdoFactory,
   UserFactory,
 } from 'Database/factories'
@@ -53,6 +55,15 @@ test.group('ProducaoUserService', async (group) => {
       { contratoId: contrato.id, cargoId: cargos[2].id },
     ]).createMany(3)
 
+    const estrutura = await EstruturaFactory.merge({ contratoId: contrato.id }).create()
+
+    const furoValido = await FuroFactory.merge({
+      nome: 'Furo Valido',
+      estruturaId: estrutura.id,
+      invalid: false,
+      contratoId: contrato.id,
+    }).create()
+
     await RdoFactory.merge([
       { contratoId: contrato.id, data: DateTime.fromISO('2021-01-01T08:00:00') },
       { contratoId: contrato.id, data: DateTime.fromISO('2021-01-15T08:00:00') },
@@ -72,6 +83,7 @@ test.group('ProducaoUserService', async (group) => {
             quantidadeInicial: 0,
             quantidadeFinal: 1,
             quantidade: 1,
+            furoId: furoValido.id,
           },
           {
             atividadeId: atividades[2].id,
@@ -80,6 +92,7 @@ test.group('ProducaoUserService', async (group) => {
             quantidadeInicial: 0,
             quantidadeFinal: 1,
             quantidade: 1,
+            furoId: furoValido.id,
           },
         ])
       })
@@ -117,5 +130,107 @@ test.group('ProducaoUserService', async (group) => {
     assert.lengthOf(producaoUsers.users, 1)
     assert.equal(producaoUsers.users[0].valor, 12)
     assert.equal(producaoUsers.valorTotal, 12)
+  })
+
+  test('should ProducaoUserService.build returns only production of non invalid furos', async (assert) => {
+    const initialDate = '2022-03-01'
+    const finalDate = '2022-03-31'
+
+    const estrutura = await EstruturaFactory.merge({ contratoId: contrato.id }).create()
+
+    const [furoValido, furoInvalido] = await FuroFactory.merge([
+      {
+        nome: 'Furo Valido',
+        estruturaId: estrutura.id,
+        invalid: false,
+        contratoId: contrato.id,
+      },
+      {
+        nome: 'Furo Invalido',
+        estruturaId: estrutura.id,
+        invalid: true,
+        contratoId: contrato.id,
+      },
+    ]).createMany(2)
+
+    await RdoFactory.merge([
+      { contratoId: contrato.id, data: DateTime.fromISO('2022-02-15T08:00:00') },
+      { contratoId: contrato.id, data: DateTime.fromISO('2022-03-01T08:00:00') },
+      { contratoId: contrato.id, data: DateTime.fromISO('2022-03-31T08:00:00') },
+      { contratoId: contrato.id, data: DateTime.fromISO('2022-04-01T08:00:00') },
+    ])
+      .with('rdoAtividades', 3, (ra) => {
+        ra.merge([
+          {
+            atividadeId: atividades[0].id,
+            horaInicio: DateTime.fromISO('2021-01-01T08:00:00'),
+            horaFim: DateTime.fromISO('2021-01-01T09:00:00'),
+          },
+          {
+            atividadeId: atividades[1].id,
+            horaInicio: DateTime.fromISO('2021-01-15T09:00:00'),
+            horaFim: DateTime.fromISO('2021-01-15T10:00:00'),
+            quantidadeInicial: 0,
+            quantidadeFinal: 1,
+            quantidade: 1,
+            furoId: furoValido.id,
+          },
+          {
+            atividadeId: atividades[2].id,
+            horaInicio: DateTime.fromISO('2021-01-31T10:00:00'),
+            horaFim: DateTime.fromISO('2021-01-31T11:00:00'),
+            quantidadeInicial: 0,
+            quantidadeFinal: 1,
+            quantidade: 1,
+            furoId: furoValido.id,
+          },
+        ])
+      })
+      .with('rdoUsers', 3, (ru) => {
+        ru.merge([{ userId: users[0].id }, { userId: users[1].id }, { userId: users[2].id }])
+      })
+      .createMany(4)
+
+    await RdoFactory.merge([
+      { contratoId: contrato.id, data: DateTime.fromISO('2022-03-15T08:00:00') },
+    ])
+      .with('rdoAtividades', 3, (ra) => {
+        ra.merge([
+          {
+            atividadeId: atividades[0].id,
+            horaInicio: DateTime.fromISO('2021-01-01T08:00:00'),
+            horaFim: DateTime.fromISO('2021-01-01T09:00:00'),
+          },
+          {
+            atividadeId: atividades[1].id,
+            horaInicio: DateTime.fromISO('2021-01-15T09:00:00'),
+            horaFim: DateTime.fromISO('2021-01-15T10:00:00'),
+            quantidadeInicial: 0,
+            quantidadeFinal: 1,
+            quantidade: 1,
+            furoId: furoInvalido.id,
+          },
+          {
+            atividadeId: atividades[2].id,
+            horaInicio: DateTime.fromISO('2021-01-31T10:00:00'),
+            horaFim: DateTime.fromISO('2021-01-31T11:00:00'),
+            quantidadeInicial: 0,
+            quantidadeFinal: 1,
+            quantidade: 1,
+            furoId: furoValido.id,
+          },
+        ])
+      })
+      .with('rdoUsers', 3, (ru) => {
+        ru.merge([{ userId: users[0].id }, { userId: users[1].id }, { userId: users[2].id }])
+      })
+      .create()
+
+    const service = new ProducaoUserService(contrato.id, initialDate, finalDate)
+    const producaoUsers = await service.build()
+
+    assert.lengthOf(producaoUsers.users, 3)
+    assert.equal(producaoUsers.users[0].valor, 10)
+    assert.equal(producaoUsers.valorTotal, 30)
   })
 })

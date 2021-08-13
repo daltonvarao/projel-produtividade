@@ -15,6 +15,7 @@ export default class RdosController {
           status: schema.string(),
           equipamentoId: schema.number(),
           estruturaId: schema.number(),
+          turno: schema.string(),
           atividades: schema.array().members(
             schema.object().members({
               atividadeId: schema.number(),

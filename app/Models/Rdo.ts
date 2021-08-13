@@ -47,6 +47,9 @@ export default class Rdo extends BaseModel {
   public status: string
 
   @column()
+  public turno: string
+
+  @column()
   public condicoesTempo: string
 
   @column()
@@ -94,6 +97,7 @@ export default class Rdo extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
+  // query scopes
   public static inContract = scope((query, contratoId: number) => {
     query.where({ contratoId })
   })
@@ -120,5 +124,9 @@ export default class Rdo extends BaseModel {
 
   public static whereStatus = scope((query, status: string) => {
     if (status) query.where({ status })
+  })
+
+  public static whereTurno = scope((query, turno: string) => {
+    if (turno) query.where({ turno })
   })
 }

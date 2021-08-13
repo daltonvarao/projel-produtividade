@@ -12,6 +12,7 @@ interface RdoData {
   status: string
   equipamentoId: number
   estruturaId: number
+  turno: string
 }
 
 interface Atividade {
@@ -45,6 +46,7 @@ export default class RdoBuilderService {
     condicoesTempo,
     equipamentoId,
     estruturaId,
+    turno,
   }: Data): RdoData {
     return {
       condicoesTempo,
@@ -54,6 +56,7 @@ export default class RdoBuilderService {
       pluviometria,
       equipamentoId,
       estruturaId,
+      turno,
     }
   }
 

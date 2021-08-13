@@ -10,7 +10,16 @@ import Estrutura from 'App/Models/Estrutura'
 
 export default class RdosController {
   public async index({ view, request, session }: HttpContextContract) {
-    const { page, equipamentoId, estruturaId, nome, status, initialDate, finalDate } = request.qs()
+    const {
+      page,
+      equipamentoId,
+      estruturaId,
+      nome,
+      status,
+      initialDate,
+      finalDate,
+      turno,
+    } = request.qs()
     const contratoId: number = session.get('contratoId')
 
     const query = Rdo.query()
@@ -22,6 +31,7 @@ export default class RdosController {
         scopes.whereEstruturaId(estruturaId)
         scopes.whereNameLike(nome)
         scopes.whereStatus(status)
+        scopes.whereTurno(turno)
       })
       .preload('user')
       .preload('equipamentoPrincipal')
