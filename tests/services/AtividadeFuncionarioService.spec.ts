@@ -5,6 +5,7 @@ import {
   AtividadeFactory,
   CargoFactory,
   ContratoFactory,
+  EstruturaFactory,
   FuroFactory,
   RdoFactory,
   UserFactory,
@@ -181,5 +182,172 @@ test.group('AtividadeFuncionarioService', async (group) => {
     assert.propertyVal(totals, atividades[1].descricao, 3)
     assert.propertyVal(totals, atividades[2].descricao, 2)
     assert.propertyVal(totals, atividades[3].descricao, 1)
+  })
+
+  test('should AtividadeFuncionarioService.build returns only production of non invalid furos', async (assert) => {
+    const initialDate = '2022-03-01'
+    const finalDate = '2022-03-31'
+
+    const estrutura = await EstruturaFactory.merge({ contratoId: contrato.id }).create()
+
+    const [furoValido, furoInvalido] = await FuroFactory.merge([
+      {
+        nome: 'Furo Valido',
+        estruturaId: estrutura.id,
+        invalid: false,
+        contratoId: contrato.id,
+      },
+      {
+        nome: 'Furo Invalido',
+        estruturaId: estrutura.id,
+        invalid: true,
+        contratoId: contrato.id,
+      },
+    ]).createMany(2)
+
+    await RdoFactory.merge([
+      { contratoId: contrato.id, data: DateTime.fromISO('2022-02-15T08:00:00') },
+      { contratoId: contrato.id, data: DateTime.fromISO('2022-03-01T08:00:00') },
+      { contratoId: contrato.id, data: DateTime.fromISO('2022-03-31T08:00:00') },
+      { contratoId: contrato.id, data: DateTime.fromISO('2022-04-01T08:00:00') },
+    ])
+      .with('rdoAtividades', 3, (ra) => {
+        ra.merge([
+          {
+            atividadeId: atividades[0].id,
+            horaInicio: DateTime.fromISO('2021-01-01T08:00:00'),
+            horaFim: DateTime.fromISO('2021-01-01T09:00:00'),
+          },
+          {
+            atividadeId: atividades[1].id,
+            horaInicio: DateTime.fromISO('2021-01-15T09:00:00'),
+            horaFim: DateTime.fromISO('2021-01-15T10:00:00'),
+            quantidadeInicial: 0,
+            quantidadeFinal: 1,
+            quantidade: 1,
+            furoId: furoValido.id,
+          },
+          {
+            atividadeId: atividades[2].id,
+            horaInicio: DateTime.fromISO('2021-01-31T10:00:00'),
+            horaFim: DateTime.fromISO('2021-01-31T11:00:00'),
+            quantidadeInicial: 0,
+            quantidadeFinal: 1,
+            quantidade: 1,
+            furoId: furoValido.id,
+          },
+        ])
+      })
+      .with('rdoUsers', 3, (ru) => {
+        ru.merge([{ userId: users[0].id }, { userId: users[1].id }, { userId: users[2].id }])
+      })
+      .createMany(4)
+
+    await RdoFactory.merge([
+      { contratoId: contrato.id, data: DateTime.fromISO('2022-03-15T08:00:00') },
+    ])
+      .with('rdoAtividades', 3, (ra) => {
+        ra.merge([
+          {
+            // almoco
+            atividadeId: atividades[0].id,
+            horaInicio: DateTime.fromISO('2021-01-01T08:00:00'),
+            horaFim: DateTime.fromISO('2021-01-01T09:00:00'),
+          },
+          {
+            // sondagem
+            atividadeId: atividades[1].id,
+            horaInicio: DateTime.fromISO('2021-01-15T09:00:00'),
+            horaFim: DateTime.fromISO('2021-01-15T10:00:00'),
+            quantidadeInicial: 0,
+            quantidadeFinal: 1,
+            quantidade: 1,
+            furoId: furoInvalido.id,
+          },
+          {
+            // ensaio
+            atividadeId: atividades[2].id,
+            horaInicio: DateTime.fromISO('2021-01-31T10:00:00'),
+            horaFim: DateTime.fromISO('2021-01-31T11:00:00'),
+            quantidadeInicial: 0,
+            quantidadeFinal: 1,
+            quantidade: 1,
+            furoId: furoValido.id,
+          },
+        ])
+      })
+      .with('rdoUsers', 3, (ru) => {
+        ru.merge([{ userId: users[0].id }, { userId: users[1].id }, { userId: users[2].id }])
+      })
+      .create()
+
+    // 3 dias
+    // 2022-03-01
+    //    ensaio -> qtd: 1, total: 1, valid, list
+    //    sondag -> qtd: 1, total: 1, valid, list
+
+    // 2022-03-15
+    //    ensaio -> qtd: 1, total: 1, valid, list
+    //    sondag -> qtd: 1, total: 1, invalid, not list
+
+    // 2022-03-31
+    //    ensaio -> qtd: 1, total: 1, valid, list
+    //    sondag -> qtd: 1, total: 1, valid, list
+
+    // totals
+    // ensaio: 3
+    // sondag: 2
+
+    const service = new AtividadeFuncionarioService(
+      contrato.id,
+      users[0].id,
+      initialDate,
+      finalDate
+    )
+    const serviceBuild = await service.build()
+
+    const { days, totals } = serviceBuild
+
+    // atividades[0] = { tipo: 'improdutiva', descricao: 'Almoço' },
+    // atividades[1] = { tipo: 'produtiva',   descricao: 'Sondagem Destrutiva' },
+    // atividades[2] = { tipo: 'produtiva',   descricao: 'Ensaio infiltracao' },
+
+    assert.lengthOf(days, 3)
+
+    // 2022-03-01
+    assert.propertyVal(days[0], 'day', '2022-03-01')
+    assert.property(days[0], 'atividades')
+    // sondag
+    assert.propertyVal(days[0].atividades[atividades[1].descricao], 'quantidade', 1)
+    assert.propertyVal(days[0].atividades[atividades[1].descricao], 'furo', furoValido.nome)
+    // ensaio
+    assert.propertyVal(days[0].atividades[atividades[2].descricao], 'quantidade', 1)
+    assert.propertyVal(days[0].atividades[atividades[2].descricao], 'furo', furoValido.nome)
+
+    // 2022-03-15
+    assert.propertyVal(days[1], 'day', '2022-03-15')
+    assert.property(days[1], 'atividades')
+    // sondag
+    assert.notProperty(days[1].atividades, atividades[1].descricao)
+    // ensaio
+    assert.propertyVal(days[1].atividades[atividades[2].descricao], 'quantidade', 1)
+    assert.propertyVal(days[1].atividades[atividades[2].descricao], 'furo', furoValido.nome)
+    assert.property(days[1].atividades, atividades[2].descricao)
+
+    // 2022-03-31
+    assert.property(days[1], 'atividades')
+    assert.propertyVal(days[2], 'day', '2022-03-31')
+    // sondag
+    assert.propertyVal(days[2].atividades[atividades[1].descricao], 'quantidade', 1)
+    assert.propertyVal(days[2].atividades[atividades[1].descricao], 'furo', furoValido.nome)
+    // ensaio
+    assert.propertyVal(days[2].atividades[atividades[2].descricao], 'quantidade', 1)
+    assert.propertyVal(days[2].atividades[atividades[2].descricao], 'furo', furoValido.nome)
+
+    // total per atividade
+    // sondag
+    assert.propertyVal(totals, atividades[1].descricao, 2)
+    // ensaio
+    assert.propertyVal(totals, atividades[2].descricao, 3)
   })
 })

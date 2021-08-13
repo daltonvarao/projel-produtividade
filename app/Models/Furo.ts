@@ -24,6 +24,9 @@ export default class Furo extends BaseModel {
   @column()
   public estruturaId: number
 
+  @column()
+  public invalid: boolean
+
   @belongsTo(() => Estrutura)
   public estrutura: BelongsTo<typeof Estrutura>
 

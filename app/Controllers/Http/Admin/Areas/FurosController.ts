@@ -17,6 +17,7 @@ export default class FurosController {
     const furos = await Furo.query()
       .apply((scopes) => scopes.inContract(contratoId))
       .preload('estrutura')
+      .orderBy('nome')
       .paginate(page || 1)
 
     return view.render('admin/areas/furos/index', {
@@ -103,12 +104,15 @@ export default class FurosController {
         }),
       ]),
       estrutura_id: schema.number(),
+      invalid: schema.boolean.optional(),
     })
 
     const data = await request.validate({
       schema: validationSchema,
       messages: this.validationMessages,
     })
+
+    console.log(data)
 
     try {
       await Furo.query().where({ id }).update(data)

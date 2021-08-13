@@ -143,6 +143,7 @@ if (tooltipTriggers) {
     const tooltipPlace = trigger.getAttribute('data-tooltip-place')
 
     trigger.onmouseover = () => {
+      trigger.classList.add('relative')
       tooltip.innerHTML = tooltipData
       trigger.appendChild(tooltip)
 
@@ -175,6 +176,7 @@ if (tooltipTriggers) {
 
     trigger.onmouseleave = () => {
       trigger.removeChild(tooltip)
+      trigger.classList.remove('relative')
     }
   })
 }
@@ -190,6 +192,21 @@ if (dropdownTriggers) {
 
     trigger.addEventListener('click', () => {
       target.classList.toggle('show')
+    })
+  })
+}
+
+// Data confirm
+const confirmTriggers = document.querySelectorAll('[data-confirm]')
+
+if (confirmTriggers) {
+  confirmTriggers.forEach((trigger) => {
+    trigger.addEventListener('click', function (ev) {
+      ev.preventDefault()
+
+      if (!confirm(trigger.getAttribute('data-confirm'))) return
+
+      trigger.submit()
     })
   })
 }

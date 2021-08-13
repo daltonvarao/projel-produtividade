@@ -672,20 +672,27 @@ button.checked::after {
 }
 
 /* DELETE FORM */
+.inline-form,
 .delete-form {
   display: inline;
 }
 
 /* ACTIONS TABLE */
+.primary-icon,
 .edit-icon {
   stroke: var(--primary);
-  /* margin-right: 0.5rem; */
 }
 
+.warning-icon {
+  stroke: var(--warning);
+}
+
+.danger-icon,
 .delete-icon {
   stroke: var(--error);
 }
 
+.success-icon,
 .check-icon {
   stroke: var(--success);
 }
