@@ -38,6 +38,15 @@
       <div class="form-row mt-2">
         <button class="btn btn-primary">Filtrar</button>
         <a href="{{ request.url() }}" class="btn btn-light">Limpar</a>
+        @if(atividadesUsuario?.length)
+          <a 
+            class="btn btn-success" 
+            href="{{ route('admin.reports.atividades_usuarios.index', {}, { qs: {...request.qs(), format: 'excel'} }) }}"
+          >
+            Excel
+            <span style="width: 16px; margin-left: .5rem;" data-feather="download"></span>
+          </a>
+          @endif
       </div>
     </form>
   </div>
@@ -45,7 +54,7 @@
 
   <div class="card mt-4">
     <div class="table-responsive">
-      @if(atividadeUsuarios?.length)
+      @if(atividadesUsuario?.length)
         <table class="data-table bordered">
           <thead>
             <tr>
@@ -63,14 +72,23 @@
           </thead>
           
           <tbody>
-            @each(day in atividadeUsuarios)
+            @each(atividadeUsuario in atividadesUsuario)
               <tr>
-                <th>{{ day.formattedDay }}</th>
+                <th>{{{ atividadeUsuario[0].data }}}</th>
                 @each(atividade in atividades)
-                  <td class="text-center" style="white-space: nowrap;">{{ day.atividades[atividade.descricao]?.furo || '-' }}</td>
+                  <td class="text-center" style="white-space: nowrap;">
+                    {{ 
+                      atividadeUsuario
+                        .find((atv) => atv.descricao === atividade.descricao)?.nome || '-'
+                    }}
+                  </td>
                   <td class="text-center">
                     {{ 
-                      day.atividades[atividade.descricao]?.quantidade.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || '-' 
+                      atividadeUsuario
+                        .find((atv) => atv.descricao === atividade.descricao)
+                        ?.quantidade
+                        ?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+                      || '-'
                     }}
                   </td>
                 @endeach
@@ -79,9 +97,9 @@
             <tfoot>
               <tr>
                 <th>Total</th>
-                @each(atividade in atividades)
+                @each(total in totals)
                   <th class="text-center">-</th>
-                  <th class="text-center">{{ totals[atividade.descricao].toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || '-' }}</th>
+                  <th class="text-center">{{ Number(total.quantidade).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || '-' }}</th>
                 @endeach
               </tr>
             </tfoot>

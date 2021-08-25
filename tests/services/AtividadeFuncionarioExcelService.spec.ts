@@ -14,10 +14,12 @@ import {
 import Database from '@ioc:Adonis/Lucid/Database'
 import Atividade from 'App/Models/Atividade'
 import Contrato from 'App/Models/Contrato'
-import AtividadeFuncionarioService from 'App/Services/AtividadeFuncionarioService'
+import AtividadeFuncionarioExcelService from 'App/Services/AtividadeFuncionarioExcelService'
 import User from 'App/Models/User'
 import Cargo from 'App/Models/Cargo'
 import Furo from 'App/Models/Furo'
+import AtividadeCargoValores from 'Database/migrations/1613267718988_atividade_cargos_valores'
+import AtividadeFuncionarioService from 'App/Services/AtividadeFuncionarioService'
 
 test.group('AtividadeFuncionarioService', async (group) => {
   let atividades: Atividade[]
@@ -217,7 +219,7 @@ test.group('AtividadeFuncionarioService', async (group) => {
     await Database.rollbackGlobalTransaction()
   })
 
-  test('should service return a list of atividades, days and totals', async (assert) => {
+  test.only('should excel service return a workbook', async (assert) => {
     const initialDate = '2021-03-21'
     const finalDate = '2021-04-21'
     const userId = users[0].id
@@ -225,125 +227,22 @@ test.group('AtividadeFuncionarioService', async (group) => {
 
     const service = new AtividadeFuncionarioService(contractId, userId, initialDate, finalDate)
 
-    const { atividadesUsuario, atividades, totals } = await service.build()
+    const atividadesFuncionario = await service.build()
 
-    assert.lengthOf(atividadesUsuario, 5)
-    assert.lengthOf(atividades, 3)
-    assert.lengthOf(totals, 3)
-    assert.equal(totals[0].quantidade, 2)
-    assert.equal(totals[1].quantidade, 2)
-    assert.equal(totals[2].quantidade, 6)
-  })
-
-  test('should AtividadeFuncionarioService.build returns only production of non invalid furos', async (assert) => {
-    const initialDate = '2022-03-01'
-    const finalDate = '2022-03-31'
-
-    const estrutura = await EstruturaFactory.merge({ contratoId: contrato.id }).create()
-
-    const [furoValido, furoInvalido] = await FuroFactory.merge([
-      {
-        nome: 'Furo Valido',
-        estruturaId: estrutura.id,
-        invalid: false,
-        contratoId: contrato.id,
-      },
-      {
-        nome: 'Furo Invalido',
-        estruturaId: estrutura.id,
-        invalid: true,
-        contratoId: contrato.id,
-      },
-    ]).createMany(2)
-
-    await RdoFactory.merge([
-      { contratoId: contrato.id, data: DateTime.fromISO('2022-02-15T08:00:00') },
-      { contratoId: contrato.id, data: DateTime.fromISO('2022-03-01T08:00:00') },
-      { contratoId: contrato.id, data: DateTime.fromISO('2022-03-31T08:00:00') },
-      { contratoId: contrato.id, data: DateTime.fromISO('2022-04-01T08:00:00') },
-    ])
-      .with('rdoAtividades', 3, (ra) => {
-        ra.merge([
-          {
-            atividadeId: atividades[0].id,
-            horaInicio: DateTime.fromISO('2021-01-01T08:00:00'),
-            horaFim: DateTime.fromISO('2021-01-01T09:00:00'),
-          },
-          {
-            atividadeId: atividades[1].id,
-            horaInicio: DateTime.fromISO('2021-01-15T09:00:00'),
-            horaFim: DateTime.fromISO('2021-01-15T10:00:00'),
-            quantidadeInicial: 0,
-            quantidadeFinal: 1,
-            quantidade: 1,
-            furoId: furoValido.id,
-          },
-          {
-            atividadeId: atividades[2].id,
-            horaInicio: DateTime.fromISO('2021-01-31T10:00:00'),
-            horaFim: DateTime.fromISO('2021-01-31T11:00:00'),
-            quantidadeInicial: 0,
-            quantidadeFinal: 1,
-            quantidade: 1,
-            furoId: furoValido.id,
-          },
-        ])
-      })
-      .with('rdoUsers', 3, (ru) => {
-        ru.merge([{ userId: users[0].id }, { userId: users[1].id }, { userId: users[2].id }])
-      })
-      .createMany(4)
-
-    await RdoFactory.merge([
-      { contratoId: contrato.id, data: DateTime.fromISO('2022-03-15T08:00:00') },
-    ])
-      .with('rdoAtividades', 3, (ra) => {
-        ra.merge([
-          {
-            // almoco
-            atividadeId: atividades[0].id,
-            horaInicio: DateTime.fromISO('2021-01-01T08:00:00'),
-            horaFim: DateTime.fromISO('2021-01-01T09:00:00'),
-          },
-          {
-            // sondagem
-            atividadeId: atividades[1].id,
-            horaInicio: DateTime.fromISO('2021-01-15T09:00:00'),
-            horaFim: DateTime.fromISO('2021-01-15T10:00:00'),
-            quantidadeInicial: 0,
-            quantidadeFinal: 1,
-            quantidade: 1,
-            furoId: furoInvalido.id,
-          },
-          {
-            // ensaio
-            atividadeId: atividades[2].id,
-            horaInicio: DateTime.fromISO('2021-01-31T10:00:00'),
-            horaFim: DateTime.fromISO('2021-01-31T11:00:00'),
-            quantidadeInicial: 0,
-            quantidadeFinal: 1,
-            quantidade: 1,
-            furoId: furoValido.id,
-          },
-        ])
-      })
-      .with('rdoUsers', 3, (ru) => {
-        ru.merge([{ userId: users[0].id }, { userId: users[1].id }, { userId: users[2].id }])
-      })
-      .create()
-
-    const service = new AtividadeFuncionarioService(
-      contrato.id,
-      users[0].id,
+    const excelService = new AtividadeFuncionarioExcelService(
+      userId,
       initialDate,
-      finalDate
+      finalDate,
+      atividadesFuncionario
     )
-    const { atividades: atividadeList, atividadesUsuario, totals } = await service.build()
 
-    assert.lengthOf(atividadesUsuario, 3)
-    assert.lengthOf(atividadeList, 2)
-    assert.lengthOf(totals, 2)
-    assert.equal(totals[0].quantidade, 3)
-    assert.equal(totals[1].quantidade, 2)
+    const workbook = await excelService.build()
+    const ws = workbook.getWorksheet('Produção Funcionário')
+
+    const cell = ws.getCell('B1')
+    const userName = cell.value
+
+    assert.isTrue(cell.isMerged)
+    assert.equal(userName, users[0].nome.toUpperCase())
   })
 })
