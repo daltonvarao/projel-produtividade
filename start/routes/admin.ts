@@ -48,6 +48,7 @@ Route.group(() => {
 
   Route.group(() => {
     Route.resource('atividades-usuarios', 'AtividadeRdoUsersController').only(['index'])
+    Route.resource('atividades-equipamentos', 'AtividadesEquipamentosController').only(['index'])
     Route.resource('producao-usuarios', 'ProducaoUsersController').only(['index'])
     Route.get('producao-usuarios-excel', 'ProducaoUsersController.downloadExcel').as(
       'producao-usuarios-excel'

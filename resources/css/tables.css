@@ -52,11 +52,9 @@ table.bordered {
   border-collapse: collapse;
 }
 
-table.bordered tbody td,
-table.bordered tfoot th,
-table.bordered tbody th,
-table.bordered thead th {
-  border: 1px solid var(--border-color);
+table.bordered td,
+table.bordered th {
+  border: 1px solid var(--border-color) !important;
 }
 
 table.data-table {

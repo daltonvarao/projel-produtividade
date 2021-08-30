@@ -1,0 +1,125 @@
+@layout('layouts/master')
+
+@set('title', 'Atividades Equipamentos')
+
+@section('content')
+
+<div class="card">
+  <div class="card-content">
+    <form action="">
+      <div class="form-md-row">
+      <div class="form-group">
+          <label for="initialDate">Data inicial</label>
+          <input type="date" value='{{ request.qs().initialDate || '' }}' id="initialDate" name="initialDate" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="finalDate">Data final</label>
+          <input type="date" value='{{ request.qs().finalDate || '' }}' id="finalDate" name="finalDate" required />
+        </div>
+
+        <div class="form-group">
+          <label for="funcionario">Equipamento</label>
+          <div
+            class="react-select-input"
+            inputid='funcionario'
+            collection='{{{ escape(JSON.stringify(equipamentos)) }}}'
+            labelkey='tag_description'
+            valuekey='id'
+            name='equipamentoId'
+            placeholder='Equipamento'
+            value='{{ request.qs().equipamentoId }}'
+            required='true'
+          >
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-row mt-2">
+        <button class="btn btn-primary">Filtrar</button>
+        <a href="{{ request.url() }}" class="btn btn-light">Limpar</a>
+        {{--  @if(atividadesEquipamento?.length)
+          <a 
+            class="btn btn-success" 
+            href="{{ route('admin.reports.atividades_equipamentos.index', {}, { qs: {...request.qs(), format: 'excel'} }) }}"
+          >
+            Excel
+            <span style="width: 16px; margin-left: .5rem;" data-feather="download"></span>
+          </a>
+        @endif  --}}
+      </div>
+    </form>
+  </div>
+</div>
+
+  <div class="card mt-4" style="overflow: hidden;">
+    <div class="table-responsive" style="overflow-y: scroll; max-height: calc(100vh - 6rem)">
+      @if(atividadesEquipamento?.length)
+        <table class="data-table bordered" style="position: relative; overflow: unset;">
+          <thead style="position: sticky; top: 0; z-index: 300;">
+            <tr>
+              <th class="text-center" rowspan="2">Dia</th>
+              @each(atividade in atividades)
+                <th class="text-center" colspan="3" style="white-space: nowrap">{{ atividade.descricao }}</th>
+              @endeach
+            </tr>
+            <tr>
+              @each(atividade in atividades)
+                <th class="text-center">Furo</th>
+                <th class="text-center" style="white-space: nowrap;">Quantidade ({{ atividade.unidade_medida === 'metros' ? 'm' : 'un' }})</th>
+                <th class="text-center" style="white-space: nowrap;">Carga Horária</th>
+              @endeach
+            </tr>
+          </thead>
+          <tbody>
+            @each(atividadeEquipamento in atividadesEquipamento)
+              <tr>
+                <th>{{{ atividadeEquipamento[0].data }}}</th>
+                @each(atividade in atividades)
+                  <td class="text-center" style="white-space: nowrap;">
+                    {{ 
+                      atividadeEquipamento
+                        .find(({atividade: atv}) => atv === atividade.descricao)?.furo || '-'
+                    }}
+                  </td>
+                  <td class="text-center">
+                    {{ 
+                      atividade.tipo === 'produtiva' ?
+                        atividadeEquipamento
+                          .find(({atividade: atv}) => atv === atividade.descricao)
+                          ?.quantidade
+                          ?.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                        || '-'
+                      : '-'
+                    }}
+                  </td>
+                  <td class="text-center" style="white-space: nowrap;">
+                    {{ 
+                      atividadeEquipamento
+                        .find(({atividade: atv}) => atv === atividade.descricao)
+                        ?.horas
+                        ?.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                      || '-'
+                    }}
+                  </td>
+                @endeach
+              </tr>
+            @endeach
+            <tfoot>
+              <tr>
+                <th>Total</th>
+                @each(total in totalAtividades)
+                  <th class="text-center">-</th>
+                  <th class="text-center">{{ total.quantidade.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || '-' }}</th>
+                  <th class="text-center">{{ total.horas.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</th>
+                @endeach
+              </tr>
+            </tfoot>
+          </tbody>
+        </table>
+      @else
+        @!emptyMessage()
+      @endif
+    </div>
+  </div>
+@endsection
