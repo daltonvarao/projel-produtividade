@@ -1,11 +1,9 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Equipamento from 'App/Models/Equipamento'
-// import AtividadeFuncionarioExcelService from 'App/Services/AtividadeFuncionarioExcelService'
-// import AtividadeFuncionarioService from 'App/Services/AtividadeFuncionarioService'
 import AtividadeEquipamentoService from 'App/Services/AtividadeEquipamentoService'
 
 export default class AtividadesEquipamentosController {
-  public async index({ view, request, session, response }: HttpContextContract) {
+  public async index({ view, request, session }: HttpContextContract) {
     const contratoId: number = session.get('contratoId')
 
     const { equipamentoId, initialDate, finalDate, format } = request.qs()
@@ -26,7 +24,8 @@ export default class AtividadesEquipamentosController {
     const { atividadesEquipamento, atividades, totalAtividades } = await service.build()
 
     // download excel
-    if (format === 'excel') {
+    if (format) {
+      session.flash('error', 'Formato não permitido')
       //   const excelService = new AtividadeFuncionarioExcelService(
       //     equipamentoId,
       //     initialDate,

@@ -39,6 +39,8 @@ export default class AtividadeEquipamentoService {
   }
 
   protected _groupByDate(data: ReturnType<AtividadeEquipamentoService['_sanitize']>) {
+    if (!data.length) return []
+
     const dates = [[data[0]]]
 
     let currentIndex = 0
