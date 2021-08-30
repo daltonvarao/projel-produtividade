@@ -3,7 +3,7 @@
 @set('title', 'Dashboard')
 
 @section('content')
-  <h2 class="report-title">Relatórios</h2>
+  <h3 class="report-title">Funcionários</h3>
 
   <div class="reports">
     <a href="{{ route('admin.reports.atividades_usuarios.index') }}" class="report-card">
@@ -16,10 +16,18 @@
 
       <span data-feather="dollar-sign"></span>
     </a>
+  </div>
+  <h3 class="report-title mt-4">Equipamentos</h3>
+  <div class="reports">
+    <a href="{{ route('admin.reports.atividades_equipamentos.index') }}" class="report-card">
+      <h4>Atividades Equipamentos</h4>
+
+      <span data-feather="tool"></span>
+    </a>
     <a href="{{ route('admin.reports.producao_equipamentos.index') }}" class="report-card">
       <h4>Produção Equipamentos</h4>
 
-      <span data-feather="list"></span>
+      <span data-feather="activity"></span>
     </a>
   </div>
 @endsection
