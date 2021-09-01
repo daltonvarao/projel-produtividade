@@ -24,8 +24,8 @@ export default class RdosController {
               quantidadeInicial: schema.number(),
               quantidadeFinal: schema.number(),
               quantidade: schema.number(),
-              furoNome: schema.string.optional(),
               observacao: schema.string.optional(),
+              furoId: schema.number.optional(),
             })
           ),
           equipamentos: schema.array().members(
@@ -55,6 +55,8 @@ export default class RdosController {
           errors: [{ message: 'Acesso não autorizado.' }],
         })
       }
+
+      // console.log(data[0].atividades)
 
       await RdoBuilderService.buildMany(user, data)
 

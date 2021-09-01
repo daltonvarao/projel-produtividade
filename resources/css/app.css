@@ -918,6 +918,14 @@ form .form-group label,
   display: block;
 }
 
+.form-group-inline label {
+  margin-bottom: 0 !important;
+}
+
+.form-group-inline input + label {
+  margin-left: 0.25rem;
+}
+
 .badge {
   padding: 0.35rem 0.5rem;
   border-radius: 20rem;
