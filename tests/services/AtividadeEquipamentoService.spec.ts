@@ -150,7 +150,7 @@ test.group('AtividadeEquipamentoService', async (group) => {
     await Database.rollbackGlobalTransaction()
   })
 
-  test.only('should AtividadeEquipamentoService.build return production for an specific equipment', async (assert) => {
+  test('should AtividadeEquipamentoService.build return production for an specific equipment', async (assert) => {
     const initialDate = '2021-02-01'
     const finalDate = '2021-02-28'
     const equipamentoId = equipamentos[0].id

@@ -72,7 +72,7 @@ test.group('Api RdosController', (group) => {
       .expect(422)
   })
 
-  test('should POST in /rdos be able to create Rdos', async (assert) => {
+  test.only('should POST in /rdos be able to create Rdos', async (assert) => {
     const data = [
       {
         nome: 'Sondagem',
@@ -92,7 +92,6 @@ test.group('Api RdosController', (group) => {
             quantidade: 10,
             quantidadeInicial: 0,
             quantidadeFinal: 10,
-            furoNome: furos[0].nome,
           },
           {
             atividadeId: atividades[1].id,
@@ -101,7 +100,7 @@ test.group('Api RdosController', (group) => {
             quantidade: 10,
             quantidadeFinal: 10,
             quantidadeInicial: 0,
-            furoNome: 'Novo furo',
+            furoId: furos[1].id,
           },
         ],
         equipamentos: [
@@ -137,11 +136,6 @@ test.group('Api RdosController', (group) => {
     await user.load('rdos')
 
     assert.lengthOf(user.rdos, 1)
-
     assert.lengthOf(furos, 4)
-
-    furos = await Furo.all()
-
-    assert.lengthOf(furos, 5)
   })
 })

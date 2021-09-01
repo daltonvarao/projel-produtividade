@@ -22,7 +22,7 @@ interface Atividade {
   quantidade: number
   quantidadeInicial: number
   quantidadeFinal: number
-  furoNome?: string
+  furoId?: number
   observacao?: string
 }
 
@@ -60,26 +60,15 @@ export default class RdoBuilderService {
     }
   }
 
-  public static async _buildRdoAtividade({ furoNome: nome, ...atividade }: Atividade, rdo: Rdo) {
+  public static async _buildRdoAtividade({ furoId, ...atividade }: Atividade, rdo: Rdo) {
     const rdoAtividade = await rdo.related('rdoAtividades').create(atividade)
 
-    if (nome) {
-      const furo = await Furo.firstOrNew(
-        { nome, contratoId: rdo.contratoId, estruturaId: rdo.estruturaId },
-        { nome, contratoId: rdo.contratoId }
-      )
+    if (furoId) {
+      const furo = await Furo.query().where({ id: furoId }).first()
 
-      if (furo.$isNew) {
-        await ApiSyncVersion.create({
-          contratoId: rdo.contratoId,
-          requestMethod: 'POST',
-          requestUrl: '/api/rdos',
-        })
-
-        await furo.save()
+      if (furo) {
+        await rdoAtividade.related('furo').associate(furo)
       }
-
-      await rdoAtividade.related('furo').associate(furo)
     }
 
     return rdoAtividade
@@ -94,7 +83,9 @@ export default class RdoBuilderService {
     await rdo.related('rdoEquipamentos').createMany(data.equipamentos)
 
     const asyncRdoAtividades = data.atividades.map(async (atividade) => {
-      return this._buildRdoAtividade(atividade, rdo)
+      const rdoAtividade = await this._buildRdoAtividade(atividade, rdo)
+
+      return rdoAtividade
     })
 
     await Promise.all(asyncRdoAtividades)
@@ -104,7 +95,9 @@ export default class RdoBuilderService {
 
   public static async buildMany(user: User, data: Data[]) {
     const builds = data.map(async (rdoData) => {
-      return this.build(user, rdoData)
+      const rdo = await this.build(user, rdoData)
+
+      return rdo
     })
 
     return await Promise.all(builds)

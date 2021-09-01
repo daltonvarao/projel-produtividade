@@ -18,7 +18,6 @@ import AtividadeFuncionarioExcelService from 'App/Services/AtividadeFuncionarioE
 import User from 'App/Models/User'
 import Cargo from 'App/Models/Cargo'
 import Furo from 'App/Models/Furo'
-import AtividadeCargoValores from 'Database/migrations/1613267718988_atividade_cargos_valores'
 import AtividadeFuncionarioService from 'App/Services/AtividadeFuncionarioService'
 
 test.group('AtividadeFuncionarioService', async (group) => {
@@ -219,7 +218,7 @@ test.group('AtividadeFuncionarioService', async (group) => {
     await Database.rollbackGlobalTransaction()
   })
 
-  test.only('should excel service return a workbook', async (assert) => {
+  test('should excel service return a workbook', async (assert) => {
     const initialDate = '2021-03-21'
     const finalDate = '2021-04-21'
     const userId = users[0].id
