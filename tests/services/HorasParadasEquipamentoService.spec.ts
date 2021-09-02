@@ -88,7 +88,7 @@ test.group('HorasParadasEquipamentoService', async (group) => {
     await Database.rollbackGlobalTransaction()
   })
 
-  test.only('should HorasParadasEquipamento.build returns a list of atividades paradas', async (assert) => {
+  test('should HorasParadasEquipamento.build returns a list of atividades paradas', async (assert) => {
     const initialDate = '2021-02-01'
     const finalDate = '2021-02-28'
     const equipamentoId = equipamentos[0].id
@@ -100,13 +100,14 @@ test.group('HorasParadasEquipamentoService', async (group) => {
       initialDate,
       finalDate
     )
-    const horasParadas = await service.build()
+    const { horasParadas, total } = await service.build()
 
+    assert.equal(total, 4)
     assert.lengthOf(horasParadas, 4)
     assert.deepEqual(horasParadas[0], {
       equipamento: equipamentos[0].tag,
-      hora_inicio: '08:00:00',
-      hora_fim: '09:00:00',
+      hora_inicio: '08:00',
+      hora_fim: '09:00',
       atividade: atividades[0].descricao,
       data: '01/02/2021',
       horas: 1,

@@ -89,7 +89,7 @@ test.group('HorasParadasEquipamentoService', async (group) => {
     await Database.rollbackGlobalTransaction()
   })
 
-  test.only('should HorasParadasEquipamento.build returns a list of atividades paradas', async (assert) => {
+  test('should HorasParadasEquipamento.build returns a list of atividades paradas', async (assert) => {
     const initialDate = '2021-02-01'
     const finalDate = '2021-02-28'
     const equipamentoId = equipamentos[0].id
@@ -101,12 +101,17 @@ test.group('HorasParadasEquipamentoService', async (group) => {
       initialDate,
       finalDate
     )
-    const horasParadas = await service.build()
+    const { horasParadas, total } = await service.build()
 
     const excelService = new HorasParadasEquipamentoExcelService(contratoId, initialDate, finalDate)
 
-    const xlsx = await excelService.build(horasParadas)
+    const wb = await excelService.build(horasParadas, total)
 
-    await xlsx.writeFile('test.xlsx')
+    const ws = wb.getWorksheet('Horas Paradas')
+    const cell = ws.getCell('A1')
+    const A1 = cell.value
+
+    assert.equal(A1, 'Equipamento')
+    assert.equal(ws.rowCount, horasParadas.length + 3)
   })
 })

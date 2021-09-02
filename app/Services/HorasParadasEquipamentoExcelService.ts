@@ -14,7 +14,7 @@ interface QueryRow {
 export default class HorasParadasEquipamentoExcelService {
   constructor(protected contratoId, protected initialDate, protected finalDate) {}
 
-  public async build(data: QueryRow[]) {
+  public async build(data: QueryRow[], total: number) {
     const workbook = new ExcelJS.Workbook()
 
     const worksheet = workbook.addWorksheet('Horas Paradas')
@@ -25,7 +25,7 @@ export default class HorasParadasEquipamentoExcelService {
 
     worksheet.columns = [
       {
-        header: ['Contrato', 'Sonda'],
+        header: ['Equipamento', 'Sonda'],
         key: 'equipamento',
         width: 20,
         style: {
@@ -33,7 +33,7 @@ export default class HorasParadasEquipamentoExcelService {
         },
       },
       {
-        header: [contrato?.numero || '', 'Data'],
+        header: [data[0]?.equipamento || '', 'Data'],
         key: 'data',
         width: 25,
         style: {
@@ -57,7 +57,7 @@ export default class HorasParadasEquipamentoExcelService {
         },
       },
       {
-        header: ['', 'Quantidade'],
+        header: ['Contrato', 'Quantidade'],
         key: 'horas',
         width: 15,
         style: {
@@ -65,14 +65,14 @@ export default class HorasParadasEquipamentoExcelService {
         },
       },
       {
-        header: ['', 'Atividade'],
+        header: [contrato?.numero || '', 'Atividade'],
         key: 'atividade',
-        width: 40,
+        width: 100,
         style: { alignment: { vertical: 'middle' } },
       },
     ]
 
-    worksheet.getRows(1, 2)?.forEach((row, index) => {
+    worksheet.getRows(1, 2)?.forEach((row) => {
       row.height = 20
 
       row.eachCell((cell) => {
@@ -92,7 +92,10 @@ export default class HorasParadasEquipamentoExcelService {
     })
 
     data.forEach((item) => {
-      worksheet.addRow(item)
+      worksheet.addRow({
+        ...item,
+        horas: item.horas.toPrecision(3),
+      })
     })
 
     worksheet.eachRow((row) => {
@@ -126,6 +129,58 @@ export default class HorasParadasEquipamentoExcelService {
       })
     })
 
-    return workbook.xlsx
+    const totalRow = worksheet.addRow({
+      equipamento: 'Total',
+      data: '-',
+      hora_inicio: '-',
+      hora_fim: '-',
+      horas: total.toPrecision(3),
+      atividade: '-',
+    })
+
+    totalRow.height = 20
+    totalRow.eachCell((cell) => {
+      cell.fill = {
+        pattern: 'gray0625',
+        type: 'pattern',
+      }
+
+      cell.style = {
+        ...cell.style,
+        font: {
+          name: 'Arial',
+          bold: true,
+        },
+      }
+
+      cell.border = {
+        top: {
+          color: {
+            argb: 'FF000000',
+          },
+          style: 'thin',
+        },
+        left: {
+          color: {
+            argb: 'FF000000',
+          },
+          style: 'thin',
+        },
+        bottom: {
+          color: {
+            argb: 'FF000000',
+          },
+          style: 'thin',
+        },
+        right: {
+          color: {
+            argb: 'FF000000',
+          },
+          style: 'thin',
+        },
+      }
+    })
+
+    return workbook
   }
 }

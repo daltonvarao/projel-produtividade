@@ -82,9 +82,22 @@ export default class HorasParadasEquipamentoService {
     })
   }
 
+  protected _computeTotal(data: ReturnType<HorasParadasEquipamentoService['_sanitize']>) {
+    if (!data.length) return 0
+
+    return data.reduce((pv, cv) => {
+      return {
+        ...cv,
+        horas: pv.horas + cv.horas,
+      }
+    }).horas
+  }
+
   public async build() {
     const data = await this._query()
 
-    return this._sanitize(data)
+    const sanitizedData = this._sanitize(data)
+
+    return { horasParadas: sanitizedData, total: this._computeTotal(sanitizedData) }
   }
 }

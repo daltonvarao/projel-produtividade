@@ -2,9 +2,10 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Equipamento from 'App/Models/Equipamento'
 import HorasParadasEquipamentoExcelService from 'App/Services/HorasParadasEquipamentoExcelService'
 import HorasParadasEquipamentoService from 'App/Services/HorasParadasEquipamentoService'
+import { DateTime } from 'luxon'
 
 export default class HorasParadasEquipamentosController {
-  public async index({ view, request, session }: HttpContextContract) {
+  public async index({ view, request, session, response }: HttpContextContract) {
     const contratoId: number = session.get('contratoId')
 
     const { equipamentoId, initialDate, finalDate, format } = request.qs()
@@ -25,41 +26,38 @@ export default class HorasParadasEquipamentosController {
       initialDate,
       finalDate
     )
-    const horasParadas = await service.build()
+    const { horasParadas, total } = await service.build()
 
     // download excel
     if (format) {
-      session.flash('error', 'Formato não permitido')
+      const excelService = new HorasParadasEquipamentoExcelService(
+        contratoId,
+        initialDate,
+        finalDate
+      )
 
-      const excelService = new HorasParadasEquipamentosService()
+      const wb = await excelService.build(horasParadas, total)
+      const excelReportBuffer = await wb.xlsx.writeBuffer()
 
-      //   const excelService = new AtividadeFuncionarioExcelService(
-      //     equipamentoId,
-      //     initialDate,
-      //     finalDate,
-      //     {
-      //       atividadesUsuario,
-      //       atividades,
-      //       totals,
-      //     }
-      //   )
-      //   const workbook = await excelService.build()
-      //   const excelReportBuffer = await workbook.xlsx.writeBuffer()
-      //   const filename = `RelatorioAtividadesFuncionario_${DateTime.fromISO(initialDate).toFormat(
-      //     'dd-MM-yyyy'
-      //   )}_${DateTime.fromISO(finalDate).toFormat('dd-MM-yyyy')}.xlsx`
-      //   return response
-      //     .header(
-      //       'Content-Type',
-      //       'application/application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      //     )
-      //     .header('Content-Disposition', `attachment; filename="${filename}"`)
-      //     .send(excelReportBuffer)
+      const filename = `RelatorioHorasParadasEquipamento_${
+        horasParadas[0].equipamento
+      }_${DateTime.fromISO(initialDate).toFormat('dd-MM-yyyy')}_${DateTime.fromISO(
+        finalDate
+      ).toFormat('dd-MM-yyyy')}.xlsx`
+
+      return response
+        .header(
+          'Content-Type',
+          'application/application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        .header('Content-Disposition', `attachment; filename="${filename}"`)
+        .send(excelReportBuffer)
     }
 
     return view.render('admin/reports/horas_paradas_equipamentos/index', {
       equipamentos: equipamentos.map((i) => i.toJSON()),
       horasParadas,
+      total,
     })
   }
 }
