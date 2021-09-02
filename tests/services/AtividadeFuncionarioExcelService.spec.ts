@@ -5,7 +5,6 @@ import {
   AtividadeFactory,
   CargoFactory,
   ContratoFactory,
-  EstruturaFactory,
   FuroFactory,
   RdoFactory,
   UserFactory,

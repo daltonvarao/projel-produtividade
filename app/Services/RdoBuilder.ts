@@ -1,4 +1,3 @@
-import ApiSyncVersion from 'App/Models/ApiSyncVersion'
 import Furo from 'App/Models/Furo'
 import Rdo from 'App/Models/Rdo'
 import User from 'App/Models/User'
