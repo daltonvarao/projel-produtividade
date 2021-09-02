@@ -1,0 +1,109 @@
+@layout('layouts/master')
+
+@set('title', 'Atividades Equipamentos')
+
+@section('content')
+
+  <div class="card">
+    <div class="card-content">
+      <form action="">
+        <div class="form-md-row">
+        <div class="form-group">
+            <label for="initialDate">Data inicial</label>
+            <input type="date" value='{{ request.qs().initialDate || '' }}' id="initialDate" name="initialDate" required />
+          </div>
+          
+          <div class="form-group">
+            <label for="finalDate">Data final</label>
+            <input type="date" value='{{ request.qs().finalDate || '' }}' id="finalDate" name="finalDate" required />
+          </div>
+
+          <div class="form-group">
+            <label for="funcionario">Equipamento</label>
+            <div
+              class="react-select-input"
+              inputid='funcionario'
+              collection='{{{ escape(JSON.stringify(equipamentos)) }}}'
+              labelkey='tag_description'
+              valuekey='id'
+              name='equipamentoId'
+              placeholder='Equipamento'
+              value='{{ request.qs().equipamentoId }}'
+              required='true'
+            >
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-row mt-2">
+          <button class="btn btn-primary">Filtrar</button>
+          <a href="{{ request.url() }}" class="btn btn-light">Limpar</a>
+          @if(horasParadas?.length)
+            <a 
+              class="btn btn-success" 
+              href="{{ route('admin.reports.horas_paradas_equipamentos.index', {}, { qs: {...request.qs(), format: 'excel'} }) }}"
+            >
+              Excel
+              <span style="width: 16px; margin-left: .5rem;" data-feather="download"></span>
+            </a>
+          @endif
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card mt-4" style="overflow: hidden;">
+    <div class="table-responsive">
+      <table class="data-table bordered" style="position: relative; overflow: unset;">
+        <thead>
+          <tr>
+            <th class="text-center">Equipamento</th>
+            <th class="text-center">Data</th>
+            <th class="text-center" style="white-space: nowrap;">Hora Início</th>
+            <th class="text-center" style="white-space: nowrap;">Hora Final</th>
+            <th class="text-center" style="white-space: nowrap;">Quantidade (horas)</th>
+            <th class="text-left" style="white-space: nowrap;">Atividade</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(horaParada in horasParadas)
+            <tr>
+              <th>{{ horaParada.equipamento }}</th>
+              <th>{{ horaParada.data }}</th>
+              <th>{{ horaParada.hora_inicio }}</th>
+              <th>{{ horaParada.hora_fim }}</th>
+              <th>
+                {{ 
+                  horaParada.horas.toLocaleString('pt-BR', {
+                    minimumFractionDigits: 3,
+                    maximumFractionDigits: 3,
+                  })
+                }}
+              </th>
+              <th class="text-left">{{ horaParada.atividade }}</th>
+            </tr>
+          @else 
+            @!emptyMessage()
+          @endeach
+          <tfoot>
+            <tr>
+              <th>Total</th>
+              <th>-</th>
+              <th>-</th>
+              <th>-</th>
+              <th>
+                {{ 
+                  total?.toLocaleString('pt-BR', {
+                    minimumFractionDigits: 3,
+                    maximumFractionDigits: 3,
+                  }) ?? '-'
+                }}
+              </th>
+              <th>-</th>
+            </tr>
+          </tfoot>
+        </tbody>
+      </table>
+    </div>
+  </div>
+@endsection

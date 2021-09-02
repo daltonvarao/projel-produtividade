@@ -7,7 +7,10 @@ export default class AtividadesEquipamentosController {
     const contratoId: number = session.get('contratoId')
 
     const { equipamentoId, initialDate, finalDate, format } = request.qs()
-    const equipamentos = await Equipamento.query().apply((scopes) => scopes.isSonda())
+    const equipamentos = await Equipamento.query().apply((scopes) => {
+      scopes.isSonda()
+      scopes.inContract(contratoId)
+    })
 
     if (!initialDate || !finalDate || !equipamentoId) {
       return view.render('admin/reports/atividades_equipamentos/index', {
