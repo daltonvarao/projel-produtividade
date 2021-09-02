@@ -1,8 +1,8 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Equipamento from 'App/Models/Equipamento'
-import AtividadeEquipamentoService from 'App/Services/AtividadeEquipamentoService'
+import HorasParadasEquipamentoService from 'App/Services/HorasParadasEquipamentoService'
 
-export default class AtividadesEquipamentosController {
+export default class HorasParadasEquipamentosController {
   public async index({ view, request, session }: HttpContextContract) {
     const contratoId: number = session.get('contratoId')
 
@@ -13,18 +13,18 @@ export default class AtividadesEquipamentosController {
     })
 
     if (!initialDate || !finalDate || !equipamentoId) {
-      return view.render('admin/reports/atividades_equipamentos/index', {
+      return view.render('admin/reports/horas_paradas_equipamentos/index', {
         equipamentos: equipamentos.map((i) => i.toJSON()),
       })
     }
 
-    const service = new AtividadeEquipamentoService(
+    const service = new HorasParadasEquipamentoService(
       contratoId,
       equipamentoId,
       initialDate,
       finalDate
     )
-    const { atividadesEquipamento, atividades, totalAtividades } = await service.build()
+    const horasParadas = await service.build()
 
     // download excel
     if (format) {
@@ -53,11 +53,9 @@ export default class AtividadesEquipamentosController {
       //     .send(excelReportBuffer)
     }
 
-    return view.render('admin/reports/atividades_equipamentos/index', {
+    return view.render('admin/reports/horas_paradas_equipamentos/index', {
       equipamentos: equipamentos.map((i) => i.toJSON()),
-      atividadesEquipamento,
-      totalAtividades,
-      atividades,
+      horasParadas,
     })
   }
 }

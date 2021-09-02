@@ -46,6 +46,7 @@ Route.group(() => {
     .only(['store', 'destroy'])
     .as('rdo_atividades')
 
+  // reports
   Route.group(() => {
     Route.resource('atividades-usuarios', 'AtividadeRdoUsersController').only(['index'])
     Route.resource('atividades-equipamentos', 'AtividadesEquipamentosController').only(['index'])
@@ -54,6 +55,9 @@ Route.group(() => {
       'producao-usuarios-excel'
     )
     Route.resource('producao-equipamentos', 'ProducaoEquipamentosController').only(['index'])
+    Route.resource('horas-paradas-equipamentos', 'HorasParadasEquipamentosController').only([
+      'index',
+    ])
   })
     .namespace('App/Controllers/Http/Admin/Reports')
     .as('reports')
