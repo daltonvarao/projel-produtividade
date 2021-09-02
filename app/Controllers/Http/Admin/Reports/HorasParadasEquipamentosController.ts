@@ -1,5 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Equipamento from 'App/Models/Equipamento'
+import HorasParadasEquipamentoExcelService from 'App/Services/HorasParadasEquipamentoExcelService'
 import HorasParadasEquipamentoService from 'App/Services/HorasParadasEquipamentoService'
 
 export default class HorasParadasEquipamentosController {
@@ -29,6 +30,9 @@ export default class HorasParadasEquipamentosController {
     // download excel
     if (format) {
       session.flash('error', 'Formato não permitido')
+
+      const excelService = new HorasParadasEquipamentosService()
+
       //   const excelService = new AtividadeFuncionarioExcelService(
       //     equipamentoId,
       //     initialDate,

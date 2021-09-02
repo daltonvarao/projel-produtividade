@@ -1,7 +1,7 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import { DateTime } from 'luxon'
 
-interface QueryRow {
+export interface QueryRow {
   equipamento: string
   data: Date
   hora_inicio: string
@@ -15,7 +15,7 @@ interface QueryRows {
   rows: QueryRow[]
 }
 
-export default class HorasParadasEquipamentosService {
+export default class HorasParadasEquipamentoService {
   constructor(
     protected contratoId,
     protected equipamentoId,
