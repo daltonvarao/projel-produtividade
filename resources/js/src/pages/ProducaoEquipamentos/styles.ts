@@ -8,20 +8,24 @@ export const Row = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 2rem;
+  max-width: 420px;
+  height: fit-content;
+
+  h3 {
+    text-align: center;
+  }
 `
 
 export const CardContainer = styled.div`
   display: flex;
-  justify-content: center;
   flex-direction: column;
-  align-items: center;
+  width: 100%;
 
+  height: fit-content;
   margin: 0 auto;
-  margin-top: 1rem;
   background: var(--white);
   border-radius: 8px;
-  padding: 2rem 2rem;
-  /* box-shadow: 0 0 35px 0 var(--shadow-color); */
+  padding: 1rem;
   box-shadow: var(--card-shadow);
 `
 export const HeaderContainer = styled.div`

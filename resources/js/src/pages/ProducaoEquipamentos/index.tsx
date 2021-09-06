@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 import stc from 'string-to-color'
-import { Pie, PieChart, Cell, Legend, Tooltip } from 'recharts'
 import * as Fi from 'react-icons/fi'
 
 import { CardContainer, Container, HeaderContainer, IconsContainer, Row } from './styles'
+import { Doughnut } from 'react-chartjs-2'
+import ChartDataLabels from 'chartjs-plugin-datalabels'
 
 interface Atividade {
   descricao: string
@@ -37,36 +38,6 @@ interface ProducaoEquipamentosProps {
   summary?: Summary
 }
 
-interface ChartProps {
-  data: any[]
-  dataKey: string
-  labelKey: string
-}
-
-const Chart: React.FC<ChartProps> = ({ data, dataKey, labelKey }) => {
-  const colors = data.map((entry: any) => stc(entry[labelKey]))
-
-  return (
-    <PieChart width={960} height={450}>
-      <Pie data={data} dataKey={dataKey} label innerRadius="55%">
-        {data.map((_: any, index: number) => {
-          return <Cell key={index} fill={colors[index]} />
-        })}
-      </Pie>
-
-      <Tooltip
-        formatter={(value: number) => {
-          if (value <= 1) {
-            return String(value.toFixed(2)).concat(' hora')
-          }
-          return String(value.toFixed(2)).concat(' horas')
-        }}
-      />
-      <Legend />
-    </PieChart>
-  )
-}
-
 const Card: React.FC<{ data: BaseSummary; title: string; showQuantitativo?: boolean }> = ({
   data,
   title,
@@ -83,9 +54,9 @@ const Card: React.FC<{ data: BaseSummary; title: string; showQuantitativo?: bool
   return (
     <CardContainer>
       <HeaderContainer>
-        <h2>
+        <h3>
           {title} {viewMode === 'chart' && ' - Total: ' + String(data.totalTime).concat(' horas')}
-        </h2>
+        </h3>
         <IconsContainer>
           {viewMode === 'chart' ? (
             <button onClick={toggleViewMode} title="Visualizar lista" className="btn-link">
@@ -101,7 +72,9 @@ const Card: React.FC<{ data: BaseSummary; title: string; showQuantitativo?: bool
 
       {viewMode === 'chart' ? (
         <div>
-          <Chart data={data.atividades} dataKey="totalTime" labelKey="name" />
+          <DoughnutChart
+            data={data.atividades.map(({ name, totalTime }) => ({ label: name, value: totalTime }))}
+          />
         </div>
       ) : (
         <table className="table">
@@ -153,6 +126,57 @@ const Card: React.FC<{ data: BaseSummary; title: string; showQuantitativo?: bool
   )
 }
 
+interface DoughnutProps {
+  data: { label: string; value: number | string }[]
+}
+
+const DoughnutChart: React.FC<DoughnutProps> = ({ data }) => {
+  const labels = data.map(({ label }) => label)
+  const values = data.map(({ value }) => value)
+  const bgColors = labels.map((label) => stc(label).concat('4e'))
+  const bdColors = labels.map((label) => stc(label))
+
+  return (
+    <Doughnut
+      width={450}
+      data={{
+        datasets: [
+          {
+            data: values,
+            backgroundColor: bgColors,
+            borderColor: bdColors,
+            borderWidth: 1,
+            datalabels: {
+              anchor: 'center',
+              color: bdColors,
+              font: {
+                weight: 'bold',
+                size: 14,
+                family: 'Poppins',
+              },
+              formatter: (value) => {
+                return `${value}h`
+              },
+            },
+          },
+        ],
+        labels: labels,
+      }}
+      options={{
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              textAlign: 'left',
+            },
+          },
+        },
+      }}
+      plugins={[ChartDataLabels]}
+    />
+  )
+}
+
 const ProducaoEquipamentos: React.FC<ProducaoEquipamentosProps> = ({ summary }) => {
   if (!summary) {
     return null
@@ -160,14 +184,32 @@ const ProducaoEquipamentos: React.FC<ProducaoEquipamentosProps> = ({ summary }) 
 
   return (
     <Container>
-      <Row className="card">
-        <h2>Distribuição de horas diárias - Tipos de Atividades</h2>
-        <Chart data={summary.totalTimes} dataKey="value" labelKey="name" />
-      </Row>
+      <div
+        style={{
+          display: 'flex',
+          gap: '1rem',
+        }}
+      >
+        <Row className="card">
+          <h3>Distribuição de horas diárias</h3>
 
-      <Card title="Distribuição de horas produtivas" showQuantitativo data={summary.produtivas} />
-      <Card title="Distribuição de horas improdutivas" data={summary.improdutivas} />
-      <Card title="Distribuição de horas paradas" data={summary.paradas} />
+          <DoughnutChart
+            data={summary.totalTimes.map(({ name, value }) => ({ label: name, value }))}
+          />
+        </Row>
+
+        <Card title="Horas produtivas" showQuantitativo data={summary.produtivas} />
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          gap: '1rem',
+          marginTop: '1rem',
+        }}
+      >
+        <Card title="Horas paradas" data={summary.paradas} />
+        <Card title="Horas improdutivas" data={summary.improdutivas} />
+      </div>
     </Container>
   )
 }
