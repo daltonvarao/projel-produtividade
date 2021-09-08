@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
-import stc from 'string-to-color'
 import * as Fi from 'react-icons/fi'
 
-import { CardContainer, Container, HeaderContainer, IconsContainer, Row } from './styles'
-import { Doughnut } from 'react-chartjs-2'
-import ChartDataLabels from 'chartjs-plugin-datalabels'
+import { CardContainer, Container, HeaderContainer, IconsContainer, Row, Col } from './styles'
+
+import { Chart } from 'react-google-charts'
+import Loader from '../../components/Loader'
 
 interface Atividade {
   descricao: string
@@ -72,7 +72,7 @@ const Card: React.FC<{ data: BaseSummary; title: string; showQuantitativo?: bool
 
       {viewMode === 'chart' ? (
         <div>
-          <DoughnutChart
+          <DonutChart
             data={data.atividades.map(({ name, totalTime }) => ({ label: name, value: totalTime }))}
           />
         </div>
@@ -126,53 +126,34 @@ const Card: React.FC<{ data: BaseSummary; title: string; showQuantitativo?: bool
   )
 }
 
-interface DoughnutProps {
+interface DonutProps {
   data: { label: string; value: number | string }[]
 }
 
-const DoughnutChart: React.FC<DoughnutProps> = ({ data }) => {
-  const labels = data.map(({ label }) => label)
-  const values = data.map(({ value }) => value)
-  const bgColors = labels.map((label) => stc(label).concat('4e'))
-  const bdColors = labels.map((label) => stc(label))
+const DonutChart: React.FC<DonutProps> = ({ data }) => {
+  const dataChart = data.map(({ label, value }) => [String(label), value])
 
   return (
-    <Doughnut
-      width={450}
-      data={{
-        datasets: [
-          {
-            data: values,
-            backgroundColor: bgColors,
-            borderColor: bdColors,
-            borderWidth: 1,
-            datalabels: {
-              anchor: 'center',
-              color: bdColors,
-              font: {
-                weight: 'bold',
-                size: 14,
-                family: 'Poppins',
-              },
-              formatter: (value) => {
-                return `${value}h`
-              },
-            },
-          },
-        ],
-        labels: labels,
-      }}
+    <Chart
+      chartType="PieChart"
+      loader={<Loader />}
+      data={[['Atividade', 'Total de horas'], ...dataChart]}
       options={{
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: {
-              textAlign: 'left',
-            },
-          },
+        height: 400,
+        legend: {
+          position: 'bottom',
+          alignment: 'center',
+        },
+        pieSliceText: 'value',
+        pieHole: 0.6,
+        chartArea: {
+          width: 350,
+          top: 10,
+          left: 10,
+          right: 10,
+          bottom: 50,
         },
       }}
-      plugins={[ChartDataLabels]}
     />
   )
 }
@@ -184,32 +165,21 @@ const ProducaoEquipamentos: React.FC<ProducaoEquipamentosProps> = ({ summary }) 
 
   return (
     <Container>
-      <div
-        style={{
-          display: 'flex',
-          gap: '1rem',
-        }}
-      >
-        <Row className="card">
+      <Row>
+        <Col className="card">
           <h3>Distribuição de horas diárias</h3>
 
-          <DoughnutChart
+          <DonutChart
             data={summary.totalTimes.map(({ name, value }) => ({ label: name, value }))}
           />
-        </Row>
+        </Col>
 
         <Card title="Horas produtivas" showQuantitativo data={summary.produtivas} />
-      </div>
-      <div
-        style={{
-          display: 'flex',
-          gap: '1rem',
-          marginTop: '1rem',
-        }}
-      >
+      </Row>
+      <Row>
         <Card title="Horas paradas" data={summary.paradas} />
         <Card title="Horas improdutivas" data={summary.improdutivas} />
-      </div>
+      </Row>
     </Container>
   )
 }

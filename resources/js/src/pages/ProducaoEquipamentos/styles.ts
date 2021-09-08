@@ -1,18 +1,32 @@
 import styled from 'styled-components'
 
-export const Container = styled.div``
+export const Container = styled.div`
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+`
 
-export const Row = styled.div`
+export const Col = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
-  align-items: center;
-  padding: 2rem;
+  /* align-items: center; */
+  padding: 1rem;
   max-width: 420px;
   height: fit-content;
 
   h3 {
-    text-align: center;
+    /* text-align: center; */
+  }
+`
+
+export const Row = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  @media screen and (min-width: 768px) {
+    flex-direction: row;
   }
 `
 
