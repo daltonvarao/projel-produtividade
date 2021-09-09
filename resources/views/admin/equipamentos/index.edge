@@ -32,7 +32,7 @@
 
         <div class="form-group-inline">
           <input type="checkbox" name="sonda" id="sonda" {{ request.qs().sonda ? "checked" : '' }}>
-          <label class="ml-2" for="sonda">Sonda</label>
+          <label class="ml-2" for="sonda">Equipamento Principal</label>
         </div>
 
         <div class="form-row mt-2">
@@ -49,7 +49,7 @@
         <thead>
           <th class="text-left">Tag</th>
           <th class="text-left">Descrição</th>
-          <th class="text-center">Sonda</th>
+          <th class="text-center">Equipamento Principal</th>
           <th class="text-right">Ações</th>
         </thead>
         
@@ -58,7 +58,7 @@
             <tr>
               <td title="Tag" class="text-left">{{ equipamento.tag }}</td>
               <td title="Descrição" class="text-left">{{ equipamento.descricao }}</td>
-              <td title="Sonda" class="text-center">{{ equipamento.sonda ? 'Sim' : 'Não' }}</td>
+              <td title="Equipamento Principal" class="text-center">{{ equipamento.sonda ? 'Sim' : 'Não' }}</td>
               <td class="text-right">
                 <a href="{{ route('admin.equipamentos.edit', { id: equipamento.id }) }}">
                   <span class="edit-icon" data-feather="edit"></span>
