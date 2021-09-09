@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
-import stc from 'string-to-color'
-import { Pie, PieChart, Cell, Legend, Tooltip } from 'recharts'
 import * as Fi from 'react-icons/fi'
 
-import { CardContainer, Container, HeaderContainer, IconsContainer, Row } from './styles'
+import { CardContainer, Container, HeaderContainer, IconsContainer, Row, Col } from './styles'
+
+import { Chart } from 'react-google-charts'
+import Loader from '../../components/Loader'
 
 interface Atividade {
   descricao: string
@@ -37,36 +38,6 @@ interface ProducaoEquipamentosProps {
   summary?: Summary
 }
 
-interface ChartProps {
-  data: any[]
-  dataKey: string
-  labelKey: string
-}
-
-const Chart: React.FC<ChartProps> = ({ data, dataKey, labelKey }) => {
-  const colors = data.map((entry: any) => stc(entry[labelKey]))
-
-  return (
-    <PieChart width={960} height={450}>
-      <Pie data={data} dataKey={dataKey} label innerRadius="55%">
-        {data.map((_: any, index: number) => {
-          return <Cell key={index} fill={colors[index]} />
-        })}
-      </Pie>
-
-      <Tooltip
-        formatter={(value: number) => {
-          if (value <= 1) {
-            return String(value.toFixed(2)).concat(' hora')
-          }
-          return String(value.toFixed(2)).concat(' horas')
-        }}
-      />
-      <Legend />
-    </PieChart>
-  )
-}
-
 const Card: React.FC<{ data: BaseSummary; title: string; showQuantitativo?: boolean }> = ({
   data,
   title,
@@ -83,9 +54,9 @@ const Card: React.FC<{ data: BaseSummary; title: string; showQuantitativo?: bool
   return (
     <CardContainer>
       <HeaderContainer>
-        <h2>
+        <h3>
           {title} {viewMode === 'chart' && ' - Total: ' + String(data.totalTime).concat(' horas')}
-        </h2>
+        </h3>
         <IconsContainer>
           {viewMode === 'chart' ? (
             <button onClick={toggleViewMode} title="Visualizar lista" className="btn-link">
@@ -101,7 +72,9 @@ const Card: React.FC<{ data: BaseSummary; title: string; showQuantitativo?: bool
 
       {viewMode === 'chart' ? (
         <div>
-          <Chart data={data.atividades} dataKey="totalTime" labelKey="name" />
+          <DonutChart
+            data={data.atividades.map(({ name, totalTime }) => ({ label: name, value: totalTime }))}
+          />
         </div>
       ) : (
         <table className="table">
@@ -153,6 +126,38 @@ const Card: React.FC<{ data: BaseSummary; title: string; showQuantitativo?: bool
   )
 }
 
+interface DonutProps {
+  data: { label: string; value: number | string }[]
+}
+
+const DonutChart: React.FC<DonutProps> = ({ data }) => {
+  const dataChart = data.map(({ label, value }) => [String(label), value])
+
+  return (
+    <Chart
+      chartType="PieChart"
+      loader={<Loader />}
+      data={[['Atividade', 'Total de horas'], ...dataChart]}
+      options={{
+        height: 400,
+        legend: {
+          position: 'bottom',
+          alignment: 'center',
+        },
+        pieSliceText: 'value',
+        pieHole: 0.6,
+        chartArea: {
+          width: 350,
+          top: 10,
+          left: 10,
+          right: 10,
+          bottom: 50,
+        },
+      }}
+    />
+  )
+}
+
 const ProducaoEquipamentos: React.FC<ProducaoEquipamentosProps> = ({ summary }) => {
   if (!summary) {
     return null
@@ -160,14 +165,21 @@ const ProducaoEquipamentos: React.FC<ProducaoEquipamentosProps> = ({ summary }) 
 
   return (
     <Container>
-      <Row className="card">
-        <h2>Distribuição de horas diárias - Tipos de Atividades</h2>
-        <Chart data={summary.totalTimes} dataKey="value" labelKey="name" />
-      </Row>
+      <Row>
+        <Col className="card">
+          <h3>Distribuição de horas diárias</h3>
 
-      <Card title="Distribuição de horas produtivas" showQuantitativo data={summary.produtivas} />
-      <Card title="Distribuição de horas improdutivas" data={summary.improdutivas} />
-      <Card title="Distribuição de horas paradas" data={summary.paradas} />
+          <DonutChart
+            data={summary.totalTimes.map(({ name, value }) => ({ label: name, value }))}
+          />
+        </Col>
+
+        <Card title="Horas produtivas" showQuantitativo data={summary.produtivas} />
+      </Row>
+      <Row>
+        <Card title="Horas paradas" data={summary.paradas} />
+        <Card title="Horas improdutivas" data={summary.improdutivas} />
+      </Row>
     </Container>
   )
 }

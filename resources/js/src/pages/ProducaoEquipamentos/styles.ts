@@ -1,27 +1,45 @@
 import styled from 'styled-components'
 
-export const Container = styled.div``
+export const Container = styled.div`
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+`
 
-export const Row = styled.div`
+export const Col = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
-  align-items: center;
-  padding: 2rem;
+  /* align-items: center; */
+  padding: 1rem;
+  max-width: 420px;
+  height: fit-content;
+
+  h3 {
+    /* text-align: center; */
+  }
+`
+
+export const Row = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  @media screen and (min-width: 768px) {
+    flex-direction: row;
+  }
 `
 
 export const CardContainer = styled.div`
   display: flex;
-  justify-content: center;
   flex-direction: column;
-  align-items: center;
+  width: 100%;
 
+  height: fit-content;
   margin: 0 auto;
-  margin-top: 1rem;
   background: var(--white);
   border-radius: 8px;
-  padding: 2rem 2rem;
-  /* box-shadow: 0 0 35px 0 var(--shadow-color); */
+  padding: 1rem;
   box-shadow: var(--card-shadow);
 `
 export const HeaderContainer = styled.div`
