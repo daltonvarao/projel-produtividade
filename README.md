@@ -1,6 +1,7 @@
 # projel-produtividade
 Variaveis
 
+```
 PORT=3333
 HOST=0.0.0.0
 NODE_ENV=production
@@ -13,3 +14,4 @@ PG_PORT=5432
 PG_USER=projel
 PG_PASSWORD=projel2021
 PG_DB_NAME=projel_produtividade
+```
