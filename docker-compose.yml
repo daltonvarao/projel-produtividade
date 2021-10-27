@@ -1,0 +1,12 @@
+version: '3.7'
+services:
+  postgres:
+    container_name: postgres_projel
+    hostname: postgres
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_DB: 'projel'
+      POSTGRES_USER: 'projel'
+      POSTGRES_PASSWORD: 'projel'
+    ports:
+      - 5432:5432
