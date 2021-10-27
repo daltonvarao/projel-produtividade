@@ -21,6 +21,9 @@ export default class UserLog extends BaseModel {
   @column()
   public method: string
 
+  @column()
+  public body: string
+
   @computed()
   public get acao() {
     switch (this.method) {

@@ -37,6 +37,7 @@ export default class FurosController {
 
   public async store({ request, session, response, logger }: HttpContextContract) {
     const contratoId: number = session.get('contratoId')
+    const estruturaId = request.input('estrutura_id')
 
     const validationSchema = schema.create({
       nome: schema.string({}, [
@@ -45,6 +46,7 @@ export default class FurosController {
           column: 'nome',
           where: {
             contrato_id: contratoId,
+            estrutura_id: estruturaId,
           },
         }),
       ]),
@@ -92,6 +94,8 @@ export default class FurosController {
 
   public async update({ session, request, response, logger }: HttpContextContract) {
     const { id } = request.params()
+    const contratoId: number = session.get('contratoId')
+    const estruturaId = request.input('estrutura_id')
 
     const validationSchema = schema.create({
       nome: schema.string({}, [
@@ -100,6 +104,10 @@ export default class FurosController {
           column: 'nome',
           whereNot: {
             id,
+          },
+          where: {
+            contrato_id: contratoId,
+            estrutura_id: estruturaId,
           },
         }),
       ]),
@@ -111,8 +119,6 @@ export default class FurosController {
       schema: validationSchema,
       messages: this.validationMessages,
     })
-
-    console.log(data)
 
     try {
       await Furo.query().where({ id }).update(data)

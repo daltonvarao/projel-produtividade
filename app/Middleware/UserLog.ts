@@ -7,12 +7,19 @@ export default class UserLogger {
       return await next()
     }
 
+    const body = request.all()
+
+    if (body['password']) {
+      body.password = 'super_secret_encrypted_password'
+    }
+
     await UserLog.create({
       route: route?.name,
       ip: request.ip(),
       url: request.url(),
       userId: auth.user?.id,
       method: request.method(),
+      body: JSON.stringify(body),
     })
 
     await next()
