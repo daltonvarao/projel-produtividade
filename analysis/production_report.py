@@ -63,32 +63,46 @@ def execute_query(query):
 
 
 
-def main():
-    sql = """
-        select u.id, u.nome, r.data , c.titulo , a.descricao , f.nome , ar.quantidade , acv.valor_unitario
-        from atividade_rdos ar
-        inner join rdo_users ru on ru.rdo_id  = ar.rdo_id
-        inner join rdos r on r.id = ar.rdo_id
-        inner join atividades a on a.id = ar.atividade_id
-        inner join furos f on f.id = ar.furo_id
-        inner join users u on ru.user_id  = u.id
-        inner join cargos c on c.id = u.cargo_id
-        inner join atividade_cargo_valores acv on acv.cargo_id  = u.cargo_id and acv.atividade_id = ar.atividade_id
-        where r."data" between '2023-12-21' and '2024-01-20'
-        and a.tipo  = 'produtiva'
-        and r.contrato_id = 1
-        and f.invalid is false
-        and u.id = 69
-        order by u.nome , r."data" , a.descricao , f.nome
-    """
+def main(nome_do_feather = None):
 
-    data = execute_query(sql)
+    def carregar_do_feather():
+        df = pd.read_feather(nome_do_feather)
+        return df
 
-    df = pd.DataFrame(data)
+    def carregar_do_banco():
+      sql = """
+          select  u.nome as funcionario, r.data , c.titulo as cargo , a.descricao as atividade , f.nome as furo , ar.quantidade , acv.valor_unitario
+          from atividade_rdos ar
+          inner join rdo_users ru on ru.rdo_id  = ar.rdo_id
+          inner join rdos r on r.id = ar.rdo_id
+          inner join atividades a on a.id = ar.atividade_id
+          inner join furos f on f.id = ar.furo_id
+          inner join users u on ru.user_id  = u.id
+          inner join cargos c on c.id = u.cargo_id
+          inner join atividade_cargo_valores acv on acv.cargo_id  = u.cargo_id and acv.atividade_id = ar.atividade_id
+          where r."data" between '{inicio}' and '{fim}'
+          and a.tipo  = 'produtiva'
+          and r.contrato_id = {contrato}
+          and f.invalid is false
+          order by u.nome , r."data" , a.descricao , f.nome
+      """.format(
+          inicio='2023-12-21',
+          fim='2024-01-20',
+          contrato=1
+      )
+
+      data = execute_query(sql)
+
+      df = pd.DataFrame(data)
+
+      return df
+
+    df = carregar_do_banco() if nome_do_feather is None else carregar_do_feather()
 
     return df
 
-df = main()
+df = main(nome_do_feather='contrato-1-2023-12-21-2024-01-20.feather')
+# df = main()
 
 df
 # %%
