@@ -5,6 +5,7 @@ import os
 from sshtunnel import SSHTunnelForwarder
 from psycopg2.extras import DictCursor
 import pandas as pd
+import numpy as np
 
 load_dotenv(r'.\dados.env',override=True)
 
@@ -102,7 +103,72 @@ def main(nome_do_feather = None):
     return df
 
 df = main(nome_do_feather='contrato-1-2023-12-21-2024-01-20.feather')
+
+df['funcionario'] = df['funcionario'].apply(lambda x: x.strip())
 # df = main()
 
 df
-# %%
+
+
+
+
+#%%
+
+def gerar_memoria_de_calculo_por_funcionario(nome_funcionario):
+
+  df_funcionario = df[df['funcionario'] == nome_funcionario]
+
+  df_funcionario_agregado = df_funcionario.pivot_table(
+      index = ['funcionario', 'cargo', 'atividade'],
+      values=['quantidade', 'valor_unitario'],
+      aggfunc='sum'
+  )
+
+  df_funcionario_agregado['sub_total'] = df_funcionario_agregado['quantidade'] * df_funcionario_agregado['valor_unitario']
+
+
+  def gerar_total_geral(df):
+      s = pd.Series(np.nan, index=df.index)
+
+      s[0] = df['sub_total'].sum()
+
+      return s
+
+  df_funcionario_agregado['total_geral'] = gerar_total_geral(df_funcionario_agregado)
+
+  return df_funcionario_agregado
+
+def gerar_resumo_memoria_completo():
+  resumo_memoria_por_funcionario = []
+
+  for funcionario in df['funcionario'].unique():
+      resumo_memoria_por_funcionario.append(
+          (funcionario, gerar_memoria_de_calculo_por_funcionario(funcionario))
+      )
+
+  resumo_memoria_completo = pd.concat([x[1] for x in resumo_memoria_por_funcionario],axis=0)
+
+  return resumo_memoria_completo
+
+def exportar_resumo_memoria_para_excel(resumo_memoria):
+  resumo_memoria['quantidade'] = resumo_memoria_completo['quantidade'].astype(str).str.replace('.',',')
+
+  resumo_memoria['valor_unitario'] = resumo_memoria_completo['valor_unitario'].astype(str).str.replace('.',',')
+
+  resumo_memoria['sub_total'] = resumo_memoria_completo['sub_total'].astype(str).str.replace('.',',')
+
+  resumo_memoria['total_geral'] = resumo_memoria_completo['total_geral'].astype(str).str.replace('.',',')
+
+  resumo_memoria['total_geral'] = resumo_memoria['total_geral'].str.replace('nan','')
+
+  resumo_memoria.to_excel('resumo_memoria_completo.xlsx')
+
+#%%
+
+resumo_memoria_completo = gerar_resumo_memoria_completo()
+
+exportar_resumo_memoria_para_excel(resumo_memoria_completo)
+
+
+
+
