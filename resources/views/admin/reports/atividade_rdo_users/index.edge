@@ -8,11 +8,11 @@
   <div class="card-content">
     <form action="">
       <div class="form-md-row">
-      <div class="form-group">
-          <label for="initialDate">Data inicial</label>
-          <input type="date" value='{{ request.qs().initialDate || '' }}' id="initialDate" name="initialDate" required />
+        <div class="form-group">
+            <label for="initialDate">Data inicial</label>
+            <input type="date" value='{{ request.qs().initialDate || '' }}' id="initialDate" name="initialDate" required />
         </div>
-        
+          
         <div class="form-group">
           <label for="finalDate">Data final</label>
           <input type="date" value='{{ request.qs().finalDate || '' }}' id="finalDate" name="finalDate" required />
