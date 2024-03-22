@@ -97,6 +97,9 @@ def load_production_data(
     df = carregar_do_banco()
 
     df['funcionario'] = df['funcionario'].apply(lambda x: x.strip())
+    df['quantidade'] = df['quantidade'].astype(float)
+    df['valor_unitario'] = df['valor_unitario'].astype(float)
+    
 
     return df
 
@@ -112,6 +115,8 @@ def gerar_memoria_de_calculo_por_funcionario(df, nome_funcionario):
   )
 
   df_funcionario_agregado['sub_total'] = df_funcionario_agregado['quantidade'] * df_funcionario_agregado['valor_unitario']
+
+  
 
 
   def gerar_total_geral(df):

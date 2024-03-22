@@ -1,17 +1,32 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Application from '@ioc:Adonis/Core/Application'
+import Env from '@ioc:Adonis/Core/Env'
 
 
 export default class RelatorioCompletoProducaoController {
 
-    public async index({view, request, logger} : HttpContextContract) {
+    public async index({view, request, logger, response} : HttpContextContract) {
 
-        const runPythonScript = async () => {
+        const runPythonScript = async ({initialDate, finalDate, excelFilePath}:{
+            initialDate:string, finalDate:string, excelFilePath: string
+        }) => {
 
             return new Promise<void>((resolve) => {
                 const { spawn } = require('child_process')
 
-                const pyProg = spawn('python3', [Application.makePath('analysis/test_script.py')])
+                const pyProg = spawn('python3', [
+                    Application.makePath('analysis/production_report.py'),
+                    "--initialDate", initialDate,
+                    "--finalDate", finalDate,
+                    "--contractId", "1",
+                    "--dbname", Env.get("PG_DB_NAME"),
+                    "--user", Env.get("PG_USER"),
+                    "--password", Env.get("PG_PASSWORD"),
+                    "--host", Env.get("PG_HOST"),
+                    "--port", Env.get("PG_PORT"),
+                    "--target-excel-file", excelFilePath
+
+                ])
 
                 pyProg.stdout.on('data', function (data) {
                     logger.debug(data.toString())
@@ -31,13 +46,21 @@ export default class RelatorioCompletoProducaoController {
         }
 
 
-        const {initialDate, finalDate} = request.qs()
+        const {initialDate, finalDate, format} = request.qs()
 
         if (!initialDate || !finalDate) {
             return view.render('admin/reports/relatorio_completo_producao/index')
         }
 
-        await runPythonScript()
+        if (format == "excel") {
+            const excelFilePath = "/tmp/relatorio-completo-producao.xlsx"
+
+            await runPythonScript({initialDate, finalDate,excelFilePath})
+
+            return response.download(excelFilePath)
+        }
+
+        
 
         return view.render('admin/reports/relatorio_completo_producao/index')
     }

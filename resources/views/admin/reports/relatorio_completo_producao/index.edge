@@ -23,7 +23,7 @@
                 </div>
 
                 <div class="form-row mt-2">
-                    <button class="btn btn-primary">Gerar Excel</button>    
+                    <a href="{{ route('admin.reports.relatorio_completo_producao.index' , {} , { qs: {...request.qs() , format: 'excel'} }) }}" class="btn btn-primary">Gerar Excel</a>    
                 </div>
             </form>
         </div>
