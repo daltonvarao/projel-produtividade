@@ -58,6 +58,7 @@ Route.group(() => {
     Route.resource('horas-paradas-equipamentos', 'HorasParadasEquipamentosController').only([
       'index',
     ])
+    Route.resource('relatorio-completo-producao', 'RelatorioCompletoProducaoController').only(['index'])
   })
     .namespace('App/Controllers/Http/Admin/Reports')
     .as('reports')
