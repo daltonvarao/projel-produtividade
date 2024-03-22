@@ -1,2 +1,4 @@
 /dados.env
+/dados-producao.env
+/dados-local.env
 /*.feather

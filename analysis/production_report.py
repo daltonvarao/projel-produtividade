@@ -6,69 +6,65 @@ from sshtunnel import SSHTunnelForwarder
 from psycopg2.extras import DictCursor
 import pandas as pd
 import numpy as np
-
-load_dotenv(r'.\dados.env',override=True)
-
-def get_connection_using_ssh_tunnel():
-    with SSHTunnelForwarder(
-        (os.getenv('SSH_HOST'), int(os.getenv('SSH_PORT'))),
-        ssh_username=os.getenv('SSH_USER'),
-        ssh_password=os.getenv('SSH_PASSWORD'),
-        remote_bind_address=(os.getenv('DB_HOST'), int(os.getenv('DB_PORT'))),
-        local_bind_address=('localhost', 5441)
-    ) as server:
-
-        server.start()
-
-        conn = psycopg2.connect(
-            dbname=os.getenv('DB_NAME'),
-            user=os.getenv('DB_USER'),
-            password=os.getenv('DB_PASSWORD'),
-            host=server.local_bind_host,
-            port=server.local_bind_port,
-            sslmode='disable'
-        )
-
-        return conn
-
-def get_connect_using_psycopg2():
+import sys
 
 
+def get_connect_using_psycopg2(
+      dbname, user, password, host, port, sslmode = 'disable'
+):
+
+
+
+    # conn = psycopg2.connect(
+    #     dbname=os.getenv('DB_NAME'),
+    #     user=os.getenv('DB_USER'),
+    #     password=os.getenv('DB_PASSWORD'),
+    #     host=os.getenv('DB_HOST'),
+    #     port=os.getenv('DB_PORT'),
+    #     sslmode='disable'
+    # )
 
     conn = psycopg2.connect(
-        dbname=os.getenv('DB_NAME'),
-        user=os.getenv('DB_USER'),
-        password=os.getenv('DB_PASSWORD'),
-        host=os.getenv('DB_HOST'),
-        port=os.getenv('DB_PORT'),
-        sslmode='disable'
+        dbname=dbname,
+        user=user,
+        password=password,
+        host=host,
+        port=port,
+        sslmode=sslmode
     )
 
     return conn
 
-def execute_query(query):
-    print('obtendo conexao')
-    conn = get_connect_using_psycopg2()
-    print('obtendo cursor')
+def execute_query(dbname, user, password, host, port, query):
+
+    conn = get_connect_using_psycopg2(
+       dbname,user,password,host,port
+    )
+
     cursor = conn.cursor(cursor_factory=DictCursor)
-    print('executando query')
+
     cursor.execute(query)
-    print('obtendo dados')
+
     data = cursor.fetchall()
-    print('fechando cursor')
+
     conn.close()
 
     results_as_dict = [dict(result) for result in data]
 
     return results_as_dict
 
+def load_production_data(
+      dbname,
+      user,
+      password,
+      host,
+      port,
+      initialDate,
+      finalDate,
+      contractId,
+):
 
 
-def main(nome_do_feather = None):
-
-    def carregar_do_feather():
-        df = pd.read_feather(nome_do_feather)
-        return df
 
     def carregar_do_banco():
       sql = """
@@ -87,34 +83,25 @@ def main(nome_do_feather = None):
           and f.invalid is false
           order by u.nome , r."data" , a.descricao , f.nome
       """.format(
-          inicio='2023-12-21',
-          fim='2024-01-20',
-          contrato=1
+          inicio=initialDate,
+          fim=finalDate,
+          contrato=contractId
       )
 
-      data = execute_query(sql)
+      data = execute_query(dbname, user,password,host,port, sql)
 
       df = pd.DataFrame(data)
 
       return df
 
-    df = carregar_do_banco() if nome_do_feather is None else carregar_do_feather()
+    df = carregar_do_banco()
+
+    df['funcionario'] = df['funcionario'].apply(lambda x: x.strip())
 
     return df
 
-df = main(nome_do_feather='contrato-1-2023-12-21-2024-01-20.feather')
 
-df['funcionario'] = df['funcionario'].apply(lambda x: x.strip())
-# df = main()
-
-df
-
-
-
-
-#%%
-
-def gerar_memoria_de_calculo_por_funcionario(nome_funcionario):
+def gerar_memoria_de_calculo_por_funcionario(df, nome_funcionario):
 
   df_funcionario = df[df['funcionario'] == nome_funcionario]
 
@@ -138,37 +125,88 @@ def gerar_memoria_de_calculo_por_funcionario(nome_funcionario):
 
   return df_funcionario_agregado
 
-def gerar_resumo_memoria_completo():
+def gerar_resumo_memoria_completo(dbname, user, password,host,port, initialDate, finalDate, contractId):
   resumo_memoria_por_funcionario = []
+
+  df = load_production_data(dbname, user, password, host, port, initialDate,finalDate,contractId)
 
   for funcionario in df['funcionario'].unique():
       resumo_memoria_por_funcionario.append(
-          (funcionario, gerar_memoria_de_calculo_por_funcionario(funcionario))
+          (funcionario, gerar_memoria_de_calculo_por_funcionario(df, funcionario))
       )
 
   resumo_memoria_completo = pd.concat([x[1] for x in resumo_memoria_por_funcionario],axis=0)
 
   return resumo_memoria_completo
 
-def exportar_resumo_memoria_para_excel(resumo_memoria):
-  resumo_memoria['quantidade'] = resumo_memoria_completo['quantidade'].astype(str).str.replace('.',',')
+def exportar_resumo_memoria_para_excel(resumo_memoria_completo, arquivo_saida):
+  resumo_memoria_completo['quantidade'] = resumo_memoria_completo['quantidade'].astype(str).str.replace('.',',')
 
-  resumo_memoria['valor_unitario'] = resumo_memoria_completo['valor_unitario'].astype(str).str.replace('.',',')
+  resumo_memoria_completo['valor_unitario'] = resumo_memoria_completo['valor_unitario'].astype(str).str.replace('.',',')
 
-  resumo_memoria['sub_total'] = resumo_memoria_completo['sub_total'].astype(str).str.replace('.',',')
+  resumo_memoria_completo['sub_total'] = resumo_memoria_completo['sub_total'].astype(str).str.replace('.',',')
 
-  resumo_memoria['total_geral'] = resumo_memoria_completo['total_geral'].astype(str).str.replace('.',',')
+  resumo_memoria_completo['total_geral'] = resumo_memoria_completo['total_geral'].astype(str).str.replace('.',',')
 
-  resumo_memoria['total_geral'] = resumo_memoria['total_geral'].str.replace('nan','')
+  resumo_memoria_completo['total_geral'] = resumo_memoria_completo['total_geral'].str.replace('nan','')
 
-  resumo_memoria.to_excel('resumo_memoria_completo.xlsx')
+  resumo_memoria_completo.to_excel(arquivo_saida)
+
+def executando_no_jupyter():
+  return 'get_ipython' in globals()
+
+def executando_como_script():
+   return not executando_no_jupyter()
+
+def executar_como_script():
+  import argparse
+
+  parser = argparse.ArgumentParser()
+
+  parser.add_argument('--initialDate', required=True)
+  parser.add_argument('--finalDate', required=True)
+  parser.add_argument('--contractId', required=True)
+  parser.add_argument('--dbname', required=True)
+  parser.add_argument('--user', required=True)
+  parser.add_argument('--password', required=True)
+  parser.add_argument('--host', required=True)
+  parser.add_argument('--port', required=True)
+  parser.add_argument('--target-excel-file', required=True)
+
+  args = parser.parse_args()
+
+  resumo_memoria_completo = gerar_resumo_memoria_completo(
+      dbname=args.dbname,
+      user=args.user,
+      password=args.password,
+      host=args.host,
+      port=args.port,
+      initialDate=args.initialDate,
+      finalDate=args.finalDate,
+      contractId=args.contractId
+  )
+
+  exportar_resumo_memoria_para_excel(resumo_memoria_completo, args.target_excel_file)
+#%%
+
+if executando_no_jupyter():
+   load_dotenv(r'.\dados.env',override=True)
+
+   resumo_memoria_completo = gerar_resumo_memoria_completo(
+      dbname=os.getenv('DB_NAME'),
+      user=os.getenv('DB_USER'),
+      password=os.getenv('DB_PASSWORD'),
+      host=os.getenv('DB_HOST'),
+      port=os.getenv('DB_PORT'),
+      initialDate='2023-12-21',
+      finalDate='2024-01-20',
+      contractId=1
+
+   )
+
+   resumo_memoria_completo
 
 #%%
 
-resumo_memoria_completo = gerar_resumo_memoria_completo()
-
-exportar_resumo_memoria_para_excel(resumo_memoria_completo)
-
-
-
-
+if executando_como_script():
+   executar_como_script()
