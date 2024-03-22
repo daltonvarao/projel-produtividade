@@ -46,22 +46,18 @@ export default class RelatorioCompletoProducaoController {
         }
 
 
-        const {initialDate, finalDate, format} = request.qs()
+        const {initialDate, finalDate} = request.qs()
 
         if (!initialDate || !finalDate) {
             return view.render('admin/reports/relatorio_completo_producao/index')
         }
 
-        if (format == "excel") {
-            const excelFilePath = "/tmp/relatorio-completo-producao.xlsx"
+        const excelFilePath = "/tmp/relatorio-completo-producao.xlsx"
 
-            await runPythonScript({initialDate, finalDate,excelFilePath})
+        await runPythonScript({initialDate, finalDate,excelFilePath})
 
-            return response.download(excelFilePath)
-        }
+        return response.download(excelFilePath)
 
         
-
-        return view.render('admin/reports/relatorio_completo_producao/index')
     }
 }

@@ -233,36 +233,50 @@ def executando_como_script():
    return not executando_no_jupyter()
 
 def executar_como_script():
-  import argparse
+    import argparse
 
-  parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser()
 
-  parser.add_argument('--initialDate', required=True)
-  parser.add_argument('--finalDate', required=True)
-  parser.add_argument('--contractId', required=True)
-  parser.add_argument('--dbname', required=True)
-  parser.add_argument('--user', required=True)
-  parser.add_argument('--password', required=True)
-  parser.add_argument('--host', required=True)
-  parser.add_argument('--port', required=True)
-  parser.add_argument('--target-excel-file', required=True)
+    parser.add_argument('--initialDate', required=True)
+    parser.add_argument('--finalDate', required=True)
+    parser.add_argument('--contractId', required=True)
+    parser.add_argument('--dbname', required=True)
+    parser.add_argument('--user', required=True)
+    parser.add_argument('--password', required=True)
+    parser.add_argument('--host', required=True)
+    parser.add_argument('--port', required=True)
+    parser.add_argument('--target-excel-file', required=True)
 
-  args = parser.parse_args()
+    args = parser.parse_args()
 
-  resumo_memoria_completo = gerar_resumo_memoria_completo(
-      dbname=args.dbname,
-      user=args.user,
-      password=args.password,
-      host=args.host,
-      port=args.port,
-      initialDate=args.initialDate,
-      finalDate=args.finalDate,
-      contractId=args.contractId
-  )
+    if os.path.exists(args.target_excel_file):
+       os.unlink(args.target_excel_file)
 
+    resumo_memoria_completo = gerar_resumo_memoria_completo(
+        dbname=args.dbname,
+        user=args.user,
+        password=args.password,
+        host=args.host,
+        port=args.port,
+        initialDate=args.initialDate,
+        finalDate=args.finalDate,
+        contractId=args.contractId
+    )
 
+    atividades_funcionarios = carregar_atividades_funcionarios(
+        dbname=args.dbname,
+        user=args.user,
+        password=args.password,
+        host=args.host,
+        port=args.port,
+        initialDate=args.initialDate,
+        finalDate=args.finalDate,
+        contractId=args.contractId
+    )
 
-  exportar_para_excel(resumo_memoria_completo, args.target_excel_file)
+    dfs_atividades_por_funcionario = gerar_dfs_atividades_por_funcionario(atividades_funcionarios)  
+
+    exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_funcionario, args.target_excel_file)
 #%%
 
 if executando_no_jupyter():
