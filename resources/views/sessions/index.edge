@@ -12,6 +12,13 @@
   <body>
     @include('partials/alerts')
     <div class="login-container">
+
+      @if (env('ENVIRONMENT') == 'TEST') 
+        <div class="login-container-test-text-box-information">
+          HOMOLOGAÇÃO
+        </div>
+      @endif
+
       <div class="login-card">
         <div class="projel-logo">
           <img src="/img/logo-projel-light.png">

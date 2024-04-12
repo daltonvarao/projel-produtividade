@@ -1,5 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Contrato from 'App/Models/Contrato'
+import User from 'App/Models/User'
 
 export default class ConfiguracoesController {
   public async index({ view, auth, response }: HttpContextContract) {
@@ -19,8 +20,14 @@ export default class ConfiguracoesController {
     })
   }
 
-  public async store({ request, response, session }: HttpContextContract) {
+  public async store({ request, response, session, auth }: HttpContextContract) {
     const { contratoId } = request.all()
+
+    const user = await User.find(auth.user?.id) as User
+
+    user.contratoId = contratoId
+
+    await user.save()
 
     if (contratoId) {
       session.put('currentContrato', contratoId)

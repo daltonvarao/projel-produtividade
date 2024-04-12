@@ -145,6 +145,7 @@ button.btn-primary:focus {
 .login-container {
   height: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
@@ -186,6 +187,14 @@ button.btn-primary:focus {
 .login-container form input + button,
 .login-container form input + input {
   margin-top: 0.5rem;
+}
+
+.login-container-test-text-box-information {
+  width: 500px;
+  padding: 10px 0 10px 0;
+  color: white;
+  text-align: center;
+  background-color: red;
 }
 
 .login-card {
@@ -493,6 +502,14 @@ body.modal-open {
 
 .content {
   padding-left: var(--sidebar-length);
+}
+
+.master-layout-test-text-box-information {
+  width: 100%;
+  padding: 10px 0 10px 0;
+  color: white;
+  text-align: center;
+  background-color: red;
 }
 
 .page-title {

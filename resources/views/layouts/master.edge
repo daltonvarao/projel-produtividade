@@ -14,6 +14,14 @@
     @include('partials/alerts')
 
     <div class="content">
+
+      @if (env('ENVIRONMENT') == 'TEST')
+        <div class="master-layout-test-text-box-information">
+          HOMOLOGAÇÃO
+        </div>
+
+      @endif
+
       <div class="page-title">
         <button class="show-menu">
           <span data-feather="menu"></span>
