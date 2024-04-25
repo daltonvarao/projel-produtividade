@@ -57,11 +57,17 @@ def execute_query(dbname, user, password, host, port, query):
 
     return results_as_dict
 
-def carregar_atividades_funcionarios(
+def converter_para_float(valor):
+    try:
+        return float(valor)
+    except:
+        return np.nan
+
+def carregar_atividades_colaboradores(
       dbname, user, password, host, port, initialDate, finalDate, contractId
 ):
   sql = """
-    select u.nome as funcionario , c.titulo as cargo, r."data" , a.descricao  as atividade, f.nome as furo, ar.quantidade
+    select u.nome as colaborador , c.titulo as cargo, r."data" , a.descricao  as atividade, f.nome as furo, ar.quantidade
     from atividade_rdos ar
     inner join rdo_users ru on ru.rdo_id  = ar.rdo_id
     inner join rdos r on r.id = ar.rdo_id
@@ -102,7 +108,7 @@ def carregar_dados_resumo_memoria(
 
     def carregar_do_banco():
       sql = """
-          select  u.nome as funcionario, r.data , c.titulo as cargo , a.descricao as atividade , f.nome as furo , ar.quantidade , acv.valor_unitario
+          select  u.nome as colaborador, r.data , c.titulo as cargo , a.descricao as atividade , f.nome as furo , ar.quantidade , acv.valor_unitario
           from atividade_rdos ar
           inner join rdo_users ru on ru.rdo_id  = ar.rdo_id
           inner join rdos r on r.id = ar.rdo_id
@@ -134,7 +140,7 @@ def carregar_dados_resumo_memoria(
       return df
 
 
-    df['funcionario'] = df['funcionario'].apply(lambda x: x.strip())
+    df['colaborador'] = df['colaborador'].apply(lambda x: x.strip())
     df['quantidade'] = df['quantidade'].astype(float)
     df['valor_unitario'] = df['valor_unitario'].astype(float)
 
@@ -142,12 +148,12 @@ def carregar_dados_resumo_memoria(
     return df
 
 
-def gerar_memoria_de_calculo_por_funcionario(df, nome_funcionario):
+def gerar_memoria_de_calculo_por_colaborador(df, nome_colaborador):
 
-  df_funcionario = df[df['funcionario'] == nome_funcionario]
+  df_colaborador = df[df['colaborador'] == nome_colaborador]
 
-  df_funcionario_agregado = df_funcionario.pivot_table(
-      index = ['funcionario', 'cargo', 'atividade'],
+  df_colaborador_agregado = df_colaborador.pivot_table(
+      index = ['colaborador', 'cargo', 'atividade'],
       values=['quantidade', 'valor_unitario'],
       aggfunc={
           'quantidade': 'sum',
@@ -155,7 +161,7 @@ def gerar_memoria_de_calculo_por_funcionario(df, nome_funcionario):
       }
   )
 
-  df_funcionario_agregado['sub_total'] = df_funcionario_agregado['quantidade'] * df_funcionario_agregado['valor_unitario']
+  df_colaborador_agregado['sub_total'] = df_colaborador_agregado['quantidade'] * df_colaborador_agregado['valor_unitario']
 
 
   def gerar_total_geral(df):
@@ -165,56 +171,67 @@ def gerar_memoria_de_calculo_por_funcionario(df, nome_funcionario):
 
       return s
 
-  df_funcionario_agregado['total_geral'] = gerar_total_geral(df_funcionario_agregado)
+  df_colaborador_agregado['total_geral'] = gerar_total_geral(df_colaborador_agregado)
 
-  return df_funcionario_agregado
+  df_colaborador_agregado['total_geral'] = df_colaborador_agregado['total_geral'].apply(converter_para_float).apply(lambda x : round(x,2))
 
-def gerar_atividades_por_funcionario(df,nome_funcionario):
-  df_funcionario = df[df['funcionario'] == nome_funcionario]
+  return df_colaborador_agregado
 
-  df_funcionario_agregado = df_funcionario.pivot_table(
-      index = ['funcionario', 'data', 'atividade', 'furo'],
+def gerar_atividades_por_colaborador(df,nome_colaborador):
+  df_colaborador = df[df['colaborador'] == nome_colaborador]
+
+  df_colaborador_agregado = df_colaborador.pivot_table(
+      index = ['colaborador', 'data', 'atividade', 'furo'],
       values = ['quantidade'],
       aggfunc='sum'
   )
 
-  return df_funcionario_agregado
+  df_colaborador_agregado['quantidade'] = df_colaborador_agregado['quantidade'].apply(converter_para_float).apply(lambda x: round(x,2))
 
-def gerar_dfs_atividades_por_funcionario(df):
+  return df_colaborador_agregado
+
+def gerar_dfs_atividades_por_colaborador(df):
 
   dfs = []
 
-  for funcionario in df['funcionario'].unique():
+  for colaborador in df['colaborador'].unique():
       dfs.append(
-          (funcionario, gerar_atividades_por_funcionario(df, funcionario))
+          (colaborador, gerar_atividades_por_colaborador(df, colaborador))
       )
 
   return dfs
 
 
 def gerar_resumo_memoria_completo(dbname, user, password,host,port, initialDate, finalDate, contractId):
-  resumo_memoria_por_funcionario = []
+  resumo_memoria_por_colaborador = []
 
   df = carregar_dados_resumo_memoria(dbname, user, password, host, port, initialDate,finalDate,contractId)
 
   if df.empty:
      return df
 
-  for funcionario in df['funcionario'].unique():
-      resumo_memoria_por_funcionario.append(
-          (funcionario, gerar_memoria_de_calculo_por_funcionario(df, funcionario))
+  for colaborador in df['colaborador'].unique():
+      resumo_memoria_por_colaborador.append(
+          (colaborador, gerar_memoria_de_calculo_por_colaborador(df, colaborador))
       )
 
-  resumo_memoria_completo = pd.concat([x[1] for x in resumo_memoria_por_funcionario],axis=0)
+  resumo_memoria_completo = pd.concat([x[1] for x in resumo_memoria_por_colaborador],axis=0)
+
+
 
   return resumo_memoria_completo
 
-def exportar_para_excel(resumo_memoria_completo, atividades_por_funcionario, arquivo_saida):
+def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arquivo_saida):
 
   def ajustar_resumo_memoria_completo():
+
+    resumo_memoria_completo['quantidade'] = resumo_memoria_completo['quantidade'].round(2)
+
     resumo_memoria_completo['quantidade'] = resumo_memoria_completo['quantidade'].astype(str).str.replace('.',',')
 
     resumo_memoria_completo['valor_unitario'] = resumo_memoria_completo['valor_unitario'].astype(str).str.replace('.',',')
+
+    resumo_memoria_completo['sub_total'] = resumo_memoria_completo['sub_total'].apply(converter_para_float).apply(lambda x: round(x,2))
 
     resumo_memoria_completo['sub_total'] = resumo_memoria_completo['sub_total'].astype(str).str.replace('.',',')
 
@@ -224,7 +241,9 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_funcionario, arq
 
     return resumo_memoria_completo
 
-  def ajustar_df_atividades_por_funcionario(df):
+  def ajustar_df_atividades_por_colaborador(df):
+    df['quantidade'] = df['quantidade'].round(2)
+
     df['quantidade'] = df['quantidade'].astype(str).str.replace('.',',')
 
     return df
@@ -237,10 +256,10 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_funcionario, arq
 
   indice_planilha = 1
 
-  for nome_funcionario, df_atividades in atividades_por_funcionario:
-    nome_planilha = nome_funcionario.split()[0] + f"_{indice_planilha}"
+  for nome_colaborador, df_atividades in atividades_por_colaborador:
+    nome_planilha = nome_colaborador.split()[0] + f"_{indice_planilha}"
 
-    df_atividades_ajustado = ajustar_df_atividades_por_funcionario(df_atividades)
+    df_atividades_ajustado = ajustar_df_atividades_por_colaborador(df_atividades)
 
     df_atividades_ajustado.to_excel(writer, sheet_name=nome_planilha)
 
@@ -285,7 +304,7 @@ def executar_como_script():
         contractId=args.contractId
     )
 
-    atividades_funcionarios = carregar_atividades_funcionarios(
+    atividades_colaboradores = carregar_atividades_colaboradores(
         dbname=args.dbname,
         user=args.user,
         password=args.password,
@@ -296,9 +315,9 @@ def executar_como_script():
         contractId=args.contractId
     )
 
-    dfs_atividades_por_funcionario = gerar_dfs_atividades_por_funcionario(atividades_funcionarios)
+    dfs_atividades_por_colaborador = gerar_dfs_atividades_por_colaborador(atividades_colaboradores)
 
-    exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_funcionario, args.target_excel_file)
+    exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_colaborador, args.target_excel_file)
 #%%
 
 if executando_no_jupyter():
@@ -362,7 +381,7 @@ if executando_no_jupyter():
     contractId=contractId
   )
 
-  atividades_funcionarios = carregar_atividades_funcionarios(
+  atividades_colaboradores = carregar_atividades_colaboradores(
     dbname=os.getenv('DB_NAME'),
     user=os.getenv('DB_USER'),
     password=os.getenv('DB_PASSWORD'),
@@ -373,11 +392,10 @@ if executando_no_jupyter():
     contractId=contractId
   )
 
-  dfs_atividades_por_funcionario = gerar_dfs_atividades_por_funcionario(atividades_funcionarios)
+  dfs_atividades_por_colaborador = gerar_dfs_atividades_por_colaborador(atividades_colaboradores)
 
-  #%%
 
-  exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_funcionario, 'resumo_memoria_completo.xlsx')
+  exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_colaborador, 'resumo_memoria_completo.xlsx')
 
 #%%
 
