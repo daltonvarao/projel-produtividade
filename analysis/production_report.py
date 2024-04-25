@@ -174,7 +174,8 @@ def gerar_atividades_por_funcionario(df,nome_funcionario):
 
   df_funcionario_agregado = df_funcionario.pivot_table(
       index = ['funcionario', 'data', 'atividade', 'furo'],
-      values = ['quantidade']
+      values = ['quantidade'],
+      aggfunc='sum'
   )
 
   return df_funcionario_agregado
