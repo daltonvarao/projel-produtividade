@@ -225,21 +225,25 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
 
   def ajustar_resumo_memoria_completo():
 
-    resumo_memoria_completo['quantidade'] = resumo_memoria_completo['quantidade'].round(2)
+    resumo_memoria_completo_copia = resumo_memoria_completo.copy()
 
-    resumo_memoria_completo['quantidade'] = resumo_memoria_completo['quantidade'].astype(str).str.replace('.',',')
+    resumo_memoria_completo_copia['quantidade'] = resumo_memoria_completo_copia['quantidade'].round(2)
 
-    resumo_memoria_completo['valor_unitario'] = resumo_memoria_completo['valor_unitario'].astype(str).str.replace('.',',')
+    resumo_memoria_completo_copia['quantidade'] = resumo_memoria_completo_copia['quantidade'].astype(str).str.replace('.',',')
 
-    resumo_memoria_completo['sub_total'] = resumo_memoria_completo['sub_total'].apply(converter_para_float).apply(lambda x: round(x,2))
+    resumo_memoria_completo_copia['valor_unitario'] = resumo_memoria_completo_copia['valor_unitario'].astype(str).str.replace('.',',')
 
-    resumo_memoria_completo['sub_total'] = resumo_memoria_completo['sub_total'].astype(str).str.replace('.',',')
+    resumo_memoria_completo_copia['sub_total'] = resumo_memoria_completo_copia['sub_total'].apply(converter_para_float).apply(lambda x: round(x,2))
 
-    resumo_memoria_completo['total_geral'] = resumo_memoria_completo['total_geral'].astype(str).str.replace('.',',')
+    resumo_memoria_completo_copia['sub_total'] = resumo_memoria_completo_copia['sub_total'].astype(str).str.replace('.',',')
 
-    resumo_memoria_completo['total_geral'] = resumo_memoria_completo['total_geral'].str.replace('nan','')
+    resumo_memoria_completo_copia['total_geral'] = resumo_memoria_completo_copia['total_geral'].astype(str).str.replace('.',',')
 
-    return resumo_memoria_completo
+    resumo_memoria_completo_copia['total_geral'] = resumo_memoria_completo_copia['total_geral'].str.replace('nan','')
+
+    resumo_memoria_completo_copia = resumo_memoria_completo_copia.style.set_properties(**{'text-align': 'center'})
+
+    return resumo_memoria_completo_copia
 
   def ajustar_df_atividades_por_colaborador(df):
     df['quantidade'] = df['quantidade'].round(2)
@@ -248,24 +252,29 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
 
     return df
 
-  writer = pd.ExcelWriter(arquivo_saida, engine='xlsxwriter')
 
-  resumo_memoria_completo = ajustar_resumo_memoria_completo()
 
-  resumo_memoria_completo.to_excel(writer, sheet_name='Resumo Memória')
+  with pd.ExcelWriter(arquivo_saida, engine='xlsxwriter') as writer:
 
-  indice_planilha = 1
+    resumo_memoria_completo = ajustar_resumo_memoria_completo()
 
-  for nome_colaborador, df_atividades in atividades_por_colaborador:
-    nome_planilha = nome_colaborador.split()[0] + f"_{indice_planilha}"
+    resumo_memoria_completo.to_excel(
+       writer,
+       sheet_name='Resumo Memória'
+    )
 
-    df_atividades_ajustado = ajustar_df_atividades_por_colaborador(df_atividades)
+    #resumo_memoria_completo.to_excel(writer, sheet_name='Resumo Memória')
 
-    df_atividades_ajustado.to_excel(writer, sheet_name=nome_planilha)
+    indice_planilha = 1
 
-    indice_planilha += 1
+    for nome_colaborador, df_atividades in atividades_por_colaborador:
+      nome_planilha = nome_colaborador.split()[0] + f"_{indice_planilha}"
 
-  writer.close()
+      df_atividades_ajustado = ajustar_df_atividades_por_colaborador(df_atividades)
+
+      df_atividades_ajustado.to_excel(writer, sheet_name=nome_planilha)
+
+      indice_planilha += 1
 
 def executando_no_jupyter():
   return 'get_ipython' in globals()
