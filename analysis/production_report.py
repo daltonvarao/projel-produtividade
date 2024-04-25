@@ -256,14 +256,39 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
 
   with pd.ExcelWriter(arquivo_saida, engine='xlsxwriter') as writer:
 
-    resumo_memoria_completo = ajustar_resumo_memoria_completo()
+
 
     resumo_memoria_completo.to_excel(
        writer,
        sheet_name='Resumo Memória'
     )
 
-    #resumo_memoria_completo.to_excel(writer, sheet_name='Resumo Memória')
+    workbook = writer.book
+
+    worksheet_resumo_memoria = writer.sheets['Resumo Memória']
+
+    format_numbers = workbook.add_format({'num_format': '#,##0.00'})
+
+    format_center = workbook.add_format({'align': 'center'})
+
+    worksheet_resumo_memoria.set_column('D:D', None, format_numbers) #quantidade
+    worksheet_resumo_memoria.set_column('D:D', None, format_center) #quantidade
+
+    worksheet_resumo_memoria.set_column('E:E', None, format_numbers) #valor unitario
+    worksheet_resumo_memoria.set_column('E:E', None, format_center) #valor unitario
+
+    worksheet_resumo_memoria.set_column('F:F', None, format_numbers) #sub total
+    worksheet_resumo_memoria.set_column('F:F', None, format_center) #sub total
+
+    worksheet_resumo_memoria.set_column('G:G', None, format_numbers) #total geral
+    worksheet_resumo_memoria.set_column('G:G', None, format_center) #total geral
+
+    worksheet_resumo_memoria.autofit()
+
+    resumo_memoria_completo = ajustar_resumo_memoria_completo()
+
+
+
 
     indice_planilha = 1
 
@@ -275,6 +300,8 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
       df_atividades_ajustado.to_excel(writer, sheet_name=nome_planilha)
 
       indice_planilha += 1
+
+
 
 def executando_no_jupyter():
   return 'get_ipython' in globals()
