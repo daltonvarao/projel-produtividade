@@ -130,6 +130,10 @@ def carregar_dados_resumo_memoria(
 
     df = carregar_do_banco()
 
+    if df.empty:
+      return df
+
+
     df['funcionario'] = df['funcionario'].apply(lambda x: x.strip())
     df['quantidade'] = df['quantidade'].astype(float)
     df['valor_unitario'] = df['valor_unitario'].astype(float)
@@ -145,7 +149,10 @@ def gerar_memoria_de_calculo_por_funcionario(df, nome_funcionario):
   df_funcionario_agregado = df_funcionario.pivot_table(
       index = ['funcionario', 'cargo', 'atividade'],
       values=['quantidade', 'valor_unitario'],
-      aggfunc='sum'
+      aggfunc={
+          'quantidade': 'sum',
+          'valor_unitario': 'first'
+      }
   )
 
   df_funcionario_agregado['sub_total'] = df_funcionario_agregado['quantidade'] * df_funcionario_agregado['valor_unitario']
@@ -188,6 +195,9 @@ def gerar_resumo_memoria_completo(dbname, user, password,host,port, initialDate,
   resumo_memoria_por_funcionario = []
 
   df = carregar_dados_resumo_memoria(dbname, user, password, host, port, initialDate,finalDate,contractId)
+
+  if df.empty:
+     return df
 
   for funcionario in df['funcionario'].unique():
       resumo_memoria_por_funcionario.append(
@@ -278,20 +288,35 @@ def executar_como_script():
         contractId=args.contractId
     )
 
-    dfs_atividades_por_funcionario = gerar_dfs_atividades_por_funcionario(atividades_funcionarios)  
+    dfs_atividades_por_funcionario = gerar_dfs_atividades_por_funcionario(atividades_funcionarios)
 
     exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_funcionario, args.target_excel_file)
 #%%
 
 if executando_no_jupyter():
+   load_dotenv(r'.\dados.env',override=True)
+
+   dados_resumo_memoria = carregar_dados_resumo_memoria(
+        dbname=os.getenv('DB_NAME'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        host=os.getenv('DB_HOST'),
+        port=os.getenv('DB_PORT'),
+        initialDate='2023-12-21',
+        finalDate='2024-01-20',
+        contractId=1
+
+   )
+
+
+
+#%%
+
+if executando_no_jupyter():
     load_dotenv(r'.\dados.env',override=True)
 
-    print(os.getenv('DB_NAME'))
-    print(os.getenv('DB_USER'))
-    print(os.getenv('DB_PASSWORD'))
-    print(os.getenv('DB_HOST'))
-    print(os.getenv('DB_PORT'))
-   
+
+
 
     resumo_memoria_completo = gerar_resumo_memoria_completo(
         dbname=os.getenv('DB_NAME'),
@@ -307,7 +332,7 @@ if executando_no_jupyter():
 
     resumo_memoria_completo
 
-#endregion   
+#endregion
 
 #%%
 
