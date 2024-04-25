@@ -224,6 +224,11 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_funcionario, arq
 
     return resumo_memoria_completo
 
+  def ajustar_df_atividades_por_funcionario(df):
+    df['quantidade'] = df['quantidade'].astype(str).str.replace('.',',')
+
+    return df
+
   writer = pd.ExcelWriter(arquivo_saida, engine='xlsxwriter')
 
   resumo_memoria_completo = ajustar_resumo_memoria_completo()
@@ -235,7 +240,9 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_funcionario, arq
   for nome_funcionario, df_atividades in atividades_por_funcionario:
     nome_planilha = nome_funcionario.split()[0] + f"_{indice_planilha}"
 
-    df_atividades.to_excel(writer, sheet_name=nome_planilha)
+    df_atividades_ajustado = ajustar_df_atividades_por_funcionario(df_atividades)
+
+    df_atividades_ajustado.to_excel(writer, sheet_name=nome_planilha)
 
     indice_planilha += 1
 
