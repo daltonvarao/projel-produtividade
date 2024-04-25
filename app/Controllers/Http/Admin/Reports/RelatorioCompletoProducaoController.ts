@@ -14,7 +14,7 @@ export default class RelatorioCompletoProducaoController {
             return new Promise<void>((resolve) => {
                 const { spawn } = require('child_process')
 
-                const pyProg = spawn('python3', [
+                const pyProg = spawn('python3.9', [
                     Application.makePath('analysis/production_report.py'),
                     "--initialDate", initialDate,
                     "--finalDate", finalDate,
@@ -30,7 +30,7 @@ export default class RelatorioCompletoProducaoController {
 
                 pyProg.stdout.on('data', function (data) {
                     logger.debug(data.toString())
-                    
+
                 })
 
                 pyProg.stderr.on('data', (data) => {
@@ -42,7 +42,7 @@ export default class RelatorioCompletoProducaoController {
                 })
             })
 
-            
+
         }
 
 
@@ -58,6 +58,6 @@ export default class RelatorioCompletoProducaoController {
 
         return response.download(excelFilePath)
 
-        
+
     }
 }

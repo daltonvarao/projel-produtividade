@@ -4,7 +4,6 @@
 import psycopg2
 from dotenv import load_dotenv
 import os
-from sshtunnel import SSHTunnelForwarder
 from psycopg2.extras import DictCursor
 import pandas as pd
 import numpy as np
