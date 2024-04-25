@@ -1,4 +1,6 @@
 #%%
+
+#region importacoes
 import psycopg2
 from dotenv import load_dotenv
 import os
@@ -7,8 +9,10 @@ from psycopg2.extras import DictCursor
 import pandas as pd
 import numpy as np
 import sys
+#endregion
 
-
+#%%
+#region funcoes
 def get_connect_using_psycopg2(
       dbname, user, password, host, port, sslmode = 'disable'
 ):
@@ -280,21 +284,30 @@ def executar_como_script():
 #%%
 
 if executando_no_jupyter():
-   load_dotenv(r'.\dados.env',override=True)
+    load_dotenv(r'.\dados.env',override=True)
 
-   resumo_memoria_completo = gerar_resumo_memoria_completo(
-      dbname=os.getenv('DB_NAME'),
-      user=os.getenv('DB_USER'),
-      password=os.getenv('DB_PASSWORD'),
-      host=os.getenv('DB_HOST'),
-      port=os.getenv('DB_PORT'),
-      initialDate='2023-12-21',
-      finalDate='2024-01-20',
-      contractId=1
+    print(os.getenv('DB_NAME'))
+    print(os.getenv('DB_USER'))
+    print(os.getenv('DB_PASSWORD'))
+    print(os.getenv('DB_HOST'))
+    print(os.getenv('DB_PORT'))
+   
 
-   )
+    resumo_memoria_completo = gerar_resumo_memoria_completo(
+        dbname=os.getenv('DB_NAME'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        host=os.getenv('DB_HOST'),
+        port=os.getenv('DB_PORT'),
+        initialDate='2023-12-21',
+        finalDate='2024-01-20',
+        contractId=1
 
-   resumo_memoria_completo
+    )
+
+    resumo_memoria_completo
+
+#endregion   
 
 #%%
 
@@ -328,6 +341,8 @@ if executando_no_jupyter():
   )
 
   dfs_atividades_por_funcionario = gerar_dfs_atividades_por_funcionario(atividades_funcionarios)
+
+  #%%
 
   exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_funcionario, 'resumo_memoria_completo.xlsx')
 
