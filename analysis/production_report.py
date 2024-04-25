@@ -67,7 +67,7 @@ def carregar_atividades_colaboradores(
       dbname, user, password, host, port, initialDate, finalDate, contractId
 ):
   sql = """
-    select u.nome as colaborador , c.titulo as cargo, r."data" , a.descricao  as atividade, f.nome as furo, ar.quantidade
+    select u.nome as "Colaborador" , c.titulo as "Cargo", r."data" as "Data" , a.descricao as "Atividade", f.nome as "Furo", ar.quantidade as "Quantidade"
     from atividade_rdos ar
     inner join rdo_users ru on ru.rdo_id  = ar.rdo_id
     inner join rdos r on r.id = ar.rdo_id
@@ -108,7 +108,7 @@ def carregar_dados_resumo_memoria(
 
     def carregar_do_banco():
       sql = """
-          select  u.nome as colaborador, r.data , c.titulo as cargo , a.descricao as atividade , f.nome as furo , ar.quantidade , acv.valor_unitario
+          select  u.nome as "Colaborador" , r.data as "Data" , c.titulo as "Cargo" , a.descricao as "Atividade" , f.nome as "Furo" , ar.quantidade as "Quantidade" , acv.valor_unitario as "Valor Unitário"
           from atividade_rdos ar
           inner join rdo_users ru on ru.rdo_id  = ar.rdo_id
           inner join rdos r on r.id = ar.rdo_id
@@ -132,6 +132,8 @@ def carregar_dados_resumo_memoria(
 
       df = pd.DataFrame(data)
 
+
+
       return df
 
     df = carregar_do_banco()
@@ -140,9 +142,9 @@ def carregar_dados_resumo_memoria(
       return df
 
 
-    df['colaborador'] = df['colaborador'].apply(lambda x: x.strip())
-    df['quantidade'] = df['quantidade'].astype(float)
-    df['valor_unitario'] = df['valor_unitario'].astype(float)
+    df['Colaborador'] = df['Colaborador'].apply(lambda x: x.strip())
+    df['Quantidade'] = df['Quantidade'].astype(float)
+    df['Valor Unitário'] = df['Valor Unitário'].astype(float)
 
 
     return df
@@ -150,43 +152,43 @@ def carregar_dados_resumo_memoria(
 
 def gerar_memoria_de_calculo_por_colaborador(df, nome_colaborador):
 
-  df_colaborador = df[df['colaborador'] == nome_colaborador]
+  df_colaborador = df[df['Colaborador'] == nome_colaborador]
 
   df_colaborador_agregado = df_colaborador.pivot_table(
-      index = ['colaborador', 'cargo', 'atividade'],
-      values=['quantidade', 'valor_unitario'],
+      index = ['Colaborador', 'Cargo', 'Atividade'],
+      values=['Quantidade', 'Valor Unitário'],
       aggfunc={
-          'quantidade': 'sum',
-          'valor_unitario': 'first'
+          'Quantidade': 'sum',
+          'Valor Unitário': 'first'
       }
   )
 
-  df_colaborador_agregado['sub_total'] = df_colaborador_agregado['quantidade'] * df_colaborador_agregado['valor_unitario']
+  df_colaborador_agregado['Subtotal'] = df_colaborador_agregado['Quantidade'] * df_colaborador_agregado['Valor Unitário']
 
 
   def gerar_total_geral(df):
       s = pd.Series(np.nan, index=df.index)
 
-      s[0] = df['sub_total'].sum()
+      s[0] = df['Subtotal'].sum()
 
       return s
 
-  df_colaborador_agregado['total_geral'] = gerar_total_geral(df_colaborador_agregado)
+  df_colaborador_agregado['Valor a pagar'] = gerar_total_geral(df_colaborador_agregado)
 
-  df_colaborador_agregado['total_geral'] = df_colaborador_agregado['total_geral'].apply(converter_para_float).apply(lambda x : round(x,2))
+  df_colaborador_agregado['Valor a pagar'] = df_colaborador_agregado['Valor a pagar'].apply(converter_para_float).apply(lambda x : round(x,2))
 
   return df_colaborador_agregado
 
 def gerar_atividades_por_colaborador(df,nome_colaborador):
-  df_colaborador = df[df['colaborador'] == nome_colaborador]
+  df_colaborador = df[df['Colaborador'] == nome_colaborador]
 
   df_colaborador_agregado = df_colaborador.pivot_table(
-      index = ['colaborador', 'data', 'atividade', 'furo'],
-      values = ['quantidade'],
+      index = ['Colaborador', 'Data', 'Atividade', 'Furo'],
+      values = ['Quantidade'],
       aggfunc='sum'
   )
 
-  df_colaborador_agregado['quantidade'] = df_colaborador_agregado['quantidade'].apply(converter_para_float).apply(lambda x: round(x,2))
+  df_colaborador_agregado['Quantidade'] = df_colaborador_agregado['Quantidade'].apply(converter_para_float).apply(lambda x: round(x,2))
 
   return df_colaborador_agregado
 
@@ -194,7 +196,7 @@ def gerar_dfs_atividades_por_colaborador(df):
 
   dfs = []
 
-  for colaborador in df['colaborador'].unique():
+  for colaborador in df['Colaborador'].unique():
       dfs.append(
           (colaborador, gerar_atividades_por_colaborador(df, colaborador))
       )
@@ -210,7 +212,7 @@ def gerar_resumo_memoria_completo(dbname, user, password,host,port, initialDate,
   if df.empty:
      return df
 
-  for colaborador in df['colaborador'].unique():
+  for colaborador in df['Colaborador'].unique():
       resumo_memoria_por_colaborador.append(
           (colaborador, gerar_memoria_de_calculo_por_colaborador(df, colaborador))
       )
@@ -227,28 +229,28 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
 
     resumo_memoria_completo_copia = resumo_memoria_completo.copy()
 
-    resumo_memoria_completo_copia['quantidade'] = resumo_memoria_completo_copia['quantidade'].round(2)
+    resumo_memoria_completo_copia['Quantidade'] = resumo_memoria_completo_copia['Quantidade'].round(2)
 
-    resumo_memoria_completo_copia['quantidade'] = resumo_memoria_completo_copia['quantidade'].astype(str).str.replace('.',',')
+    resumo_memoria_completo_copia['Quantidade'] = resumo_memoria_completo_copia['Quantidade'].astype(str).str.replace('.',',')
 
-    resumo_memoria_completo_copia['valor_unitario'] = resumo_memoria_completo_copia['valor_unitario'].astype(str).str.replace('.',',')
+    resumo_memoria_completo_copia['Valor Unitário'] = resumo_memoria_completo_copia['Valor Unitário'].astype(str).str.replace('.',',')
 
-    resumo_memoria_completo_copia['sub_total'] = resumo_memoria_completo_copia['sub_total'].apply(converter_para_float).apply(lambda x: round(x,2))
+    resumo_memoria_completo_copia['Subtotal'] = resumo_memoria_completo_copia['Subtotal'].apply(converter_para_float).apply(lambda x: round(x,2))
 
-    resumo_memoria_completo_copia['sub_total'] = resumo_memoria_completo_copia['sub_total'].astype(str).str.replace('.',',')
+    resumo_memoria_completo_copia['Subtotal'] = resumo_memoria_completo_copia['Subtotal'].astype(str).str.replace('.',',')
 
-    resumo_memoria_completo_copia['total_geral'] = resumo_memoria_completo_copia['total_geral'].astype(str).str.replace('.',',')
+    resumo_memoria_completo_copia['Valor a pagar'] = resumo_memoria_completo_copia['Valor a pagar'].astype(str).str.replace('.',',')
 
-    resumo_memoria_completo_copia['total_geral'] = resumo_memoria_completo_copia['total_geral'].str.replace('nan','')
+    resumo_memoria_completo_copia['Valor a pagar'] = resumo_memoria_completo_copia['Valor a pagar'].str.replace('nan','')
 
     resumo_memoria_completo_copia = resumo_memoria_completo_copia.style.set_properties(**{'text-align': 'center'})
 
     return resumo_memoria_completo_copia
 
   def ajustar_df_atividades_por_colaborador(df):
-    df['quantidade'] = df['quantidade'].round(2)
+    df['Quantidade'] = df['Quantidade'].round(2)
 
-    df['quantidade'] = df['quantidade'].astype(str).str.replace('.',',')
+    df['Quantidade'] = df['Quantidade'].astype(str).str.replace('.',',')
 
     return df
 
