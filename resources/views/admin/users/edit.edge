@@ -82,6 +82,13 @@
           error: 'errors.conta'
         })
 
+        @!component('components/input', {
+          name: 'pix',
+          label: 'PIX',
+          value: flashMessages.get('pix') || user.pix,
+          error: 'errors.pix'
+        })
+
         <button class="btn btn-primary">Atualizar</button>
       </form>
     </div>
