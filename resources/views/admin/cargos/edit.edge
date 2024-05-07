@@ -15,6 +15,16 @@
           value: cargo.titulo || flashMessages.get('titulo')
         })
 
+        <h2>Limite para valor pago por contrato</h2>
+
+        @!component('components/select',{
+          name: 'contratoLimitePagamento',
+          label: 'Contrato',
+          collection: contratos,
+          valueKey: 'id',
+          labelKey: 'numero'
+        })
+
         <h2>Permissões</h2>
 
         <div 

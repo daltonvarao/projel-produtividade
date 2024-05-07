@@ -6,6 +6,7 @@ import User from 'App/Models/User'
 import Cargo from 'App/Models/Cargo'
 import Equipamento from 'App/Models/Equipamento'
 import Atividade from 'App/Models/Atividade'
+import LimitePagamento from './LimitePagamento'
 
 export default class Contrato extends BaseModel {
   public static table = 'contratos'
@@ -36,6 +37,9 @@ export default class Contrato extends BaseModel {
 
   @hasMany(() => Equipamento)
   public equipamentos: HasMany<typeof Equipamento>
+
+  @hasMany(() => LimitePagamento)
+  public limitePagamentos: HasMany<typeof LimitePagamento>
 
   @column.dateTime({
     autoCreate: true,

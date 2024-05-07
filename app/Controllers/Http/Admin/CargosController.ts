@@ -3,6 +3,8 @@ import { rules, schema } from '@ioc:Adonis/Core/Validator'
 import resources from 'Config/resources'
 import Cargo from 'App/Models/Cargo'
 import CargoPermission from 'App/Models/CargoPermission'
+import Contrato from 'App/Models/Contrato'
+import LimitePagamento from 'App/Models/LimitePagamento'
 
 export default class CargosController {
   private validationMessages = {
@@ -90,10 +92,13 @@ export default class CargosController {
         })
         .firstOrFail()
 
+      const contratos = await Contrato.query().orderBy('numero')
+
       return view.render('admin/cargos/edit', {
         cargo: cargo.toJSON(),
         permissions: cargo.permissions,
         resources,
+        contratos
       })
     } catch (error) {
       logger.error(error)
@@ -121,9 +126,10 @@ export default class CargosController {
       update: schema.array().members(schema.boolean()),
       delete: schema.array().members(schema.boolean()),
       id: schema.array().members(schema.number()),
+      contratoLimitePagamento: schema.number.optional()
     })
 
-    const { titulo, ...data } = await request.validate({
+    const { titulo, contratoLimitePagamento, ...data } = await request.validate({
       schema: cargoSchema,
       messages: this.validationMessages,
     })
@@ -143,6 +149,11 @@ export default class CargosController {
       await Cargo.query().where({ id }).update({ titulo })
 
       await CargoPermission.updateOrCreateMany('id', newData)
+
+      await LimitePagamento.create({
+        contratoId: contratoLimitePagamento,
+        limite: 1000
+      })
 
       session.flash('success', 'Cargo atualizado.')
 
