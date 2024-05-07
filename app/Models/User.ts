@@ -79,6 +79,9 @@ export default class User extends BaseModel {
   @column()
   public pix: string
 
+  @column()
+  public numeroCadastro: string
+
   @beforeSave()
   public static async hashPassword(user: User) {
     if (user.$dirty.password) {

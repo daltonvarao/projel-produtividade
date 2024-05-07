@@ -160,7 +160,8 @@ export default class UsersController {
       agencia: schema.string(),
       conta: schema.string(),
       operacaoCaixa: schema.string.optional(),
-      pix: schema.string.optional()
+      pix: schema.string.optional(),
+      numeroCadastro: schema.string.optional()
     })
 
     const data = await request.validate({
@@ -169,8 +170,6 @@ export default class UsersController {
     })
 
     data.codigoBanco = bancos.find((b) => b.longName === data.banco)?.code
-
-    Logger.info(`banco: ${data.banco} - codigoBanco: ${data.codigoBanco}`)
 
     data.cpf = data.cpf.replace(/\D/g, '')
 
