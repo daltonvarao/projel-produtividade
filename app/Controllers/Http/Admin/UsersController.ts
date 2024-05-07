@@ -5,6 +5,8 @@ import User from 'App/Models/User'
 
 import bancos from '../../../../resources/utils/bancos'
 
+import Logger from '@ioc:Adonis/Core/Logger'
+
 export default class UsersController {
   private validationMessages = {
     'required': '{{ field }} é obrigatório.',
@@ -154,15 +156,20 @@ export default class UsersController {
       password: schema.string.optional({}, [rules.confirmed('password_confirmation')]),
       cargoId: schema.number(),
       banco: schema.string(),
+      codigoBanco: schema.string.optional(),
       agencia: schema.string(),
       conta: schema.string(),
       operacaoCaixa: schema.string.optional(),
+      pix: schema.string.optional(),
+      numeroCadastro: schema.string.optional()
     })
 
     const data = await request.validate({
       schema: userSchema,
       messages: this.validationMessages,
     })
+
+    data.codigoBanco = bancos.find((b) => b.longName === data.banco)?.code
 
     data.cpf = data.cpf.replace(/\D/g, '')
 
