@@ -66,7 +66,7 @@ def carregar_atividades_colaboradores(
       dbname, user, password, host, port, initialDate, finalDate, contractId
 ):
   sql = """
-    select u.nome as "Colaborador" , c.titulo as "Cargo", r."data" as "Data" , a.descricao as "Atividade", f.nome as "Furo", ar.quantidade as "Quantidade"
+    select u.id as "ColaboradorId", u.nome as "Colaborador" , c.titulo as "Cargo", r."data" as "Data" , a.descricao as "Atividade", f.nome as "Furo", ar.quantidade as "Quantidade"
     from atividade_rdos ar
     inner join rdo_users ru on ru.rdo_id  = ar.rdo_id
     inner join rdos r on r.id = ar.rdo_id
@@ -107,7 +107,7 @@ def carregar_dados_resumo_memoria(
 
     def carregar_do_banco():
       sql = """
-          select  u.nome as "Colaborador" , r.data as "Data" , c.titulo as "Cargo" , a.descricao as "Atividade" , f.nome as "Furo" , ar.quantidade as "Quantidade" , acv.valor_unitario as "Valor Unitário"
+          select u.id as "ColaboradorId", u.nome as "Colaborador" , r.data as "Data" , c.titulo as "Cargo" , a.descricao as "Atividade" , f.nome as "Furo" , ar.quantidade as "Quantidade" , acv.valor_unitario as "Valor Unitário"
           from atividade_rdos ar
           inner join rdo_users ru on ru.rdo_id  = ar.rdo_id
           inner join rdos r on r.id = ar.rdo_id
@@ -154,7 +154,7 @@ def gerar_memoria_de_calculo_por_colaborador(df, nome_colaborador):
   df_colaborador = df[df['Colaborador'] == nome_colaborador]
 
   df_colaborador_agregado = df_colaborador.pivot_table(
-      index = ['Colaborador', 'Cargo', 'Atividade'],
+      index = ['ColaboradorId', 'Colaborador', 'Cargo', 'Atividade'],
       values=['Quantidade', 'Valor Unitário'],
       aggfunc={
           'Quantidade': 'sum',
@@ -168,7 +168,7 @@ def gerar_memoria_de_calculo_por_colaborador(df, nome_colaborador):
   def gerar_total_geral(df):
       s = pd.Series(np.nan, index=df.index)
 
-      s[0] = df['Subtotal'].sum()
+      s.iloc[0] = df['Subtotal'].sum()
 
       return s
 
@@ -222,7 +222,7 @@ def gerar_resumo_memoria_completo(dbname, user, password,host,port, initialDate,
 
   return resumo_memoria_completo
 
-def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arquivo_saida):
+def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arquivo_saida, resumo_pagamento):
 
   def ajustar_resumo_memoria_completo():
 
@@ -253,43 +253,60 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
 
     return df
 
+  def ajustar_resumo_pagamento():
+     resumo_pagamento_copia = resumo_pagamento.copy()
 
+     return resumo_pagamento_copia
 
   with pd.ExcelWriter(arquivo_saida, engine='xlsxwriter') as writer:
 
+    resumo_memoria_completo = ajustar_resumo_memoria_completo()
 
+    resumo_pagamento = ajustar_resumo_pagamento()
 
     resumo_memoria_completo.to_excel(
        writer,
        sheet_name='Resumo Memória'
     )
 
+    resumo_pagamento.to_excel(writer, sheet_name='Resumo Pagamento', index=False)
+
+    def ajustar_worksheet_resumo_memoria( format_numbers, format_center):
+      worksheet_resumo_memoria = writer.sheets['Resumo Memória']
+
+      worksheet_resumo_memoria.set_column('D:D', None, format_numbers) #quantidade
+      worksheet_resumo_memoria.set_column('D:D', None, format_center) #quantidade
+
+      worksheet_resumo_memoria.set_column('E:E', None, format_numbers) #valor unitario
+      worksheet_resumo_memoria.set_column('E:E', None, format_center) #valor unitario
+
+      worksheet_resumo_memoria.set_column('F:F', None, format_numbers) #sub total
+      worksheet_resumo_memoria.set_column('F:F', None, format_center) #sub total
+
+      worksheet_resumo_memoria.set_column('G:G', None, format_numbers) #total geral
+      worksheet_resumo_memoria.set_column('G:G', None, format_center) #total geral
+
+      worksheet_resumo_memoria.autofit()
+
+
+
+    def ajustar_worksheet_resumo_pagamento(format_numbers):
+      worksheet_resumo_pagamento = writer.sheets['Resumo Pagamento']
+
+      worksheet_resumo_pagamento.autofit()
+
+      worksheet_resumo_pagamento.set_column('K:K', None, format_numbers) #valor a pagar
+
     workbook = writer.book
 
-    worksheet_resumo_memoria = writer.sheets['Resumo Memória']
 
     format_numbers = workbook.add_format({'num_format': '#,##0.00'})
 
     format_center = workbook.add_format({'align': 'center'})
 
-    worksheet_resumo_memoria.set_column('D:D', None, format_numbers) #quantidade
-    worksheet_resumo_memoria.set_column('D:D', None, format_center) #quantidade
+    ajustar_worksheet_resumo_memoria(format_numbers, format_center)
 
-    worksheet_resumo_memoria.set_column('E:E', None, format_numbers) #valor unitario
-    worksheet_resumo_memoria.set_column('E:E', None, format_center) #valor unitario
-
-    worksheet_resumo_memoria.set_column('F:F', None, format_numbers) #sub total
-    worksheet_resumo_memoria.set_column('F:F', None, format_center) #sub total
-
-    worksheet_resumo_memoria.set_column('G:G', None, format_numbers) #total geral
-    worksheet_resumo_memoria.set_column('G:G', None, format_center) #total geral
-
-    worksheet_resumo_memoria.autofit()
-
-    resumo_memoria_completo = ajustar_resumo_memoria_completo()
-
-
-
+    ajustar_worksheet_resumo_pagamento(format_numbers)
 
     indice_planilha = 1
 
@@ -302,7 +319,47 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
 
       indice_planilha += 1
 
+def obter_resumo_pagamento_por_colaborador(colaboradorId, valorAPagar, user,password,host,port,dbname):
+  sql = f"""
+    select u.numero_cadastro as "Cadastro", u.nome as "Colaborador", c.titulo as "Cargo", u.cpf as "CPF", u.banco as "Banco", u.codigo_banco as "Código Banco", u.agencia as "Agência", u.conta as "Conta", u.pix as "PIX"
+    from users u
+    inner join cargos c on c.id = u.cargo_id
+    where u.id = {colaboradorId}
+  """
 
+  data = execute_query(dbname,user,password,host,port,sql)
+
+  df = pd.DataFrame(data)
+
+  df['Valor a pagar'] = valorAPagar
+
+  return df
+
+def obter_resumo_pagamento(resumo_memoria_completo, user,password,host,port,dbname):
+
+  resumos_pagamento = []
+
+  resumo_memoria_completo_indice_resetado = resumo_memoria_completo.reset_index()
+
+  for colaboradorId in resumo_memoria_completo_indice_resetado['ColaboradorId'].unique():
+    resumos_pagamento.append(
+      obter_resumo_pagamento_por_colaborador(
+          colaboradorId=colaboradorId,
+          valorAPagar=resumo_memoria_completo_indice_resetado[resumo_memoria_completo_indice_resetado['ColaboradorId'] == colaboradorId]['Valor a pagar'].iloc[0],
+          user=user,
+          password=password,
+          host=host,
+          port=port,
+          dbname=dbname
+      )
+    )
+
+  resumo_pagamento = pd.concat(resumos_pagamento, axis=0)
+
+  resumo_pagamento.reset_index(drop=True, inplace=True)
+
+
+  return resumo_pagamento
 
 def executando_no_jupyter():
   return 'get_ipython' in globals()
@@ -354,7 +411,15 @@ def executar_como_script():
 
     dfs_atividades_por_colaborador = gerar_dfs_atividades_por_colaborador(atividades_colaboradores)
 
-    exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_colaborador, args.target_excel_file)
+    resumo_pagamento = obter_resumo_pagamento(resumo_memoria_completo,
+        user=args.user,
+        password=args.password,
+        host=args.host,
+        port=args.port,
+        dbname=args.dbname
+    )
+
+    exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_colaborador, args.target_excel_file, resumo_pagamento)
 #%%
 
 if executando_no_jupyter():
@@ -371,6 +436,41 @@ if executando_no_jupyter():
         contractId=1
 
    )
+
+#%%
+if executando_no_jupyter():
+  load_dotenv(r'.\dados.env',override=True)
+
+  dados_resumo_memoria = carregar_dados_resumo_memoria(
+      dbname=os.getenv('DB_NAME'),
+      user=os.getenv('DB_USER'),
+      password=os.getenv('DB_PASSWORD'),
+      host=os.getenv('DB_HOST'),
+      port=os.getenv('DB_PORT'),
+      initialDate='2023-12-21',
+      finalDate='2024-01-20',
+      contractId=1
+
+  )
+
+  df_colaborador = dados_resumo_memoria[dados_resumo_memoria['Colaborador'] == 'Allan Henrique Hermogenes']
+
+  df_colaborador_agregado = df_colaborador.pivot_table(
+    index = ['ColaboradorId', 'Colaborador', 'Cargo', 'Atividade'],
+    values=['Quantidade', 'Valor Unitário'],
+    aggfunc={
+        'Quantidade': 'sum',
+        'Valor Unitário': 'first'
+    }
+  )
+
+  df_colaborador_agregado['Subtotal'] = df_colaborador_agregado['Quantidade'] * df_colaborador_agregado['Valor Unitário']
+
+  s = pd.Series(np.nan, index=df_colaborador_agregado.index)
+
+  s.iloc[0] = df_colaborador_agregado['Subtotal'].sum()
+
+  df_colaborador_agregado['Valor a pagar'] = s
 
 
 
@@ -431,8 +531,58 @@ if executando_no_jupyter():
 
   dfs_atividades_por_colaborador = gerar_dfs_atividades_por_colaborador(atividades_colaboradores)
 
+  resumo_pagamento = obter_resumo_pagamento(resumo_memoria_completo,
+    user=os.getenv('DB_USER'),
+    password=os.getenv('DB_PASSWORD'),
+    host=os.getenv('DB_HOST'),
+    port=os.getenv('DB_PORT'),
+    dbname=os.getenv('DB_NAME')
 
-  exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_colaborador, 'resumo_memoria_completo.xlsx')
+    )
+
+
+  exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_colaborador, 'resumo_memoria_completo.xlsx', resumo_pagamento)
+
+#%%
+
+if executando_no_jupyter():
+
+   load_dotenv(r'.\dados.env',override=True)
+
+   resumo_pagamento_por_colaborador = obter_resumo_pagamento_por_colaborador(
+    colaboradorId=223,
+    valorAPagar=1000,
+    dbname=os.getenv('DB_NAME'),
+    user=os.getenv('DB_USER'),
+    password=os.getenv('DB_PASSWORD'),
+    host=os.getenv('DB_HOST'),
+    port=os.getenv('DB_PORT'),)
+
+#%%
+if executando_no_jupyter():
+   load_dotenv(r'.\dados.env',override=True)
+
+   resumo_memoria_completo = gerar_resumo_memoria_completo(
+    dbname=os.getenv('DB_NAME'),
+    user=os.getenv('DB_USER'),
+    password=os.getenv('DB_PASSWORD'),
+    host=os.getenv('DB_HOST'),
+    port=os.getenv('DB_PORT'),
+    initialDate=initialDate,
+    finalDate=finalDate,
+    contractId=contractId
+  )
+
+   resumo_pagamento = obter_resumo_pagamento(
+      resumo_memoria_completo=resumo_memoria_completo,
+      user=os.getenv('DB_USER'),
+      password=os.getenv('DB_PASSWORD'),
+      host=os.getenv('DB_HOST'),
+      port=os.getenv('DB_PORT'),
+      dbname=os.getenv('DB_NAME')
+   )
+
+
 
 #%%
 
