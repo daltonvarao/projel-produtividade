@@ -16,6 +16,20 @@
         })
 
         <h2>Limite para valor pago por contrato</h2>
+        
+        <table>
+          @each(contrato in contratos)
+            <tr>
+              <td>{{contrato.numero}}</td>
+              <td>
+                <input 
+                  name="contrato_{{contrato.id}}"
+                  type="number"
+                  value="{{contrato.limite}}"/>
+              </td>
+            </tr>
+          @end
+        </table>
 
         @!component('components/select',{
           name: 'contratoLimitePagamento',
