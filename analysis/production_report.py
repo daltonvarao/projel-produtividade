@@ -148,8 +148,32 @@ def carregar_dados_resumo_memoria(
 
     return df
 
+def obter_limite_pagamento(colaborador_id, contrato_id, dbname, user, password, host, port):
+  def obter_cargo_id():
+     sql = f"""
+       select cargo_id from users where id = {colaborador_id}
+      """
 
-def gerar_memoria_de_calculo_por_colaborador(df, nome_colaborador):
+     data = execute_query(dbname,user,password,host,port,sql)
+
+     return data[0]['cargo_id']
+
+  def obter_limite_pagamento(cargo_id):
+    sql = f"""
+    select limite from limite_pagamentos where contrato_id = {contrato_id} and cargo_id = {cargo_id}
+    """
+
+    data = execute_query(dbname,user,password,host,port,sql)
+
+    return float(data[0]['limite']) if len(data) > 0 else None
+
+  limite_pagamento = obter_limite_pagamento(
+     cargo_id=obter_cargo_id()
+  )
+
+  return limite_pagamento
+
+def gerar_memoria_de_calculo_por_colaborador(df, nome_colaborador, dbname, user, password, host, port, contrato_id):
 
   df_colaborador = df[df['Colaborador'] == nome_colaborador]
 
@@ -172,9 +196,19 @@ def gerar_memoria_de_calculo_por_colaborador(df, nome_colaborador):
 
       return s
 
+
+
+
   df_colaborador_agregado['Valor a pagar'] = gerar_total_geral(df_colaborador_agregado)
 
   df_colaborador_agregado['Valor a pagar'] = df_colaborador_agregado['Valor a pagar'].apply(converter_para_float).apply(lambda x : round(x,2))
+
+  df_colaborador_agregado['Limite'] = obter_limite_pagamento(
+     colaborador_id=df_colaborador_agregado.reset_index()['ColaboradorId'].iloc[0],
+     contrato_id=contrato_id,
+     dbname=dbname, user=user, password=password, host=host, port=port)
+
+  # df_colaborador_agregado = df_colaborador_agregado.reset_index().drop(['CargoId'],axis=1).set_index(['ColaboradorId','Colaborador','Cargo','Atividade'])
 
   return df_colaborador_agregado
 
@@ -203,17 +237,17 @@ def gerar_dfs_atividades_por_colaborador(df):
   return dfs
 
 
-def gerar_resumo_memoria_completo(dbname, user, password,host,port, initialDate, finalDate, contractId):
+def gerar_resumo_memoria_completo(dbname, user, password,host,port, initialDate, finalDate, contrato_id):
   resumo_memoria_por_colaborador = []
 
-  df = carregar_dados_resumo_memoria(dbname, user, password, host, port, initialDate,finalDate,contractId)
+  df = carregar_dados_resumo_memoria(dbname, user, password, host, port, initialDate,finalDate,contrato_id)
 
   if df.empty:
      return df
 
   for colaborador in df['Colaborador'].unique():
       resumo_memoria_por_colaborador.append(
-          (colaborador, gerar_memoria_de_calculo_por_colaborador(df, colaborador))
+          (colaborador, gerar_memoria_de_calculo_por_colaborador(df, colaborador, dbname=dbname, user=user, password=password, host=host, port=port, contrato_id=contrato_id))
       )
 
   resumo_memoria_completo = pd.concat([x[1] for x in resumo_memoria_por_colaborador],axis=0)
@@ -319,23 +353,30 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
 
       indice_planilha += 1
 
-def obter_resumo_pagamento_por_colaborador(colaboradorId, valorAPagar, user,password,host,port,dbname):
+def obter_resumo_pagamento_por_colaborador(colaborador_id, valorAPagar, user,password,host,port,dbname, contrato_id):
+
+
+
+
+
   sql = f"""
     select u.numero_cadastro as "Cadastro", u.nome as "Colaborador", c.titulo as "Cargo", u.cpf as "CPF", u.banco as "Banco", u.codigo_banco as "Código Banco", u.agencia as "Agência", u.conta as "Conta", u.pix as "PIX"
     from users u
     inner join cargos c on c.id = u.cargo_id
-    where u.id = {colaboradorId}
+    where u.id = {colaborador_id}
   """
 
   data = execute_query(dbname,user,password,host,port,sql)
 
   df = pd.DataFrame(data)
 
-  df['Valor a pagar'] = valorAPagar
+  limite_pagamento = obter_limite_pagamento(colaborador_id, contrato_id, dbname, user, password, host, port)
+
+  df['Valor a pagar'] = limite_pagamento if limite_pagamento is not None else valorAPagar
 
   return df
 
-def obter_resumo_pagamento(resumo_memoria_completo, user,password,host,port,dbname):
+def obter_resumo_pagamento(resumo_memoria_completo, user,password,host,port,dbname,contrato_id):
 
   resumos_pagamento = []
 
@@ -344,13 +385,14 @@ def obter_resumo_pagamento(resumo_memoria_completo, user,password,host,port,dbna
   for colaboradorId in resumo_memoria_completo_indice_resetado['ColaboradorId'].unique():
     resumos_pagamento.append(
       obter_resumo_pagamento_por_colaborador(
-          colaboradorId=colaboradorId,
+          colaborador_id=colaboradorId,
           valorAPagar=resumo_memoria_completo_indice_resetado[resumo_memoria_completo_indice_resetado['ColaboradorId'] == colaboradorId]['Valor a pagar'].iloc[0],
           user=user,
           password=password,
           host=host,
           port=port,
-          dbname=dbname
+          dbname=dbname,
+          contrato_id=contrato_id
       )
     )
 
@@ -395,7 +437,7 @@ def executar_como_script():
         port=args.port,
         initialDate=args.initialDate,
         finalDate=args.finalDate,
-        contractId=args.contractId
+        contrato_id=args.contractId
     )
 
     atividades_colaboradores = carregar_atividades_colaboradores(
@@ -416,7 +458,8 @@ def executar_como_script():
         password=args.password,
         host=args.host,
         port=args.port,
-        dbname=args.dbname
+        dbname=args.dbname,
+        contrato_id=args.contractId
     )
 
     exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_colaborador, args.target_excel_file, resumo_pagamento)
@@ -490,7 +533,7 @@ if executando_no_jupyter():
         port=os.getenv('DB_PORT'),
         initialDate='2023-12-21',
         finalDate='2024-01-20',
-        contractId=1
+        contrato_id=1
 
     )
 
@@ -515,7 +558,7 @@ if executando_no_jupyter():
     port=os.getenv('DB_PORT'),
     initialDate=initialDate,
     finalDate=finalDate,
-    contractId=contractId
+    contrato_id=contractId
   )
 
   atividades_colaboradores = carregar_atividades_colaboradores(
@@ -536,8 +579,8 @@ if executando_no_jupyter():
     password=os.getenv('DB_PASSWORD'),
     host=os.getenv('DB_HOST'),
     port=os.getenv('DB_PORT'),
-    dbname=os.getenv('DB_NAME')
-
+    dbname=os.getenv('DB_NAME'),
+    contrato_id=contractId
     )
 
 
@@ -550,7 +593,7 @@ if executando_no_jupyter():
    load_dotenv(r'.\dados.env',override=True)
 
    resumo_pagamento_por_colaborador = obter_resumo_pagamento_por_colaborador(
-    colaboradorId=223,
+    colaborador_id=223,
     valorAPagar=1000,
     dbname=os.getenv('DB_NAME'),
     user=os.getenv('DB_USER'),
@@ -570,7 +613,7 @@ if executando_no_jupyter():
     port=os.getenv('DB_PORT'),
     initialDate=initialDate,
     finalDate=finalDate,
-    contractId=contractId
+    contrato_id=contractId
   )
 
    resumo_pagamento = obter_resumo_pagamento(
@@ -582,7 +625,17 @@ if executando_no_jupyter():
       dbname=os.getenv('DB_NAME')
    )
 
-
+#%%
+if executando_no_jupyter():
+   query = "select limite from limite_pagamentos where contrato_id = 5 and cargo_id = 57"
+   data = execute_query(
+      dbname=os.getenv('DB_NAME'),
+      user=os.getenv('DB_USER'),
+      password=os.getenv('DB_PASSWORD'),
+      host=os.getenv('DB_HOST'),
+      port=os.getenv('DB_PORT'),
+      query=query
+   )
 
 #%%
 
