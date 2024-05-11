@@ -258,6 +258,9 @@ def gerar_resumo_memoria_completo(dbname, user, password,host,port, initialDate,
 
 def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arquivo_saida, resumo_pagamento):
 
+  if os.path.isfile(arquivo_saida):
+    os.remove(arquivo_saida)
+
   def ajustar_resumo_memoria_completo():
 
     resumo_memoria_completo_copia = resumo_memoria_completo.copy()

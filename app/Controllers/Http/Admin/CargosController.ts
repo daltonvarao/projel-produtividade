@@ -99,16 +99,7 @@ export default class CargosController {
         (contrato as any).limite = (await LimitePagamento.query().where('cargoId',id).where('contratoId',contrato.id).first())?.limite
       }
 
-      const getLimitForContratos = async (contratosIds:number[]) => {
-        const limitesPagamentos = await LimitePagamento.query()
-          .where('cargoId',id)
-          .whereIn('contratoId', contratosIds)
-          
-        return limitesPagamentos.reduce((acc,limitePagamento) => {
-          acc["contrato_" + limitePagamento.contratoId] = limitePagamento.limite
-          return acc
-        },{})
-      }
+      
 
       return view.render('admin/cargos/edit', {
         cargo: cargo.toJSON(),

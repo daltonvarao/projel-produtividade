@@ -5,7 +5,6 @@ import User from 'App/Models/User'
 
 import bancos from '../../../../resources/utils/bancos'
 
-import Logger from '@ioc:Adonis/Core/Logger'
 
 export default class UsersController {
   private validationMessages = {
