@@ -8,6 +8,10 @@ from psycopg2.extras import DictCursor
 import pandas as pd
 import numpy as np
 import sys
+from openpyxl import load_workbook
+from openpyxl.styles import PatternFill, Alignment, Font
+from pathlib import Path
+from datetime import datetime
 #endregion
 
 #%%
@@ -256,7 +260,16 @@ def gerar_resumo_memoria_completo(dbname, user, password,host,port, initialDate,
 
   return resumo_memoria_completo
 
-def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arquivo_saida, resumo_pagamento):
+def obter_centro_custo_contrato(contrato_id,dbname, user, password, host, port):
+  sql = f"""
+    select centro_custo from contratos where id = {contrato_id}
+  """
+
+  data = execute_query(dbname,user,password,host,port,sql)
+
+  return data[0]['centro_custo']
+
+def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arquivo_saida, resumo_pagamento, data_inicial, data_final, contrato_id, dbname, user, password, host, port):
 
   if os.path.isfile(arquivo_saida):
     os.remove(arquivo_saida)
@@ -296,6 +309,27 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
      resumo_pagamento_copia = resumo_pagamento.copy()
 
      return resumo_pagamento_copia
+
+  def inserir_titulo_planilha_resumo_memoria():
+    wb = load_workbook(arquivo_saida)
+
+    ws = wb['Resumo Memória']
+
+    ws.insert_rows(1)
+
+    ws.merge_cells('A1:H1')
+
+    ws['A1'].fill = PatternFill(start_color='005078', end_color='005078',fill_type='solid')
+
+    ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
+
+    centro_custo = obter_centro_custo_contrato(contrato_id, dbname, user, password, host, port)
+
+    ws['A1'] = f'CC:_{centro_custo} MEMORIA DE CÁLCULO DA PRODUÇÃO PERÍODO {datetime.strptime(data_inicial, "%Y-%m-%d").strftime("%d/%m/%Y")} A {datetime.strptime(data_final, "%Y-%m-%d").strftime("%d/%m/%Y")}'
+
+    ws['A1'].font = Font(color="FFFFFF")
+
+    wb.save(arquivo_saida)
 
   with pd.ExcelWriter(arquivo_saida, engine='xlsxwriter') as writer:
 
@@ -357,6 +391,8 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
       df_atividades_ajustado.to_excel(writer, sheet_name=nome_planilha)
 
       indice_planilha += 1
+
+  inserir_titulo_planilha_resumo_memoria()
 
 def obter_resumo_pagamento_por_colaborador(colaborador_id, valorAPagar, user,password,host,port,dbname, contrato_id):
 
@@ -467,7 +503,9 @@ def executar_como_script():
         contrato_id=args.contractId
     )
 
-    exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_colaborador, args.target_excel_file, resumo_pagamento)
+    exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_colaborador, args.target_excel_file, resumo_pagamento,
+                        data_inicial=args.initialDate, data_final=args.finalDate, contrato_id=args.contractId,
+                        dbname=args.dbname, user=args.user, password=args.password, host=args.host, port=args.port)
 #%%
 
 if executando_no_jupyter():
@@ -589,7 +627,9 @@ if executando_no_jupyter():
     )
 
 
-  exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_colaborador, 'resumo_memoria_completo.xlsx', resumo_pagamento)
+  exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_colaborador, 'resumo_memoria_completo.xlsx', resumo_pagamento,
+                      data_inicial=initialDate, data_final=finalDate, contrato_id=contractId,
+                      dbname=os.getenv('DB_NAME'), user=os.getenv('DB_USER'), password=os.getenv('DB_PASSWORD'), host=os.getenv('DB_HOST'), port=os.getenv('DB_PORT'))
 
 #%%
 
@@ -648,6 +688,34 @@ if executando_no_jupyter():
    )
 
 #%%
+
+if executando_no_jupyter():
+   from openpyxl import load_workbook
+   from openpyxl.styles import PatternFill, Alignment, Font
+   from pathlib import Path
+   from datetime import datetime
+
+   resumo_memoria_completo_xlsx = r'C:\projel\projel-produtividade\analysis\resumo_memoria_completo.xlsx'
+
+   resumo_memoria_completo_xlsx_modificado = Path(resumo_memoria_completo_xlsx).parent / (Path(resumo_memoria_completo_xlsx).name[0:Path(resumo_memoria_completo_xlsx).name.index('.')] + '-' + datetime.now().strftime('%Y-%m-%d-%H-%M-%S') +  '.xlsx')
+
+   wb = load_workbook(resumo_memoria_completo_xlsx)
+
+   ws = wb['Resumo Memória']
+
+   ws.insert_rows(1)
+
+   ws.merge_cells('A1:H1')
+
+   ws['A1'].fill = PatternFill(start_color='005078', end_color='005078',fill_type='solid')
+
+   ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
+
+   ws['A1'] = 'CC:_264 MEMORIA DE CÁLCULO DA PRODUÇÃO PERÍODO 21/12/2023 A 20/01/2024'
+
+   ws['A1'].font = Font(color="FFFFFF")
+
+   wb.save(resumo_memoria_completo_xlsx_modificado)
 
 if executando_como_script():
    executar_como_script()
