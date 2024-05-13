@@ -338,7 +338,7 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
 
     ws.insert_rows(1)
 
-    ws.merge_cells('A1:H1')
+    ws.merge_cells('A1:J1')
 
     ws['A1'].fill = PatternFill(start_color='005078', end_color='005078',fill_type='solid')
 
@@ -741,6 +741,34 @@ if executando_no_jupyter():
    ws['A1'].font = Font(color="FFFFFF")
 
    wb.save(resumo_memoria_completo_xlsx_modificado)
+
+if executando_no_jupyter():
+
+  import weasyprint
+  import tempfile
+
+  load_dotenv(r'.\dados.env',override=True)
+
+  initialDate = '2023-12-21'
+  finalDate = '2024-01-20'
+  contractId = 1
+
+  resumo_memoria_completo = gerar_resumo_memoria_completo(
+    dbname=os.getenv('DB_NAME'),
+    user=os.getenv('DB_USER'),
+    password=os.getenv('DB_PASSWORD'),
+    host=os.getenv('DB_HOST'),
+    port=os.getenv('DB_PORT'),
+    initialDate=initialDate,
+    finalDate=finalDate,
+    contrato_id=contractId
+  )
+
+  arquivo_html_temporario = tempfile.NamedTemporaryFile(delete=False, suffix='.html')
+
+  resumo_memoria_completo.to_html(arquivo_html_temporario.name)
+
+  weasyprint.HTML(arquivo_html_temporario.name).write_pdf('resumo_memoria_completo.pdf')
 
 if executando_como_script():
    executar_como_script()
