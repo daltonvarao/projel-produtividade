@@ -331,6 +331,27 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
 
     wb.save(arquivo_saida)
 
+  def inserir_titulo_planilha_resumo_pagamento():
+    wb = load_workbook(arquivo_saida)
+
+    ws = wb['Resumo Pagamento']
+
+    ws.insert_rows(1)
+
+    ws.merge_cells('A1:H1')
+
+    ws['A1'].fill = PatternFill(start_color='005078', end_color='005078',fill_type='solid')
+
+    ws['A1'].alignment = Alignment(horizontal='center', vertical='center')
+
+    centro_custo = obter_centro_custo_contrato(contrato_id, dbname, user, password, host, port)
+
+    ws['A1'] = f'CC:_{centro_custo} RESUMO DE VALORES DE PRODUTIVIDADE REFERENTE AO PERÍODO {datetime.strptime(data_inicial, "%Y-%m-%d").strftime("%d/%m/%Y")} A {datetime.strptime(data_final, "%Y-%m-%d").strftime("%d/%m/%Y")}'
+
+    ws['A1'].font = Font(color="FFFFFF")
+
+    wb.save(arquivo_saida)
+
   with pd.ExcelWriter(arquivo_saida, engine='xlsxwriter') as writer:
 
     resumo_memoria_completo = ajustar_resumo_memoria_completo()
@@ -390,9 +411,13 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
 
       df_atividades_ajustado.to_excel(writer, sheet_name=nome_planilha)
 
+      writer.sheets[nome_planilha].autofit()
+
       indice_planilha += 1
 
   inserir_titulo_planilha_resumo_memoria()
+
+  inserir_titulo_planilha_resumo_pagamento()
 
 def obter_resumo_pagamento_por_colaborador(colaborador_id, valorAPagar, user,password,host,port,dbname, contrato_id):
 
