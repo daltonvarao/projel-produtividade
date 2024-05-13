@@ -265,6 +265,8 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
 
     resumo_memoria_completo_copia = resumo_memoria_completo.copy()
 
+    resumo_memoria_completo_copia = resumo_memoria_completo_copia.droplevel('ColaboradorId', axis=0)
+
     resumo_memoria_completo_copia['Quantidade'] = resumo_memoria_completo_copia['Quantidade'].round(2)
 
     resumo_memoria_completo_copia['Quantidade'] = resumo_memoria_completo_copia['Quantidade'].astype(str).str.replace('.',',')
@@ -606,27 +608,32 @@ if executando_no_jupyter():
 
 #%%
 if executando_no_jupyter():
-   load_dotenv(r'.\dados.env',override=True)
+    load_dotenv(r'.\dados.env',override=True)
 
-   resumo_memoria_completo = gerar_resumo_memoria_completo(
-    dbname=os.getenv('DB_NAME'),
-    user=os.getenv('DB_USER'),
-    password=os.getenv('DB_PASSWORD'),
-    host=os.getenv('DB_HOST'),
-    port=os.getenv('DB_PORT'),
-    initialDate=initialDate,
-    finalDate=finalDate,
-    contrato_id=contractId
-  )
+    initialDate = '2023-12-21'
+    finalDate = '2024-01-20'
+    contractId = 1
 
-   resumo_pagamento = obter_resumo_pagamento(
+    resumo_memoria_completo = gerar_resumo_memoria_completo(
+      dbname=os.getenv('DB_NAME'),
+      user=os.getenv('DB_USER'),
+      password=os.getenv('DB_PASSWORD'),
+      host=os.getenv('DB_HOST'),
+      port=os.getenv('DB_PORT'),
+      initialDate=initialDate,
+      finalDate=finalDate,
+      contrato_id=contractId
+    )
+
+    resumo_pagamento = obter_resumo_pagamento(
       resumo_memoria_completo=resumo_memoria_completo,
       user=os.getenv('DB_USER'),
       password=os.getenv('DB_PASSWORD'),
       host=os.getenv('DB_HOST'),
       port=os.getenv('DB_PORT'),
-      dbname=os.getenv('DB_NAME')
-   )
+      dbname=os.getenv('DB_NAME'),
+      contrato_id=contractId
+    )
 
 #%%
 if executando_no_jupyter():
