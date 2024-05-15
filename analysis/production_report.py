@@ -294,7 +294,7 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
 
     resumo_memoria_completo_copia['Valor a pagar'] = resumo_memoria_completo_copia['Valor a pagar'].str.replace('nan','')
 
-    resumo_memoria_completo_copia = resumo_memoria_completo_copia.style.set_properties(**{'text-align': 'center'})
+    resumo_memoria_completo_copia.style.set_properties(**{'text-align': 'center'})
 
     return resumo_memoria_completo_copia
 
@@ -314,6 +314,13 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
     wb = load_workbook(arquivo_saida)
 
     ws = wb['Resumo Memória']
+
+    # ws.insert_rows(1)
+
+    merged_cells_range = ws.merged_cells.ranges
+
+    for merged_cell in merged_cells_range:
+       merged_cell.shift(0, 1)
 
     ws.insert_rows(1)
 
