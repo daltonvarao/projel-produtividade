@@ -67,7 +67,7 @@ def converter_para_float(valor):
         return np.nan
 
 def carregar_atividades_colaboradores(
-      dbname, user, password, host, port, initialDate, finalDate, contractId
+      dbname, user, password, host, port, initialDate, finalDate, contractId, colaboradorId = None
 ):
   sql = """
     select u.id as "ColaboradorId", u.nome as "Colaborador" , c.titulo as "Cargo", r."data" as "Data" , a.descricao as "Atividade", f.nome as "Furo", ar.quantidade as "Quantidade"
@@ -79,6 +79,7 @@ def carregar_atividades_colaboradores(
     inner join users u on u.id = ru.user_id
     inner join cargos c on c.id  = u.cargo_id
     where a.tipo  = 'produtiva'
+    {condicao_colaborador}
     and r."data" between '{initialDate}' and '{finalDate}'
     and r.contrato_id = {contractId}
     and f.invalid  is false
@@ -86,8 +87,11 @@ def carregar_atividades_colaboradores(
     """.format(
       initialDate=initialDate,
       finalDate=finalDate,
-      contractId=contractId
+      contractId=contractId,
+      condicao_colaborador = f"and u.id = {colaboradorId}" if colaboradorId is not None else ""
     )
+
+  
 
   data = execute_query(dbname, user, password, host, port, sql)
 
@@ -269,7 +273,15 @@ def obter_centro_custo_contrato(contrato_id,dbname, user, password, host, port):
 
   return data[0]['centro_custo']
 
-def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arquivo_saida, resumo_pagamento, data_inicial, data_final, contrato_id, dbname, user, password, host, port):
+def exportar_para_excel(
+      resumo_memoria_completo = None,
+      atividades_por_colaborador = None,
+      arquivo_saida = None,
+      resumo_pagamento = None,
+      data_inicial = None,
+      data_final = None,
+      contrato_id = None,
+      dbname = None, user = None, password = None, host = None, port = None):
 
   if os.path.isfile(arquivo_saida):
     os.remove(arquivo_saida)
@@ -361,16 +373,20 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
 
   with pd.ExcelWriter(arquivo_saida, engine='xlsxwriter') as writer:
 
-    resumo_memoria_completo = ajustar_resumo_memoria_completo()
+    if resumo_memoria_completo is not None:
 
-    resumo_pagamento = ajustar_resumo_pagamento()
+      resumo_memoria_completo = ajustar_resumo_memoria_completo()
 
-    resumo_memoria_completo.to_excel(
-       writer,
-       sheet_name='Resumo Memória'
-    )
+      resumo_memoria_completo.to_excel(
+        writer,
+        sheet_name='Resumo Memória'
+      )
 
-    resumo_pagamento.to_excel(writer, sheet_name='Resumo Pagamento', index=False)
+      if resumo_pagamento is not None:
+
+        resumo_pagamento = ajustar_resumo_pagamento()
+
+        resumo_pagamento.to_excel(writer, sheet_name='Resumo Pagamento', index=False)
 
     def ajustar_worksheet_resumo_memoria( format_numbers, format_center):
       worksheet_resumo_memoria = writer.sheets['Resumo Memória']
@@ -405,26 +421,34 @@ def exportar_para_excel(resumo_memoria_completo, atividades_por_colaborador, arq
 
     format_center = workbook.add_format({'align': 'center'})
 
-    ajustar_worksheet_resumo_memoria(format_numbers, format_center)
+    if resumo_memoria_completo is not None:
 
-    ajustar_worksheet_resumo_pagamento(format_numbers)
+      ajustar_worksheet_resumo_memoria(format_numbers, format_center)
+
+    if resumo_pagamento is not None:
+      ajustar_worksheet_resumo_pagamento(format_numbers)
 
     indice_planilha = 1
 
-    for nome_colaborador, df_atividades in atividades_por_colaborador:
-      nome_planilha = nome_colaborador.split()[0] + f"_{indice_planilha}"
+    if atividades_por_colaborador is not None:
 
-      df_atividades_ajustado = ajustar_df_atividades_por_colaborador(df_atividades)
+      for nome_colaborador, df_atividades in atividades_por_colaborador:
+        nome_planilha = nome_colaborador.split()[0] + f"_{indice_planilha}"
 
-      df_atividades_ajustado.to_excel(writer, sheet_name=nome_planilha)
+        df_atividades_ajustado = ajustar_df_atividades_por_colaborador(df_atividades)
 
-      writer.sheets[nome_planilha].autofit()
+        df_atividades_ajustado.to_excel(writer, sheet_name=nome_planilha)
 
-      indice_planilha += 1
+        writer.sheets[nome_planilha].autofit()
 
-  inserir_titulo_planilha_resumo_memoria()
+        indice_planilha += 1
 
-  inserir_titulo_planilha_resumo_pagamento()
+  if resumo_memoria_completo is not None:
+
+    inserir_titulo_planilha_resumo_memoria()
+
+  if resumo_pagamento is not None:
+    inserir_titulo_planilha_resumo_pagamento()
 
 def obter_resumo_pagamento_por_colaborador(colaborador_id, valorAPagar, user,password,host,port,dbname, contrato_id):
 
@@ -496,48 +520,78 @@ def executar_como_script():
     parser.add_argument('--host', required=True)
     parser.add_argument('--port', required=True)
     parser.add_argument('--target-excel-file', required=True)
+    parser.add_argument('--type-of-report', required=True, help="Valores possiveis: resumo_memoria, atividade_colaborador")
+    parser.add_argument('--colaborador-id',required=False, type=int)
 
     args = parser.parse_args()
 
     if os.path.exists(args.target_excel_file):
        os.unlink(args.target_excel_file)
 
-    resumo_memoria_completo = gerar_resumo_memoria_completo(
-        dbname=args.dbname,
-        user=args.user,
-        password=args.password,
-        host=args.host,
-        port=args.port,
-        initialDate=args.initialDate,
-        finalDate=args.finalDate,
-        contrato_id=args.contractId
-    )
+    if args.type_of_report == 'resumo_memoria':
 
-    atividades_colaboradores = carregar_atividades_colaboradores(
-        dbname=args.dbname,
-        user=args.user,
-        password=args.password,
-        host=args.host,
-        port=args.port,
-        initialDate=args.initialDate,
-        finalDate=args.finalDate,
-        contractId=args.contractId
-    )
+      resumo_memoria_completo = gerar_resumo_memoria_completo(
+          dbname=args.dbname,
+          user=args.user,
+          password=args.password,
+          host=args.host,
+          port=args.port,
+          initialDate=args.initialDate,
+          finalDate=args.finalDate,
+          contrato_id=args.contractId
+      )
 
-    dfs_atividades_por_colaborador = gerar_dfs_atividades_por_colaborador(atividades_colaboradores)
-
-    resumo_pagamento = obter_resumo_pagamento(resumo_memoria_completo,
+      resumo_pagamento = obter_resumo_pagamento(resumo_memoria_completo,
         user=args.user,
         password=args.password,
         host=args.host,
         port=args.port,
         dbname=args.dbname,
         contrato_id=args.contractId
-    )
+      )
 
-    exportar_para_excel(resumo_memoria_completo, dfs_atividades_por_colaborador, args.target_excel_file, resumo_pagamento,
-                        data_inicial=args.initialDate, data_final=args.finalDate, contrato_id=args.contractId,
-                        dbname=args.dbname, user=args.user, password=args.password, host=args.host, port=args.port)
+      exportar_para_excel(
+        resumo_memoria_completo = resumo_memoria_completo,
+        atividades_por_colaborador = None,
+        arquivo_saida = args.target_excel_file,
+        resumo_pagamento = resumo_pagamento,
+        data_inicial=args.initialDate,
+        data_final=args.finalDate,
+        contrato_id=args.contractId,
+        dbname=args.dbname, user=args.user, password=args.password, host=args.host, port=args.port)
+
+    if args.type_of_report == 'atividade_colaborador':
+
+      atividades_colaboradores = carregar_atividades_colaboradores(
+          dbname=args.dbname,
+          user=args.user,
+          password=args.password,
+          host=args.host,
+          port=args.port,
+          initialDate=args.initialDate,
+          finalDate=args.finalDate,
+          contractId=args.contractId,
+          colaboradorId=args.colaborador_id
+      )
+
+      if len(atividades_colaboradores) > 0:
+
+        dfs_atividades_por_colaborador = gerar_dfs_atividades_por_colaborador(atividades_colaboradores)
+
+        exportar_para_excel(
+          resumo_memoria_completo = None,
+          atividades_por_colaborador = dfs_atividades_por_colaborador,
+          arquivo_saida = args.target_excel_file,
+          resumo_pagamento = None,
+          data_inicial=args.initialDate,
+          data_final=args.finalDate,
+          contrato_id=args.contractId,
+          dbname=args.dbname, user=args.user, password=args.password, host=args.host, port=args.port)
+
+
+
+
+
 #%%
 
 if executando_no_jupyter():
