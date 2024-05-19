@@ -21,7 +21,7 @@ export default class RelatorioCompletoProducaoController {
                 
                 
 
-                const pyProg = spawn('python3.9', [
+                const pyProg = spawn(Env.get("PYTHON_PATH"), [
                     Application.makePath('analysis/production_report.py'),
                     "--initialDate", initialDate,
                     "--finalDate", finalDate,
@@ -31,7 +31,8 @@ export default class RelatorioCompletoProducaoController {
                     "--password", Env.get("PG_PASSWORD"),
                     "--host", Env.get("PG_HOST"),
                     "--port", Env.get("PG_PORT"),
-                    "--target-excel-file", excelFilePath
+                    "--target-excel-file", excelFilePath,
+                    "--type-of-report", "resumo_memoria"
 
                 ])
 
@@ -75,7 +76,7 @@ export default class RelatorioCompletoProducaoController {
 
         await runPythonScript({initialDate, finalDate,excelFilePath})
 
-        return response.download(excelFilePath)
+        return response.attachment(excelFilePath)
 
 
     }

@@ -294,26 +294,28 @@ def exportar_para_excel(
 
     resumo_memoria_completo_copia['Quantidade'] = resumo_memoria_completo_copia['Quantidade'].round(2)
 
-    resumo_memoria_completo_copia['Quantidade'] = resumo_memoria_completo_copia['Quantidade'].astype(str).str.replace('.',',')
+    # resumo_memoria_completo_copia['Quantidade'] = resumo_memoria_completo_copia['Quantidade'].astype(str).str.replace('.',',')
 
-    resumo_memoria_completo_copia['Valor Unitário'] = resumo_memoria_completo_copia['Valor Unitário'].astype(str).str.replace('.',',')
+    # resumo_memoria_completo_copia['Valor Unitário'] = resumo_memoria_completo_copia['Valor Unitário'].astype(str).str.replace('.',',')
 
     resumo_memoria_completo_copia['Subtotal'] = resumo_memoria_completo_copia['Subtotal'].apply(converter_para_float).apply(lambda x: round(x,2))
 
-    resumo_memoria_completo_copia['Subtotal'] = resumo_memoria_completo_copia['Subtotal'].astype(str).str.replace('.',',')
+    #resumo_memoria_completo_copia['Subtotal'] = resumo_memoria_completo_copia['Subtotal'].astype(str).str.replace('.',',')
 
-    resumo_memoria_completo_copia['Valor a pagar'] = resumo_memoria_completo_copia['Valor a pagar'].astype(str).str.replace('.',',')
+    #resumo_memoria_completo_copia['Valor a pagar'] = resumo_memoria_completo_copia['Valor a pagar'].astype(str).str.replace('.',',')
 
-    resumo_memoria_completo_copia['Valor a pagar'] = resumo_memoria_completo_copia['Valor a pagar'].str.replace('nan','')
+    #resumo_memoria_completo_copia['Valor a pagar'] = resumo_memoria_completo_copia['Valor a pagar'].str.replace('nan','')
 
     resumo_memoria_completo_copia.style.set_properties(**{'text-align': 'center'})
 
     return resumo_memoria_completo_copia
 
   def ajustar_df_atividades_por_colaborador(df):
-    df['Quantidade'] = df['Quantidade'].round(2)
+    #df['Quantidade'] = df['Quantidade'].round(2)
 
-    df['Quantidade'] = df['Quantidade'].astype(str).str.replace('.',',')
+    df['Quantidade'] = df['Quantidade'].apply(converter_para_float).apply(lambda x: round(x,2))
+
+    #df['Quantidade'] = df['Quantidade'].astype(str).str.replace('.',',')
 
     return df
 
@@ -388,31 +390,47 @@ def exportar_para_excel(
 
         resumo_pagamento.to_excel(writer, sheet_name='Resumo Pagamento', index=False)
 
-    def ajustar_worksheet_resumo_memoria( format_numbers, format_center):
+    def ajustar_worksheet_resumo_memoria( format_numbers, format_center, format_border):
       worksheet_resumo_memoria = writer.sheets['Resumo Memória']
 
       worksheet_resumo_memoria.set_column('D:D', None, format_numbers) #quantidade
       worksheet_resumo_memoria.set_column('D:D', None, format_center) #quantidade
+      #worksheet_resumo_memoria.set_column('D:D', None, format_border)
 
       worksheet_resumo_memoria.set_column('E:E', None, format_numbers) #valor unitario
       worksheet_resumo_memoria.set_column('E:E', None, format_center) #valor unitario
+      #worksheet_resumo_memoria.set_column('E:E', None, format_border)
 
       worksheet_resumo_memoria.set_column('F:F', None, format_numbers) #sub total
       worksheet_resumo_memoria.set_column('F:F', None, format_center) #sub total
+      #worksheet_resumo_memoria.set_column('F:F', None, format_border)
 
       worksheet_resumo_memoria.set_column('G:G', None, format_numbers) #total geral
       worksheet_resumo_memoria.set_column('G:G', None, format_center) #total geral
+      #worksheet_resumo_memoria.set_column('G:G', None, format_border)
+
+      #worksheet_resumo_memoria.set_column('H:H', None, format_border) #valor a pagar
+
+      worksheet_resumo_memoria.conditional_format(1, 0, len(resumo_memoria_completo) + 1, resumo_memoria_completo.index.nlevels + len(resumo_memoria_completo.columns) - 1, {'type': 'no_errors', 'format': format_border})
+
 
       worksheet_resumo_memoria.autofit()
 
 
 
-    def ajustar_worksheet_resumo_pagamento(format_numbers):
+    def ajustar_worksheet_resumo_pagamento(format_numbers, format_border):
       worksheet_resumo_pagamento = writer.sheets['Resumo Pagamento']
+
+      colunas = ['A','B','C','D','E','F','G','H','I','J']
+
+      # for coluna in colunas:
+      #   worksheet_resumo_pagamento.set_column(f'{coluna}:{coluna}', None, format_border)
 
       worksheet_resumo_pagamento.autofit()
 
       worksheet_resumo_pagamento.set_column('K:K', None, format_numbers) #valor a pagar
+
+      worksheet_resumo_pagamento.conditional_format(1, 0, len(resumo_pagamento) + 1, resumo_pagamento.index.nlevels + len(resumo_pagamento.columns) - 2, {'type': 'no_errors', 'format': format_border})
 
     workbook = writer.book
 
@@ -421,12 +439,16 @@ def exportar_para_excel(
 
     format_center = workbook.add_format({'align': 'center'})
 
+    format_border = workbook.add_format({
+        'border': 1  # 1 is the thinnest border
+    })
+
     if resumo_memoria_completo is not None:
 
-      ajustar_worksheet_resumo_memoria(format_numbers, format_center)
+      ajustar_worksheet_resumo_memoria(format_numbers, format_center, format_border)
 
     if resumo_pagamento is not None:
-      ajustar_worksheet_resumo_pagamento(format_numbers)
+      ajustar_worksheet_resumo_pagamento(format_numbers, format_border)
 
     indice_planilha = 1
 
@@ -440,6 +462,16 @@ def exportar_para_excel(
         df_atividades_ajustado.to_excel(writer, sheet_name=nome_planilha)
 
         writer.sheets[nome_planilha].autofit()
+
+        # writer.sheets[nome_planilha].set_column('E:E', None, format_border)
+
+        writer.sheets[nome_planilha].conditional_format(
+           1,
+           0,
+           len(df_atividades_ajustado) + 1,
+            df_atividades_ajustado.index.nlevels + len(df_atividades_ajustado.columns) - 1,
+            {'type': 'no_errors', 'format': format_border}
+        )
 
         indice_planilha += 1
 
