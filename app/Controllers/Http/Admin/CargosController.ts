@@ -3,6 +3,9 @@ import { rules, schema } from '@ioc:Adonis/Core/Validator'
 import resources from 'Config/resources'
 import Cargo from 'App/Models/Cargo'
 import CargoPermission from 'App/Models/CargoPermission'
+import Contrato from 'App/Models/Contrato'
+import LimitePagamento from 'App/Models/LimitePagamento'
+import Logger from '@ioc:Adonis/Core/Logger'
 
 export default class CargosController {
   private validationMessages = {
@@ -90,10 +93,19 @@ export default class CargosController {
         })
         .firstOrFail()
 
+      const contratos = (await Contrato.query().orderBy('numero'))
+
+      for (let contrato of contratos) {
+        (contrato as any).limite = (await LimitePagamento.query().where('cargoId',id).where('contratoId',contrato.id).first())?.limite
+      }
+
+      
+
       return view.render('admin/cargos/edit', {
         cargo: cargo.toJSON(),
         permissions: cargo.permissions,
         resources,
+        contratos
       })
     } catch (error) {
       logger.error(error)
@@ -103,6 +115,54 @@ export default class CargosController {
   }
 
   public async update({ request, session, params, response, logger }: HttpContextContract) {
+
+    //Logger.info(JSON.stringify(request.all(),null,2))
+
+    const getLimitForEachContrato = () => {
+      return Object.keys(request.all())
+        .filter(k => k.startsWith("contrato_"))
+        .filter(k => request.all()[k] != null)
+        .reduce((acc,contratoKey) => {
+        const contratoId = Number(contratoKey.split("_")[1])
+        const limit = Number(request.all()[contratoKey])
+
+        acc[contratoId] = limit
+
+        return acc
+      }, {})
+    }
+
+    const saveLimitePagamento = async ({contratoId,cargoId,limit}:{contratoId: number, cargoId:number, limit: number}) => {
+      const limitePagamento = await LimitePagamento.query()
+        .where('cargoId', cargoId)
+        .where('contratoId',contratoId)
+        .first()
+
+      if (limitePagamento) {
+        limitePagamento.limite = limit
+        
+        await limitePagamento.save()
+      } else {
+        await LimitePagamento.create({
+          cargoId,
+          contratoId,
+          limite: limit
+        })
+      }
+
+      
+
+
+
+
+    }
+
+    //Logger.info(JSON.stringify(getLimitForEachContrato(),null,2))
+
+    // return response.redirect().toRoute('admin.cargos.edit', {
+    //   id: params.id
+    
+    // })
     const { id } = params
     const contratoId: number = session.get('contratoId')
 
@@ -121,9 +181,10 @@ export default class CargosController {
       update: schema.array().members(schema.boolean()),
       delete: schema.array().members(schema.boolean()),
       id: schema.array().members(schema.number()),
+      contratoLimitePagamento: schema.number.optional()
     })
 
-    const { titulo, ...data } = await request.validate({
+    const { titulo, contratoLimitePagamento, ...data } = await request.validate({
       schema: cargoSchema,
       messages: this.validationMessages,
     })
@@ -143,6 +204,25 @@ export default class CargosController {
       await Cargo.query().where({ id }).update({ titulo })
 
       await CargoPermission.updateOrCreateMany('id', newData)
+
+      const limitesPagamentos = getLimitForEachContrato()
+
+      Logger.info(JSON.stringify(limitesPagamentos,null,2))
+
+      for (let contratoId of Object.keys(limitesPagamentos)) {
+
+        const contratoIdNumber = Number(contratoId)
+
+        Logger.info(`contratoId: ${contratoIdNumber}`)
+        Logger.info(`cargoId: ${id}`)
+        Logger.info(`limit: ${limitesPagamentos[contratoId]}`)
+
+        await saveLimitePagamento({
+          contratoId: contratoIdNumber,
+          cargoId: id,
+          limit: limitesPagamentos[contratoId]
+        })
+      }
 
       session.flash('success', 'Cargo atualizado.')
 

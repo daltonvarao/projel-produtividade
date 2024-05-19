@@ -25,6 +25,15 @@
           id: 'cpf'
         })
 
+        @!component('components/input', { 
+          name: 'numeroCadastro',
+          label: 'Número de Cadastro',
+          error: 'errors.numeroCadastro',
+          value: flashMessages.get('numeroCadastro') || user.numeroCadastro,
+          maxLength: 20,
+          id: 'numeroCadastro'
+        })
+
         @!component('components/select', {
           name: 'cargoId',
           label: 'Cargo',
@@ -80,6 +89,13 @@
           label: 'Conta',
           value: flashMessages.get('conta') || user.conta,
           error: 'errors.conta'
+        })
+
+        @!component('components/input', {
+          name: 'pix',
+          label: 'PIX',
+          value: flashMessages.get('pix') || user.pix,
+          error: 'errors.pix'
         })
 
         <button class="btn btn-primary">Atualizar</button>
