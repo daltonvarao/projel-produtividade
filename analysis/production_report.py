@@ -436,6 +436,7 @@ def exportar_para_excel(
 
 
     format_numbers = workbook.add_format({'num_format': '#,##0.00'})
+    # format_numbers = workbook.add_format({'num_format': '0.00'})
 
     format_center = workbook.add_format({'align': 'center'})
 
@@ -582,9 +583,29 @@ def executar_como_script():
         contrato_id=args.contractId
       )
 
+      atividades_colaboradores = carregar_atividades_colaboradores(
+          dbname=args.dbname,
+          user=args.user,
+          password=args.password,
+          host=args.host,
+          port=args.port,
+          initialDate=args.initialDate,
+          finalDate=args.finalDate,
+          contractId=args.contractId,
+          colaboradorId=args.colaborador_id
+      )
+
+      dfs_atividades_por_colaborador = None
+
+      if len(atividades_colaboradores) > 0:
+
+        dfs_atividades_por_colaborador = gerar_dfs_atividades_por_colaborador(atividades_colaboradores)
+
+
+
       exportar_para_excel(
         resumo_memoria_completo = resumo_memoria_completo,
-        atividades_por_colaborador = None,
+        atividades_por_colaborador = dfs_atividades_por_colaborador,
         arquivo_saida = args.target_excel_file,
         resumo_pagamento = resumo_pagamento,
         data_inicial=args.initialDate,
