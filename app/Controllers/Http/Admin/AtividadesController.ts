@@ -101,6 +101,7 @@ export default class AtividadesController {
     const contratoId: number = session.get('contratoId')
 
     const cargos = await Cargo.query().apply((scopes) => scopes.inContract(contratoId))
+      .orderBy('titulo','asc')
 
     try {
       const atividade = await Atividade.query()
