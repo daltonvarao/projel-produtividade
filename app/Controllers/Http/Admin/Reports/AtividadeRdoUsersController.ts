@@ -3,9 +3,12 @@ import User from 'App/Models/User'
 import AtividadeFuncionarioExcelService from 'App/Services/AtividadeFuncionarioExcelService'
 import AtividadeFuncionarioService from 'App/Services/AtividadeFuncionarioService'
 import { DateTime } from 'luxon'
+const fs = require('fs').promises
+import Env from '@ioc:Adonis/Core/Env'
+import Application from '@ioc:Adonis/Core/Application'
 
 export default class AtividadeRdoUsersController {
-  public async index({ view, request, session, response }: HttpContextContract) {
+  public async index({ view, request, session, response, logger }: HttpContextContract) {
     const contratoId: number = session.get('contratoId')
 
     const { userId, initialDate, finalDate, format } = request.qs()
@@ -25,25 +28,90 @@ export default class AtividadeRdoUsersController {
 
     // download excel
     if (format === 'excel') {
-      const excelService = new AtividadeFuncionarioExcelService(userId, initialDate, finalDate, {
-        atividadesUsuario,
-        atividades,
-        totals,
-      })
 
-      const workbook = await excelService.build()
-      const excelReportBuffer = await workbook.xlsx.writeBuffer()
-      const filename = `RelatorioAtividadesFuncionario_${DateTime.fromISO(initialDate).toFormat(
-        'dd-MM-yyyy'
-      )}_${DateTime.fromISO(finalDate).toFormat('dd-MM-yyyy')}.xlsx`
+      const colaboradorId = userId
 
-      return response
-        .header(
-          'Content-Type',
-          'application/application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        )
-        .header('Content-Disposition', `attachment; filename="${filename}"`)
-        .send(excelReportBuffer)
+      const excelFilePath = `/tmp/atividades-colaborador-${colaboradorId}.xlsx`
+
+      const deleteFile = async (filePath) => {
+        try {
+            await fs.unlink(filePath)
+        } catch (error) {
+            if (error.code != 'ENOENT') {
+                throw error
+            }
+        }
+      }
+
+      await deleteFile(excelFilePath)
+
+      const runPythonScript = async ({colaboradorId, initialDate, finalDate, excelFilePath}:{
+        colaboradorId: number, initialDate:string, finalDate:string, excelFilePath: string
+    }) => {
+
+        return new Promise<void>((resolve) => {
+            const { spawn } = require('child_process')
+
+            
+            
+            
+
+            const pyProg = spawn(Env.get("PYTHON_PATH"), [
+                Application.makePath('analysis/production_report.py'),
+                "--initialDate", initialDate,
+                "--finalDate", finalDate,
+                "--contractId", contratoId,
+                "--dbname", Env.get("PG_DB_NAME"),
+                "--user", Env.get("PG_USER"),
+                "--password", Env.get("PG_PASSWORD"),
+                "--host", Env.get("PG_HOST"),
+                "--port", Env.get("PG_PORT"),
+                "--target-excel-file", excelFilePath,
+                "--type-of-report", "atividade_colaborador",
+                "--colaborador-id", colaboradorId
+
+            ])
+
+            pyProg.stdout.on('data', function (data) {
+                logger.debug(data.toString())
+
+            })
+
+            pyProg.stderr.on('data', (data) => {
+                logger.error(data.toString())
+            })
+
+            pyProg.on('close', () => {
+                resolve()
+            })
+        })
+
+
+    }
+
+      await runPythonScript({colaboradorId, initialDate, finalDate, excelFilePath})
+
+      return response.attachment(excelFilePath)
+
+      // const excelService = new AtividadeFuncionarioExcelService(userId, initialDate, finalDate, {
+      //   atividadesUsuario,
+      //   atividades,
+      //   totals,
+      // })
+
+      // const workbook = await excelService.build()
+      // const excelReportBuffer = await workbook.xlsx.writeBuffer()
+      // const filename = `RelatorioAtividadesFuncionario_${DateTime.fromISO(initialDate).toFormat(
+      //   'dd-MM-yyyy'
+      // )}_${DateTime.fromISO(finalDate).toFormat('dd-MM-yyyy')}.xlsx`
+
+      // return response
+      //   .header(
+      //     'Content-Type',
+      //     'application/application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      //   )
+      //   .header('Content-Disposition', `attachment; filename="${filename}"`)
+      //   .send(excelReportBuffer)
     }
 
     return view.render('admin/reports/atividade_rdo_users/index', {
