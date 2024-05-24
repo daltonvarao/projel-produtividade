@@ -520,7 +520,7 @@ def obter_resumo_pagamento_por_colaborador(colaborador_id, valorAPagar, user,pas
 
   limite_pagamento = obter_limite_pagamento(colaborador_id, contrato_id, dbname, user, password, host, port)
 
-  df['Valor a pagar'] = limite_pagamento if limite_pagamento is not None else valorAPagar
+  df['Valor a pagar'] = limite_pagamento if (limite_pagamento is not None and valorAPagar > limite_pagamento) else valorAPagar
 
   return df
 
@@ -747,7 +747,7 @@ if executando_no_jupyter():
   load_dotenv(r'.\dados.env',override=True)
 
   initialDate = '2023-03-21'
-  finalDate = '2024-05-20'
+  finalDate = '2024-04-20'
   contractId = 1
 
   resumo_memoria_completo = gerar_resumo_memoria_completo(
@@ -808,7 +808,7 @@ if executando_no_jupyter():
     load_dotenv(r'.\dados.env',override=True)
 
     initialDate = '2024-03-21'
-    finalDate = '2024-05-20'
+    finalDate = '2024-04-20'
     contractId = 1
 
     resumo_memoria_completo = gerar_resumo_memoria_completo(
