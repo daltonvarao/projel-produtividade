@@ -157,7 +157,8 @@ def carregar_dados_resumo_memoria(
       'Mudança de Sonda (Maior que 200 m)',
       'Mudança de Sonda (Menor que 200 m)',
       'Mudança de sonda (Km adicional)',
-      'Tamponamento Furo Mts'
+      'Tamponamento Furo Mts',
+      'Tamponamento de furo'
     ]
 
     df = df[~df['Atividade'].isin(colunas_indesejadas)]
