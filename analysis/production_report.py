@@ -91,7 +91,7 @@ def carregar_atividades_colaboradores(
       condicao_colaborador = f"and u.id = {colaboradorId}" if colaboradorId is not None else ""
     )
 
-  
+
 
   data = execute_query(dbname, user, password, host, port, sql)
 
@@ -152,6 +152,15 @@ def carregar_dados_resumo_memoria(
     df['Colaborador'] = df['Colaborador'].apply(lambda x: x.strip())
     df['Quantidade'] = df['Quantidade'].astype(float)
     df['Valor Unitário'] = df['Valor Unitário'].astype(float)
+
+    colunas_indesejadas = [
+      'Mudança de Sonda (Maior que 200 m)',
+      'Mudança de Sonda (Menor que 200 m)',
+      'Mudança de sonda (Km adicional)',
+      'Tamponamento Furo Mts'
+    ]
+
+    df = df[~df['Atividade'].isin(colunas_indesejadas)]
 
 
     return df
@@ -260,7 +269,16 @@ def gerar_resumo_memoria_completo(dbname, user, password,host,port, initialDate,
 
   resumo_memoria_completo = pd.concat([x[1] for x in resumo_memoria_por_colaborador],axis=0)
 
+  # def remover_colunas_indesejadas():
+  #   colunas_indesejadas = [
+  #     'Mudança de Sonda (Maior que 200 m)',
+  #     'Mudança de Sonda (Menor que 200 m)'
+  #     'Mudança de sonda (Km adicional)',
+  #     'Tamponamento Furo Mts']
 
+  #   return resumo_memoria_completo[~(resumo_memoria_completo.index.get_level_values('Atividade').isin(colunas_indesejadas))]
+
+  # resumo_memoria_completo = remover_colunas_indesejadas()
 
   return resumo_memoria_completo
 
@@ -603,8 +621,8 @@ if executando_no_jupyter():
         password=os.getenv('DB_PASSWORD'),
         host=os.getenv('DB_HOST'),
         port=os.getenv('DB_PORT'),
-        initialDate='2023-12-21',
-        finalDate='2024-01-20',
+        initialDate='2023-03-21',
+        finalDate='2024-05-20',
         contractId=1
 
    )
@@ -675,8 +693,8 @@ if executando_no_jupyter():
 if executando_no_jupyter():
   load_dotenv(r'.\dados.env',override=True)
 
-  initialDate = '2023-12-21'
-  finalDate = '2024-01-20'
+  initialDate = '2023-03-21'
+  finalDate = '2024-05-20'
   contractId = 1
 
   resumo_memoria_completo = gerar_resumo_memoria_completo(
@@ -736,8 +754,8 @@ if executando_no_jupyter():
 if executando_no_jupyter():
     load_dotenv(r'.\dados.env',override=True)
 
-    initialDate = '2023-12-21'
-    finalDate = '2024-01-20'
+    initialDate = '2024-03-21'
+    finalDate = '2024-05-20'
     contractId = 1
 
     resumo_memoria_completo = gerar_resumo_memoria_completo(
@@ -803,6 +821,7 @@ if executando_no_jupyter():
 
    wb.save(resumo_memoria_completo_xlsx_modificado)
 
+#%%
 if executando_no_jupyter():
 
   import weasyprint
@@ -831,5 +850,49 @@ if executando_no_jupyter():
 
   weasyprint.HTML(arquivo_html_temporario.name).write_pdf('resumo_memoria_completo.pdf')
 
+#%%
+if executando_no_jupyter():
+  load_dotenv(r'.\dados.env',override=True)
+
+  initialDate = '2024-03-21'
+  finalDate = '2024-05-20'
+  contractId = 1
+
+  resumo_memoria_completo = gerar_resumo_memoria_completo(
+    dbname=os.getenv('DB_NAME'),
+    user=os.getenv('DB_USER'),
+    password=os.getenv('DB_PASSWORD'),
+    host=os.getenv('DB_HOST'),
+    port=os.getenv('DB_PORT'),
+    initialDate=initialDate,
+    finalDate=finalDate,
+    contrato_id=contractId
+  )
+
+  resumo_pagamento = obter_resumo_pagamento(
+    resumo_memoria_completo=resumo_memoria_completo,
+    user=os.getenv('DB_USER'),
+    password=os.getenv('DB_PASSWORD'),
+    host=os.getenv('DB_HOST'),
+    port=os.getenv('DB_PORT'),
+    dbname=os.getenv('DB_NAME'),
+    contrato_id=contractId
+  )
+#%%
+if executando_no_jupyter():
+  df = resumo_memoria_completo.reset_index()
+  df = df[~df['Atividade'].isin(
+     ['Mudança de Sonda (Maior que 200 m)',
+     'Mudança de Sonda (Menor que 200 m)'
+     'Mudança de sonda (Km adicional)']
+  )]
+
+  df = df.set_index(['ColaboradorId','Colaborador','Cargo','Atividade'])
+
+
+
 if executando_como_script():
    executar_como_script()
+
+
+# %%
