@@ -6,6 +6,8 @@ cd $DIRETORIO_PROJETO
 
 cp -au $DIRETORIO_PROJETO/build/.env /home/projel/.env-producao-backup
 
+yarn install
+
 npm run build
 
 cp /home/projel/.env-producao-backup $DIRETORIO_PROJETO/build/.env
