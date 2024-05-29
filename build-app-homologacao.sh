@@ -4,6 +4,8 @@ DIRETORIO_PROJETO="/home/projel/projel-produtividade-teste"
 
 cd $DIRETORIO_PROJETO
 
+yarn install
+
 npm run build
 
 cp /home/projel/.env-homologacao-backup $DIRETORIO_PROJETO/build/.env

@@ -2,6 +2,8 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Atividade from 'App/Models/Atividade'
 import Cargo from 'App/Models/Cargo'
+import * as R from 'ramda'
+import Logger from '@ioc:Adonis/Core/Logger'
 
 export default class AtividadesController {
   private tipos = ['produtiva', 'improdutiva', 'parada']
@@ -137,16 +139,19 @@ export default class AtividadesController {
         }),
       ]),
       unidade_medida: schema.string.optional({}, [rules.requiredWhen('tipo', '=', 'produtiva')]),
-      tipo: schema.enum(this.tipos),
-      cargoId: schema.array
-        .optional([rules.requiredWhen('tipo', '=', 'produtiva')])
-        .members(schema.number()),
-      valorUnitario: schema.array
-        .optional([rules.requiredWhen('tipo', '=', 'produtiva')])
-        .members(schema.number()),
+      tipo: schema.enum(this.tipos)
     })
 
-    const { cargoId, valorUnitario, ...data } = await request.validate({
+    Logger.info(JSON.stringify(request.all(),null,2))
+
+    const valoresUnitarios = R.pickBy(
+      (_val,key) => key.startsWith('valorUnitario_'),
+      request.all()
+    )
+
+    Logger.info(JSON.stringify(valoresUnitarios,null,2))
+
+    const {  ...data } = await request.validate({
       schema: atividadeSchema,
       messages: this.validationMessages,
     })
@@ -155,17 +160,29 @@ export default class AtividadesController {
       await Atividade.query().where({ id }).update(data)
 
       const atividade = await Atividade.query().where({ id }).firstOrFail()
+
       await atividade.related('atividadeCargoValores').query().delete()
 
-      if (valorUnitario && cargoId) {
-        const atividadeCargosValoresData = cargoId.map((cid, index) => {
-          return {
-            cargoId: cid,
-            valorUnitario: valorUnitario[index],
-          }
-        })
-        await atividade.related('atividadeCargoValores').createMany(atividadeCargosValoresData)
-      }
+      const atividadeCargosValoresData = Object.keys(valoresUnitarios).map(key => ({
+        cargoId: Number(key.replace("valorUnitario_","")),
+        valorUnitario: request.input(key)
+      }))
+
+      Logger.info(JSON.stringify(atividadeCargosValoresData,null,2))
+
+
+
+      await atividade.related('atividadeCargoValores').createMany(atividadeCargosValoresData)
+
+      // if (valorUnitario) {
+      //   const atividadeCargosValoresData = valorUnitario.map((v) => {
+      //     return {
+      //       cargoId: cid,
+      //       valorUnitario: valorUnitario[cid],
+      //     }
+      //   })
+      //   await atividade.related('atividadeCargoValores').createMany(atividadeCargosValoresData)
+      // }
 
       session.flash('success', 'Atividade atualizada.')
       return response.redirect().toRoute('admin.atividades.index')
