@@ -127,12 +127,7 @@ const EditAtividades: React.FC<CreateAtividadesProps> = ({ atividade, flashMessa
                   <tr key={cargoIndex}>
                     <td className="text-left">
                       {cargo.titulo}
-                      <input
-                        type="hidden"
-                        defaultValue="false"
-                        name={`atividadeCargoId[${cargoIndex}]`}
-                      />
-                      <input type="hidden" value={cargo.id} name={`cargoId[${cargoIndex}]`} />
+                      
                     </td>
                     <td className="text-right">
                       <input
@@ -140,9 +135,9 @@ const EditAtividades: React.FC<CreateAtividadesProps> = ({ atividade, flashMessa
                         type="number"
                         step="0.01"
                         defaultValue={
-                          atividade.atividadeCargoValores[cargoIndex]?.valor_unitario ?? '0.0'
+                          (atividade.atividadeCargoValores ?? []).find(acv => acv.cargo_id == cargo.id)?.valor_unitario ?? '0.0' 
                         }
-                        name={`valorUnitario[${cargoIndex}]`}
+                        name={`valorUnitario_${cargo.id}`}
                       />
                     </td>
                   </tr>
