@@ -12,6 +12,8 @@ from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Alignment, Font
 from pathlib import Path
 from datetime import datetime
+#from babel.numbers import format_currency
+
 #endregion
 
 #%%
@@ -178,7 +180,7 @@ def obter_limite_pagamento(colaborador_id, contrato_id, dbname, user, password, 
 
      return data[0]['cargo_id']
 
-  def obter_limite_pagamento(cargo_id):
+  def obter_limite_pagamento_por_cargo(cargo_id):
     sql = f"""
     select limite from limite_pagamentos where contrato_id = {contrato_id} and cargo_id = {cargo_id}
     """
@@ -187,7 +189,7 @@ def obter_limite_pagamento(colaborador_id, contrato_id, dbname, user, password, 
 
     return float(data[0]['limite']) if len(data) > 0 else None
 
-  limite_pagamento = obter_limite_pagamento(
+  limite_pagamento = obter_limite_pagamento_por_cargo(
      cargo_id=obter_cargo_id()
   )
 
@@ -223,10 +225,13 @@ def gerar_memoria_de_calculo_por_colaborador(df, nome_colaborador, dbname, user,
 
   df_colaborador_agregado['Valor a pagar'] = df_colaborador_agregado['Valor a pagar'].apply(converter_para_float).apply(lambda x : round(x,2))
 
-  df_colaborador_agregado['Limite'] = obter_limite_pagamento(
-     colaborador_id=df_colaborador_agregado.reset_index()['ColaboradorId'].iloc[0],
+  limite_series = pd.Series(np.nan, index=df_colaborador_agregado.index)
+
+  limite_series.iloc[0] = obter_limite_pagamento(colaborador_id=df_colaborador_agregado.reset_index()['ColaboradorId'].iloc[0],
      contrato_id=contrato_id,
      dbname=dbname, user=user, password=password, host=host, port=port)
+
+  df_colaborador_agregado['Limite'] = limite_series
 
   # df_colaborador_agregado = df_colaborador_agregado.reset_index().drop(['CargoId'],axis=1).set_index(['ColaboradorId','Colaborador','Cargo','Atividade'])
 
@@ -272,17 +277,6 @@ def gerar_resumo_memoria_completo(dbname, user, password,host,port, initialDate,
 
   resumo_memoria_completo = pd.concat([x[1] for x in resumo_memoria_por_colaborador],axis=0)
 
-  # def remover_colunas_indesejadas():
-  #   colunas_indesejadas = [
-  #     'Mudança de Sonda (Maior que 200 m)',
-  #     'Mudança de Sonda (Menor que 200 m)'
-  #     'Mudança de sonda (Km adicional)',
-  #     'Tamponamento Furo Mts']
-
-  #   return resumo_memoria_completo[~(resumo_memoria_completo.index.get_level_values('Atividade').isin(colunas_indesejadas))]
-
-  # resumo_memoria_completo = remover_colunas_indesejadas()
-
   return resumo_memoria_completo
 
 def obter_centro_custo_contrato(contrato_id,dbname, user, password, host, port):
@@ -315,19 +309,21 @@ def exportar_para_excel(
 
     resumo_memoria_completo_copia['Quantidade'] = resumo_memoria_completo_copia['Quantidade'].round(2)
 
-    # resumo_memoria_completo_copia['Quantidade'] = resumo_memoria_completo_copia['Quantidade'].astype(str).str.replace('.',',')
-
-    # resumo_memoria_completo_copia['Valor Unitário'] = resumo_memoria_completo_copia['Valor Unitário'].astype(str).str.replace('.',',')
 
     resumo_memoria_completo_copia['Subtotal'] = resumo_memoria_completo_copia['Subtotal'].apply(converter_para_float).apply(lambda x: round(x,2))
 
-    #resumo_memoria_completo_copia['Subtotal'] = resumo_memoria_completo_copia['Subtotal'].astype(str).str.replace('.',',')
 
-    #resumo_memoria_completo_copia['Valor a pagar'] = resumo_memoria_completo_copia['Valor a pagar'].astype(str).str.replace('.',',')
-
-    #resumo_memoria_completo_copia['Valor a pagar'] = resumo_memoria_completo_copia['Valor a pagar'].str.replace('nan','')
 
     resumo_memoria_completo_copia.style.set_properties(**{'text-align': 'center'})
+
+    #resumo_memoria_completo_copia['Valor a pagar'] = resumo_memoria_completo_copia['Valor a pagar'].apply(lambda x : format_currency(x, currency='BRL', locale='pt_BR') if not np.isnan(x) else np.nan)
+
+    #resumo_memoria_completo_copia['Limite'] = resumo_memoria_completo_copia['Limite'].apply(lambda x : format_currency(x, currency='BRL', locale='pt_BR') if not np.isnan(x) else np.nan)
+
+    #resumo_memoria_completo_copia['Valor Unitário'] = resumo_memoria_completo_copia['Valor Unitário'].apply(lambda x : format_currency(x, currency='BRL', locale='pt_BR') if not np.isnan(x) else np.nan)
+
+    #resumo_memoria_completo_copia['Subtotal'] = resumo_memoria_completo_copia['Subtotal'].apply(lambda x : format_currency(x, currency='BRL', locale='pt_BR') if not np.isnan(x) else np.nan)
+
 
     return resumo_memoria_completo_copia
 
@@ -342,6 +338,8 @@ def exportar_para_excel(
 
   def ajustar_resumo_pagamento():
      resumo_pagamento_copia = resumo_pagamento.copy()
+
+     #resumo_pagamento_copia['Valor a pagar'] = resumo_pagamento_copia['Valor a pagar'].apply(lambda x : format_currency(x, currency='BRL', locale='pt_BR') if not np.isnan(x) else np.nan)
 
      return resumo_pagamento_copia
 
@@ -411,26 +409,32 @@ def exportar_para_excel(
 
         resumo_pagamento.to_excel(writer, sheet_name='Resumo Pagamento', index=False)
 
-    def ajustar_worksheet_resumo_memoria( format_numbers, format_center, format_border):
+    def ajustar_worksheet_resumo_memoria( format_numbers, format_currency, format_center, format_border):
       worksheet_resumo_memoria = writer.sheets['Resumo Memória']
 
       worksheet_resumo_memoria.set_column('D:D', None, format_numbers) #quantidade
       worksheet_resumo_memoria.set_column('D:D', None, format_center) #quantidade
       #worksheet_resumo_memoria.set_column('D:D', None, format_border)
 
-      worksheet_resumo_memoria.set_column('E:E', None, format_numbers) #valor unitario
-      worksheet_resumo_memoria.set_column('E:E', None, format_center) #valor unitario
+      # worksheet_resumo_memoria.set_column('E:E', None, format_numbers) #valor unitario
+      # worksheet_resumo_memoria.set_column('E:E', None, format_center) #valor unitario
+      worksheet_resumo_memoria.set_column('E:E', None, format_currency) #valor unitario
       #worksheet_resumo_memoria.set_column('E:E', None, format_border)
 
-      worksheet_resumo_memoria.set_column('F:F', None, format_numbers) #sub total
-      worksheet_resumo_memoria.set_column('F:F', None, format_center) #sub total
+      # worksheet_resumo_memoria.set_column('F:F', None, format_numbers) #sub total
+      # worksheet_resumo_memoria.set_column('F:F', None, format_center) #sub total
+      worksheet_resumo_memoria.set_column('F:F', None, format_currency) #sub total
       #worksheet_resumo_memoria.set_column('F:F', None, format_border)
 
-      worksheet_resumo_memoria.set_column('G:G', None, format_numbers) #total geral
-      worksheet_resumo_memoria.set_column('G:G', None, format_center) #total geral
+      # worksheet_resumo_memoria.set_column('G:G', None, format_numbers) #total geral
+      # worksheet_resumo_memoria.set_column('G:G', None, format_center) #total geral
+      worksheet_resumo_memoria.set_column('G:G', None, format_currency) #total geral
+
+      worksheet_resumo_memoria.set_column('H:H', None, format_currency) # limite
+
       #worksheet_resumo_memoria.set_column('G:G', None, format_border)
 
-      #worksheet_resumo_memoria.set_column('H:H', None, format_border) #valor a pagar
+
 
       worksheet_resumo_memoria.conditional_format(1, 0, len(resumo_memoria_completo) + 1, resumo_memoria_completo.index.nlevels + len(resumo_memoria_completo.columns) - 1, {'type': 'no_errors', 'format': format_border})
 
@@ -439,7 +443,7 @@ def exportar_para_excel(
 
 
 
-    def ajustar_worksheet_resumo_pagamento(format_numbers, format_border):
+    def ajustar_worksheet_resumo_pagamento(format_numbers, format_currency, format_border):
       worksheet_resumo_pagamento = writer.sheets['Resumo Pagamento']
 
       colunas = ['A','B','C','D','E','F','G','H','I','J']
@@ -450,6 +454,7 @@ def exportar_para_excel(
       worksheet_resumo_pagamento.autofit()
 
       worksheet_resumo_pagamento.set_column('K:K', None, format_numbers) #valor a pagar
+      worksheet_resumo_pagamento.set_column('J:J',None,format_currency) # valor a pagar
 
       worksheet_resumo_pagamento.conditional_format(1, 0, len(resumo_pagamento) + 1, resumo_pagamento.index.nlevels + len(resumo_pagamento.columns) - 2, {'type': 'no_errors', 'format': format_border})
 
@@ -457,6 +462,7 @@ def exportar_para_excel(
 
 
     format_numbers = workbook.add_format({'num_format': '#,##0.00'})
+    format_currency = workbook.add_format({'num_format': 'R$ #,##0.00'})
     # format_numbers = workbook.add_format({'num_format': '0.00'})
 
     format_center = workbook.add_format({'align': 'center'})
@@ -467,10 +473,10 @@ def exportar_para_excel(
 
     if resumo_memoria_completo is not None:
 
-      ajustar_worksheet_resumo_memoria(format_numbers, format_center, format_border)
+      ajustar_worksheet_resumo_memoria(format_numbers, format_currency, format_center, format_border)
 
     if resumo_pagamento is not None:
-      ajustar_worksheet_resumo_pagamento(format_numbers, format_border)
+      ajustar_worksheet_resumo_pagamento(format_numbers, format_currency, format_border)
 
     indice_planilha = 1
 
@@ -524,6 +530,8 @@ def obter_resumo_pagamento_por_colaborador(colaborador_id, valorAPagar, user,pas
   limite_pagamento = obter_limite_pagamento(colaborador_id, contrato_id, dbname, user, password, host, port)
 
   df['Valor a pagar'] = limite_pagamento if (limite_pagamento is not None and valorAPagar > limite_pagamento) else valorAPagar
+
+
 
   return df
 
@@ -791,7 +799,7 @@ if executando_no_jupyter():
                       data_inicial=initialDate, data_final=finalDate, contrato_id=contractId,
                       dbname=os.getenv('DB_NAME'), user=os.getenv('DB_USER'), password=os.getenv('DB_PASSWORD'), host=os.getenv('DB_HOST'), port=os.getenv('DB_PORT'))
 
-#%%
+  #%%
 
 if executando_no_jupyter():
 
