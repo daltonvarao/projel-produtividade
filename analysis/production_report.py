@@ -12,7 +12,7 @@ from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Alignment, Font
 from pathlib import Path
 from datetime import datetime
-from babel.numbers import format_currency
+#from babel.numbers import format_currency
 
 #endregion
 
@@ -316,13 +316,13 @@ def exportar_para_excel(
 
     resumo_memoria_completo_copia.style.set_properties(**{'text-align': 'center'})
 
-    resumo_memoria_completo_copia['Valor a pagar'] = resumo_memoria_completo_copia['Valor a pagar'].apply(lambda x : format_currency(x, currency='BRL', locale='pt_BR') if not np.isnan(x) else np.nan)
+    #resumo_memoria_completo_copia['Valor a pagar'] = resumo_memoria_completo_copia['Valor a pagar'].apply(lambda x : format_currency(x, currency='BRL', locale='pt_BR') if not np.isnan(x) else np.nan)
 
-    resumo_memoria_completo_copia['Limite'] = resumo_memoria_completo_copia['Limite'].apply(lambda x : format_currency(x, currency='BRL', locale='pt_BR') if not np.isnan(x) else np.nan)
+    #resumo_memoria_completo_copia['Limite'] = resumo_memoria_completo_copia['Limite'].apply(lambda x : format_currency(x, currency='BRL', locale='pt_BR') if not np.isnan(x) else np.nan)
 
-    resumo_memoria_completo_copia['Valor Unitário'] = resumo_memoria_completo_copia['Valor Unitário'].apply(lambda x : format_currency(x, currency='BRL', locale='pt_BR') if not np.isnan(x) else np.nan)
+    #resumo_memoria_completo_copia['Valor Unitário'] = resumo_memoria_completo_copia['Valor Unitário'].apply(lambda x : format_currency(x, currency='BRL', locale='pt_BR') if not np.isnan(x) else np.nan)
 
-    resumo_memoria_completo_copia['Subtotal'] = resumo_memoria_completo_copia['Subtotal'].apply(lambda x : format_currency(x, currency='BRL', locale='pt_BR') if not np.isnan(x) else np.nan)
+    #resumo_memoria_completo_copia['Subtotal'] = resumo_memoria_completo_copia['Subtotal'].apply(lambda x : format_currency(x, currency='BRL', locale='pt_BR') if not np.isnan(x) else np.nan)
 
 
     return resumo_memoria_completo_copia
@@ -339,7 +339,7 @@ def exportar_para_excel(
   def ajustar_resumo_pagamento():
      resumo_pagamento_copia = resumo_pagamento.copy()
 
-     resumo_pagamento_copia['Valor a pagar'] = resumo_pagamento_copia['Valor a pagar'].apply(lambda x : format_currency(x, currency='BRL', locale='pt_BR') if not np.isnan(x) else np.nan)
+     #resumo_pagamento_copia['Valor a pagar'] = resumo_pagamento_copia['Valor a pagar'].apply(lambda x : format_currency(x, currency='BRL', locale='pt_BR') if not np.isnan(x) else np.nan)
 
      return resumo_pagamento_copia
 
@@ -409,23 +409,29 @@ def exportar_para_excel(
 
         resumo_pagamento.to_excel(writer, sheet_name='Resumo Pagamento', index=False)
 
-    def ajustar_worksheet_resumo_memoria( format_numbers, format_center, format_border):
+    def ajustar_worksheet_resumo_memoria( format_numbers, format_currency, format_center, format_border):
       worksheet_resumo_memoria = writer.sheets['Resumo Memória']
 
       worksheet_resumo_memoria.set_column('D:D', None, format_numbers) #quantidade
       worksheet_resumo_memoria.set_column('D:D', None, format_center) #quantidade
       #worksheet_resumo_memoria.set_column('D:D', None, format_border)
 
-      worksheet_resumo_memoria.set_column('E:E', None, format_numbers) #valor unitario
-      worksheet_resumo_memoria.set_column('E:E', None, format_center) #valor unitario
+      # worksheet_resumo_memoria.set_column('E:E', None, format_numbers) #valor unitario
+      # worksheet_resumo_memoria.set_column('E:E', None, format_center) #valor unitario
+      worksheet_resumo_memoria.set_column('E:E', None, format_currency) #valor unitario
       #worksheet_resumo_memoria.set_column('E:E', None, format_border)
 
-      worksheet_resumo_memoria.set_column('F:F', None, format_numbers) #sub total
-      worksheet_resumo_memoria.set_column('F:F', None, format_center) #sub total
+      # worksheet_resumo_memoria.set_column('F:F', None, format_numbers) #sub total
+      # worksheet_resumo_memoria.set_column('F:F', None, format_center) #sub total
+      worksheet_resumo_memoria.set_column('F:F', None, format_currency) #sub total
       #worksheet_resumo_memoria.set_column('F:F', None, format_border)
 
-      worksheet_resumo_memoria.set_column('G:G', None, format_numbers) #total geral
-      worksheet_resumo_memoria.set_column('G:G', None, format_center) #total geral
+      # worksheet_resumo_memoria.set_column('G:G', None, format_numbers) #total geral
+      # worksheet_resumo_memoria.set_column('G:G', None, format_center) #total geral
+      worksheet_resumo_memoria.set_column('G:G', None, format_currency) #total geral
+
+      worksheet_resumo_memoria.set_column('H:H', None, format_currency) # limite
+
       #worksheet_resumo_memoria.set_column('G:G', None, format_border)
 
 
@@ -437,7 +443,7 @@ def exportar_para_excel(
 
 
 
-    def ajustar_worksheet_resumo_pagamento(format_numbers, format_border):
+    def ajustar_worksheet_resumo_pagamento(format_numbers, format_currency, format_border):
       worksheet_resumo_pagamento = writer.sheets['Resumo Pagamento']
 
       colunas = ['A','B','C','D','E','F','G','H','I','J']
@@ -448,6 +454,7 @@ def exportar_para_excel(
       worksheet_resumo_pagamento.autofit()
 
       worksheet_resumo_pagamento.set_column('K:K', None, format_numbers) #valor a pagar
+      worksheet_resumo_pagamento.set_column('J:J',None,format_currency) # valor a pagar
 
       worksheet_resumo_pagamento.conditional_format(1, 0, len(resumo_pagamento) + 1, resumo_pagamento.index.nlevels + len(resumo_pagamento.columns) - 2, {'type': 'no_errors', 'format': format_border})
 
@@ -455,6 +462,7 @@ def exportar_para_excel(
 
 
     format_numbers = workbook.add_format({'num_format': '#,##0.00'})
+    format_currency = workbook.add_format({'num_format': 'R$ #,##0.00'})
     # format_numbers = workbook.add_format({'num_format': '0.00'})
 
     format_center = workbook.add_format({'align': 'center'})
@@ -465,10 +473,10 @@ def exportar_para_excel(
 
     if resumo_memoria_completo is not None:
 
-      ajustar_worksheet_resumo_memoria(format_numbers, format_center, format_border)
+      ajustar_worksheet_resumo_memoria(format_numbers, format_currency, format_center, format_border)
 
     if resumo_pagamento is not None:
-      ajustar_worksheet_resumo_pagamento(format_numbers, format_border)
+      ajustar_worksheet_resumo_pagamento(format_numbers, format_currency, format_border)
 
     indice_planilha = 1
 
