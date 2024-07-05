@@ -158,7 +158,7 @@ def carregar_dados_resumo_memoria(
     colunas_indesejadas = [
       'Mudança de Sonda (Maior que 200m)',
       'Mudança de Sonda (Menor que 200m)',
-      'Mudança de Sonda (Menor que 200 m)',
+      'Mudança de Sonda (Maior que 200 m)',
       'Mudança de Sonda (Menor que 200 m)',
       'Mudança de sonda (Km adicional)',
       'Tamponamento Furo Mts',
